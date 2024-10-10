@@ -14,21 +14,9 @@
 // and limitations under the License.
 //
 
-export * from './MobileToken';
-export * from './MobileTokenException'
+import { Networking, type RequestProcessor, type MobileTokenResponse } from "../networking/Networking";
+import { PowerAuthAuthentication } from 'react-native-powerauth-mobile-sdk';
 
-// OPERATIONS
-export * from './operations/Operations';
-export * from './operations/MobileTokenOperation';
-export * from './operations/MobileTokenOperationAttribute';
-export * from './operations/MobileTokenUserOperation';
+export class Inbox extends Networking {
 
-// PUSH
-export * from './push/Push';
-
-// INBOX
-export * from './inbox/Inbox';
-
-// NETWORKING
-export * from './networking/KnownRestApiError';
-export * from './networking/Networking';
+}

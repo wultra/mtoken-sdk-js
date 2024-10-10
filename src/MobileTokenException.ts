@@ -14,21 +14,16 @@
 // and limitations under the License.
 //
 
-export * from './MobileToken';
-export * from './MobileTokenException'
+/** Possible logic errors during the API calls. */
+export class MobileTokenException {
 
-// OPERATIONS
-export * from './operations/Operations';
-export * from './operations/MobileTokenOperation';
-export * from './operations/MobileTokenOperationAttribute';
-export * from './operations/MobileTokenUserOperation';
-
-// PUSH
-export * from './push/Push';
-
-// INBOX
-export * from './inbox/Inbox';
-
-// NETWORKING
-export * from './networking/KnownRestApiError';
-export * from './networking/Networking';
+    /** Description of the Exception */
+    description: string;
+    /** Optional additional data that helps with the exception */
+    additionalData?: any;
+    
+    constructor(description: string, additionalData?: any) {
+      this.description = description;
+      this.additionalData = additionalData;
+    }
+  }
