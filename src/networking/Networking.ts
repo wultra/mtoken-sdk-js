@@ -27,12 +27,9 @@ export class Networking {
     private pa: PowerAuth;
     private baseURL: string;
 
-    constructor(powerAuth: PowerAuth, baseURL?: string) {
+    constructor(powerAuth: PowerAuth, baseURL: string) {
         this.pa = powerAuth;
-        this.baseURL = baseURL ?? powerAuth.configuration?.baseEndpointUrl ?? ""
-        if (!this.baseURL.endsWith("/")) {
-            this.baseURL = this.baseURL + "/";
-        }
+        this.baseURL = baseURL
     }
 
     protected async postSigned<T>(
@@ -77,7 +74,7 @@ export class Networking {
         requestProcessor?: RequestProcessor
     ): Promise<MobileTokenResponse<T>> {
         let method = "POST";
-        let url = this.baseURL + endpoindPath;
+        let url = (this.baseURL + endpoindPath).replace("//","/");
 
         let jsonType = "application/json";
         headers.set("Accept", jsonType);
@@ -92,7 +89,7 @@ export class Networking {
         }
 
         if (requestProcessor) {
-        request = requestProcessor(request);
+            request = requestProcessor(request);
         }
 
         let result = await fetch(url, request);

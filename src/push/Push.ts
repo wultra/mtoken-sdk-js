@@ -18,6 +18,7 @@ import { Networking, type RequestProcessor, type MobileTokenResponse } from "../
 import { Platform } from 'react-native';
 import { PowerAuthAuthentication } from 'react-native-powerauth-mobile-sdk';
 
+/** Push handling */
 export class Push extends Networking {
 
   /** 

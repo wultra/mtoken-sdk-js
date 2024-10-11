@@ -20,10 +20,10 @@ import { type MobileTokenOperation } from "./MobileTokenOperation";
 import { PowerAuthAuthentication } from 'react-native-powerauth-mobile-sdk';
 
 /** Operation handling.  */
-export class Operation extends Networking {
+export class Operations extends Networking {
 
     /**
-    * Retrieves user operations from the server.
+    * Retrieves user operations that are pending approval.
     * 
     * @param requestProcessor You may modify the request via this processor. It's highly recommended to only modify HTTP headers.
     * @returns Server response (with list of operations).
@@ -32,7 +32,7 @@ export class Operation extends Networking {
         return await this.postSignedWithToken<MobileTokenUserOperation[]>(
             {},
             PowerAuthAuthentication.possession(),
-            "api/auth/token/app/operation/list",
+            "/api/auth/token/app/operation/list",
             "possession_universal",
             true,
             requestProcessor
@@ -50,8 +50,26 @@ export class Operation extends Networking {
         return await this.postSignedWithToken<MobileTokenUserOperation>(
             { requestObject: { id: operationId } },
             PowerAuthAuthentication.possession(),
-            "api/auth/token/app/operation/detail",
+            "/api/auth/token/app/operation/detail",
             "possession_universal",
+            true,
+            requestProcessor
+        );
+    }
+
+    /**
+     * Retrieves the history of user operations.
+     * 
+     * @param authentication Authentication object
+     * @param requestProcessor You may modify the request via this processor. It's highly recommended to only modify HTTP headers.
+     * @returns Server response (with list of operations).
+     */
+    async history(authentication: PowerAuthAuthentication, requestProcessor?: RequestProcessor): Promise<MobileTokenResponse<MobileTokenUserOperation[]>> {
+        return await this.postSigned<MobileTokenUserOperation[]>(
+            {},
+            authentication,
+            "/api/auth/token/app/operation/history",
+            "/operation/history",
             true,
             requestProcessor
         );
@@ -91,6 +109,24 @@ export class Operation extends Networking {
             "/api/auth/token/app/operation/cancel",
             "/operation/cancel",
             false,
+            requestProcessor
+        );
+    }
+
+    /**
+     * Assigns the 'non-personalized' operation to the user
+     * 
+     * @param operationId ID of the operation.
+     * @param requestProcessor You may modify the request via this processor. It's highly recommended to only modify HTTP headers.
+     * @returns Server response (with operation detail)
+     */
+    async claim(operationId: string, requestProcessor?: RequestProcessor): Promise<MobileTokenResponse<MobileTokenUserOperation>> {
+        return await this.postSignedWithToken<MobileTokenUserOperation>(
+            { requestObject: { id: operationId } },
+            PowerAuthAuthentication.possession(),
+            "/api/auth/token/app/operation/detail/claim",
+            "possession_universal",
+            true,
             requestProcessor
         );
     }

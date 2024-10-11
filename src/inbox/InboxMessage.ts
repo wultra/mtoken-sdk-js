@@ -14,24 +14,21 @@
 // and limitations under the License.
 //
 
-export * from './MobileToken';
-export * from './MobileTokenException'
-
-// OPERATIONS
-export * from './operations/Operations';
-export * from './operations/MobileTokenOperation';
-export * from './operations/MobileTokenOperationAttribute';
-export * from './operations/MobileTokenUserOperation';
-
-// PUSH
-export * from './push/Push';
-
-// INBOX
-export * from './inbox/Inbox';
-export * from './inbox/InboxCount';
-export * from './inbox/InboxMessage';
-export * from './inbox/InboxMessageDetail';
-
-// NETWORKING
-export * from './networking/KnownRestApiError';
-export * from './networking/Networking';
+/** Structure contains information about message in inbox. */
+export interface InboxMessage {
+    /** Message's identifier. */
+    id: string
+    /** Message's subject. */
+    subject: string
+    /**
+     * Message's summary. It typically contains a reduced
+     * information from message's body, with no additional formatting.
+     */
+    summary: string
+    /** Message body's content type. */
+    type: "text" | "html"
+    /** If `true`, then user already read the message. */
+    read: boolean
+    /** Date and time when the message was created. */
+    timestampCreated: Date
+}
