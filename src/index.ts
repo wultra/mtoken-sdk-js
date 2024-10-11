@@ -22,6 +22,8 @@ export * from './operations/Operations';
 export * from './operations/MobileTokenOperation';
 export * from './operations/MobileTokenOperationAttribute';
 export * from './operations/MobileTokenUserOperation';
+export * from './operations/QROperation'
+export * from './operations/QROperationParser'
 
 // PUSH
 export * from './push/Push';
