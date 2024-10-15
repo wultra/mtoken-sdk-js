@@ -65,7 +65,7 @@ export class QROperationParser {
         const attributes = string.split("\n")
 
         if (attributes.length < this.minimumAttributeFields) {
-            throw new MobileTokenException("QR operation needs to have at least $minimumAttributeFields attributes")
+            throw new MobileTokenException(`QR operation needs to have at least ${this.minimumAttributeFields} attributes but have ${attributes.length}`)
         }
 
         // Acquire all attributes

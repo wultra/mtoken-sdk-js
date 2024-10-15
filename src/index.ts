@@ -19,9 +19,11 @@ export * from './MobileTokenException'
 
 // OPERATIONS
 export * from './operations/Operations';
-export * from './operations/MobileTokenOperation';
-export * from './operations/MobileTokenOperationAttribute';
-export * from './operations/MobileTokenUserOperation';
+export * from './operations/OnlineOperation';
+export * from './operations/UserOperationAttribute';
+export * from './operations/UserOperation';
+export * from './operations/UserOperationUIData';
+export * from './operations/UserOperationProximityCheck';
 export * from './operations/QROperation'
 export * from './operations/QROperationParser'
 

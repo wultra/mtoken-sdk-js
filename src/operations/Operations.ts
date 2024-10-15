@@ -15,9 +15,10 @@
 //
 
 import { Networking, type RequestProcessor, type MobileTokenResponse } from "../networking/Networking";
-import { type MobileTokenUserOperation } from "./MobileTokenUserOperation";
-import { type MobileTokenOperation } from "./MobileTokenOperation";
+import { type UserOperation } from "./UserOperation";
+import { type OnlineOperation } from "./OnlineOperation";
 import { PowerAuthAuthentication } from 'react-native-powerauth-mobile-sdk';
+import type { QROperation } from "react-native-mtoken-sdk";
 
 /** Operation handling.  */
 export class Operations extends Networking {
@@ -28,8 +29,8 @@ export class Operations extends Networking {
     * @param requestProcessor You may modify the request via this processor. It's highly recommended to only modify HTTP headers.
     * @returns Server response (with list of operations).
     */
-    async pendingList(requestProcessor?: RequestProcessor): Promise<MobileTokenResponse<MobileTokenUserOperation[]>> {
-        return await this.postSignedWithToken<MobileTokenUserOperation[]>(
+    async pendingList(requestProcessor?: RequestProcessor): Promise<MobileTokenResponse<UserOperation[]>> {
+        return await this.postSignedWithToken<UserOperation[]>(
             {},
             PowerAuthAuthentication.possession(),
             "/api/auth/token/app/operation/list",
@@ -46,8 +47,8 @@ export class Operations extends Networking {
      * @param requestProcessor You may modify the request via this processor. It's highly recommended to only modify HTTP headers.
      * @returns Server response (with operation detail)
      */
-    async detail(operationId: string, requestProcessor?: RequestProcessor): Promise<MobileTokenResponse<MobileTokenUserOperation>> {
-        return await this.postSignedWithToken<MobileTokenUserOperation>(
+    async detail(operationId: string, requestProcessor?: RequestProcessor): Promise<MobileTokenResponse<UserOperation>> {
+        return await this.postSignedWithToken<UserOperation>(
             { requestObject: { id: operationId } },
             PowerAuthAuthentication.possession(),
             "/api/auth/token/app/operation/detail",
@@ -64,8 +65,8 @@ export class Operations extends Networking {
      * @param requestProcessor You may modify the request via this processor. It's highly recommended to only modify HTTP headers.
      * @returns Server response (with list of operations).
      */
-    async history(authentication: PowerAuthAuthentication, requestProcessor?: RequestProcessor): Promise<MobileTokenResponse<MobileTokenUserOperation[]>> {
-        return await this.postSigned<MobileTokenUserOperation[]>(
+    async history(authentication: PowerAuthAuthentication, requestProcessor?: RequestProcessor): Promise<MobileTokenResponse<UserOperation[]>> {
+        return await this.postSigned<UserOperation[]>(
             {},
             authentication,
             "/api/auth/token/app/operation/history",
@@ -83,7 +84,7 @@ export class Operations extends Networking {
      * @param requestProcessor You may modify the request via this processor. It's highly recommended to only modify HTTP headers.
      * @returns Server response
      */
-    async authorize(operation: MobileTokenOperation, authentication: PowerAuthAuthentication, requestProcessor?: RequestProcessor): Promise<MobileTokenResponse<void>> {
+    async authorize(operation: OnlineOperation, authentication: PowerAuthAuthentication, requestProcessor?: RequestProcessor): Promise<MobileTokenResponse<void>> {
         return await this.postSigned<void>(
             { requestObject: { id: operation.id, data: operation.data } },
             authentication,
@@ -92,6 +93,19 @@ export class Operations extends Networking {
             false,
             requestProcessor
         );
+    }
+
+    /**
+     * Sign offline QR operation with provided authentication.
+     * 
+     * @param operation Operation to approve
+     * @param authentication Authentication object
+     * @param uriId Custom signature URI ID of the operation. Use URI ID under which the operation was
+     * created on the server. Default value is `/operation/authorize/offline`.
+     * @returns 
+     */
+    async authorizeOffline(operation: QROperation, authentication: PowerAuthAuthentication, uriId: string = "/operation/authorize/offline"): Promise<string> {
+        return await this.pa.offlineSignature(authentication, uriId, operation.nonce, QROperationUtil.dataForOfflineSigning(operation))
     }
 
     /**
@@ -120,8 +134,8 @@ export class Operations extends Networking {
      * @param requestProcessor You may modify the request via this processor. It's highly recommended to only modify HTTP headers.
      * @returns Server response (with operation detail)
      */
-    async claim(operationId: string, requestProcessor?: RequestProcessor): Promise<MobileTokenResponse<MobileTokenUserOperation>> {
-        return await this.postSignedWithToken<MobileTokenUserOperation>(
+    async claim(operationId: string, requestProcessor?: RequestProcessor): Promise<MobileTokenResponse<UserOperation>> {
+        return await this.postSignedWithToken<UserOperation>(
             { requestObject: { id: operationId } },
             PowerAuthAuthentication.possession(),
             "/api/auth/token/app/operation/detail/claim",
@@ -129,5 +143,15 @@ export class Operations extends Networking {
             true,
             requestProcessor
         );
+    }
+}
+
+class QROperationUtil {
+    static dataForOfflineSigning(operation: QROperation): string {
+        if (operation.totp) {
+            return `${operation.operationId}&${operation.operationData.sourceString}&${operation.totp}`
+        } else {
+            return `${operation.operationId}&${operation.operationData.sourceString}`
+        }
     }
 }

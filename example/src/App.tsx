@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import * as Notifications from 'expo-notifications';
 import { StyleSheet, View, Text, Alert, Button } from 'react-native';
-import { MobileToken, type MobileTokenUserOperation, QROperationParser } from 'react-native-mtoken-sdk';
+import { MobileToken, type UserOperation, QROperationParser } from 'react-native-mtoken-sdk';
 import { PowerAuth, PowerAuthActivation, PowerAuthAuthentication, type PowerAuthActivationStatus } from 'react-native-powerauth-mobile-sdk';
 
 export default function App() {
@@ -163,14 +163,28 @@ export default function App() {
           log(err);
         }
       }} />
-      <Button title='Parse QR code' onPress={async () => {
+      <Button title='Authorize QR operation' onPress={async () => {
         try {
 
-          const code = makeCode()
-          
-          const parsed = QROperationParser.parse(code)
+          //const code = makeCode()
 
-          log(parsed)
+          Alert.prompt("QR Operation", "Insert QR code data", async code => {
+            if (!code) {
+              return;
+            }
+
+            try {
+  
+              const parsed = QROperationParser.parse(code.replaceAll("\\n", "\n"))
+            
+              console.log(parsed)
+  
+              const result = await mtoken.operations.authorizeOffline(parsed, PowerAuthAuthentication.password(pin));
+              Alert.alert(`code: ${result}`)
+            } catch (err) {
+              log(err);
+            }
+          })
 
         } catch (err) {
           log(err);

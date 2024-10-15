@@ -18,7 +18,7 @@
  * An interface that defines minimum data needed for calculating the operation signature
  * and sending it to confirmation endpoint.
  */
-export interface MobileTokenOperation {
+export interface OnlineOperation {
 
     /** Unique operation identifier. */
     id: string;

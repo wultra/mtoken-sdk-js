@@ -14,15 +14,17 @@
 // and limitations under the License.
 //
 
-import type { MobileTokenOperation } from "./MobileTokenOperation";
-import type { MobileTokenOperationAttribute } from "./MobileTokenOperationAttribute";
+import type { UserOperationUIData } from "./UserOperationUIData";
+import type { OnlineOperation } from "./OnlineOperation";
+import type { UserOperationAttribute } from "./UserOperationAttribute";
+import type { UserOperationProximityCheck } from "./UserOperationProximityCheck";
 
 /**
  * `UserOperation` is object returned from the backend that can be either approved or rejected.
  * It is usually visually presented to the user as a non-editable form with information about
  * the real-world operation (for example login or payment).
  */
-export interface MobileTokenUserOperation extends MobileTokenOperation {
+export interface UserOperation extends OnlineOperation {
 
     /** Processing status of the operation */
     status: "APPROVED" | "REJECTED" | "PENDING" | "CANCELED" | "EXPIRED" | "FAILED";
@@ -51,9 +53,10 @@ export interface MobileTokenUserOperation extends MobileTokenOperation {
     /**
      * Data that should be presented to the user.
      */ 
-    formData: MobileTokenOperationFormData;
+    formData: OperationFormData;
     
-    /** Enum-like reason why the status has changed.
+    /** 
+     * Enum-like reason why the status has changed.
      * 
      *  Max 32 characters are expected. Possible values depend on the backend implementation and configuration.
      */ 
@@ -66,25 +69,32 @@ export interface MobileTokenUserOperation extends MobileTokenOperation {
      * tapping an approve button. If the operation requires 2FA, this value also hints if
      * the user may use the biometry, or if a password is required.
      */ 
-    allowedSignatureType: MobileTokenAllowedOperationSignature;
+    allowedSignatureType: AllowedOperationSignature;
     
-    // Following features are not supported in the react-native yet and will be added later.
-    // If you need it for your project, please raise an issue in the repository or contact Wultra support.
+    /**
+     * UI data to be shown
+     *
+     * Accompanying information about the operation additional UI which should be presented such as
+     * Pre-Approval Screen or Post-Approval Screen
+     */
+    ui?: UserOperationUIData;
 
-    // ui: MobileTokenOerationUIData?
-    // proximityCheck: MobileTokenProximityCheck?
+    /** 
+     * Proximity Check Data to be passed when OTP is handed to the app.
+     */
+    proximityCheck?: UserOperationProximityCheck;
 }
 
-type MtokenSignatureFactor = "possession" | "possession_knowledge" | "possession_biometry";
+type SignatureFactor = "possession" | "possession_knowledge" | "possession_biometry";
 
 /** Allowed signature types that can be used for operation approval. */
-export interface MobileTokenAllowedOperationSignature {
+export interface AllowedOperationSignature {
     
     /** If operation should be signed with 1 or 2 factor authentication. */
     type: "1FA" | "2FA";
 
     /** What factors are needed to signing this operation. */
-    variants: MtokenSignatureFactor[];
+    variants: SignatureFactor[];
 }
 
 /**
@@ -92,7 +102,7 @@ export interface MobileTokenAllowedOperationSignature {
  * 
  *  Note that the data returned from the server are localized based on the `MobileToken.acceptLanguage` property.
  */
-export interface MobileTokenOperationFormData {
+export interface OperationFormData {
     
     /** Title of the operation */
     title: string;
@@ -105,14 +115,14 @@ export interface MobileTokenOperationFormData {
      * 
      * This includes messages for different outcomes of the operation such as success, rejection, and failure.
      */
-    resultTexts?: MobileTokenResultTexts;
+    resultTexts?: ResultTexts;
      
     /**
      * Other attributes.
      * 
      * Note that attributes can be presented with different classes (Starting with `MobileTokenOperationAttribute*`) based on the attribute type.  
      */ 
-    attributes: MobileTokenOperationAttribute[];
+    attributes: UserOperationAttribute[];
 }
 
 /**
@@ -120,7 +130,7 @@ export interface MobileTokenOperationFormData {
  * 
  * This includes messages for different outcomes of the operation such as success, rejection, and failure.
  */
-export interface MobileTokenResultTexts {
+export interface ResultTexts {
     /** Optional message to be displayed when the approval of the operation is successful. */
     success?: string;
     
