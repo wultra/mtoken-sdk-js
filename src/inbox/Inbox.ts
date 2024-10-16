@@ -51,7 +51,7 @@ export class Inbox extends Networking {
      */
     async list(pageNumber: Number, pageSize: Number, onlyUnread: boolean, requestProcessor?: RequestProcessor): Promise<MobileTokenResponse<InboxMessage[]>> {
         return await this.postSignedWithToken<InboxMessage[]>(
-            {},
+            { requestObject: { page: pageNumber, size: pageSize, onlyUnread: onlyUnread } },
             PowerAuthAuthentication.possession(),
             "/api/inbox/message/list",
             "possession_universal",
@@ -69,7 +69,7 @@ export class Inbox extends Networking {
      */
     async detail(messageId: string, requestProcessor?: RequestProcessor): Promise<MobileTokenResponse<InboxMessageDetail>> {
         return await this.postSignedWithToken<InboxMessageDetail>(
-            {},
+            { requestObject: { id: messageId } },
             PowerAuthAuthentication.possession(),
             "/api/inbox/message/detail",
             "possession_universal",
@@ -87,7 +87,7 @@ export class Inbox extends Networking {
      */
     async markRead(messageId: string, requestProcessor?: RequestProcessor): Promise<MobileTokenResponse<void>> {
         return await this.postSignedWithToken<void>(
-            {},
+            { requestObject: { id: messageId } },
             PowerAuthAuthentication.possession(),
             "/api/inbox/message/read",
             "possession_universal",

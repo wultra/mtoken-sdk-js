@@ -190,6 +190,68 @@ export default function App() {
           log(err);
         }
       }} />
+      <Button title='Fetch inbox' onPress={async () => {
+        try {
+          let result = await mtoken.inbox.list(0, 10, false);
+          let json = JSON.stringify(result);
+          console.log(json);
+          if (result.responseObject) {
+            Alert.alert(json);
+          } else if (result.responseError) {
+            Alert.alert(`${result.responseError.code}`, `${result.responseError.message}`);
+          }
+        } catch (err) {
+          log(err);
+        }
+      }} />
+      <Button title='Inbox unread count' onPress={async () => {
+        try {
+          let result = await mtoken.inbox.unreadCount();
+          let json = JSON.stringify(result);
+          console.log(json);
+          if (result.responseObject) {
+            Alert.alert(json);
+          } else if (result.responseError) {
+            Alert.alert(`${result.responseError.code}`, `${result.responseError.message}`);
+          }
+        } catch (err) {
+          log(err);
+        }
+      }} />
+      <Button title='Fetch first message' onPress={async () => {
+        try {
+          let list = await mtoken.inbox.list(0, 10, false);
+          let result = await mtoken.inbox.detail(list.responseObject!![0].id);
+          let json = JSON.stringify(result);
+          console.log(json);
+          if (result.responseObject) {
+            Alert.alert(json);
+          } else if (result.responseError) {
+            Alert.alert(`${result.responseError.code}`, `${result.responseError.message}`);
+          }
+        } catch (err) {
+          log(err);
+        }
+      }} />
+      <Button title='Make first message read' onPress={async () => {
+        try {
+          let list = await mtoken.inbox.list(0, 10, false);
+          let result = await mtoken.inbox.markRead(list.responseObject!![0].id);
+          let json = JSON.stringify(result);
+          Alert.alert(json);
+        } catch (err) {
+          log(err);
+        }
+      }} />
+      <Button title='Make all messages read' onPress={async () => {
+        try {
+          let result = await mtoken.inbox.markAllRead()
+          let json = JSON.stringify(result);
+          Alert.alert(json);
+        } catch (err) {
+          log(err);
+        }
+      }} />
     </View>
   );
 }
