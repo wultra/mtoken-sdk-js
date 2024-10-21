@@ -20,7 +20,7 @@
  * `MobileTokenOperationAttribute` is considered to be "abstract".
  * Every type of the attribute has it's own "strongly typed" implementation.
  */
-export interface MobileTokenOperationAttribute {
+export interface UserOperationAttribute {
     /** 
      * Type of the operation.
      * 
@@ -28,14 +28,14 @@ export interface MobileTokenOperationAttribute {
      * 
      * The possible string value is a fallback for unknown attribute types.
      */
-    type: MobileTokenAttributeType | string;
+    type: AttributeType | string;
     
     /** Label for the value. */
-    label: MobileTokenAttributeLabel;
+    label: AttributeLabel;
 }
 
 /** Attribute type. Based on this type, proper class should be chosen for "deserialization". */
-export enum MobileTokenAttributeType {
+export enum AttributeType {
     /** Amount, like "100.00 CZK" */
     Amount           = "AMOUNT", 
     /** Currency conversion, for example when changing money from USD to EUR */
@@ -51,7 +51,7 @@ export enum MobileTokenAttributeType {
 }
 
 /** Attribute label serves as a UI heading for the attribute. */
-export interface MobileTokenAttributeLabel {
+export interface AttributeLabel {
         
     /** 
      * ID (type) of the label. This is highly depended on the backend
@@ -64,7 +64,7 @@ export interface MobileTokenAttributeLabel {
 }
 
 /** Amount attribute is 1 row in operation, that represents "Payment Amount" */
-export interface MobileTokenOperationAttributeAmount extends MobileTokenOperationAttribute {
+export interface OperationAttributeAmount extends UserOperationAttribute {
     
     /**
      * Formatted amount for presentation.
@@ -100,24 +100,24 @@ export interface MobileTokenOperationAttributeAmount extends MobileTokenOperatio
 }
 
 /** Attribute that describes generic key-value row to display. */
-export interface MobileTokenOperationAttributeKeyValue extends MobileTokenOperationAttribute {
+export interface OperationAttributeKeyValue extends UserOperationAttribute {
     /**Value of the attribute  */ 
     value: string;
 }
 
 /** Attribute that describes note, that should be handled as "long text message". */
-export interface MobileTokenOperationAttributeNote extends MobileTokenOperationAttribute {
+export interface OperationAttributeNote extends UserOperationAttribute {
     /** Note  */ 
     note: string;
 }
 
 /** Heading. This attribute has no value. It only acts as a "section separator". */
-export interface MobileTokenOperationAttributeHeading extends MobileTokenOperationAttribute {
+export interface OperationAttributeHeading extends UserOperationAttribute {
     
 }
 
 /** Image that might be "open" on tap/click. */
-export interface MobileTokenOperationAttributeImage extends MobileTokenOperationAttribute {
+export interface OperationAttributeImage extends UserOperationAttribute {
 
     /** Image thumbnail url to the public internet. */
     thumbnailUrl: string;
@@ -130,7 +130,7 @@ export interface MobileTokenOperationAttributeImage extends MobileTokenOperation
 }
 
 /** Conversion attribute is 1 row in operation, that represents "Money Conversion" */
-export interface MobileTokenOperationAmountConversion extends MobileTokenOperationAttribute {
+export interface OperationAmountConversion extends UserOperationAttribute {
     
     /**
      * If the conversion is dynamic and the application should refresh it periodically
@@ -154,6 +154,7 @@ export interface MobileTokenOperationAmountConversion extends MobileTokenOperati
      * For example when the currency is CZK, this property will be "Kč"
      */
     sourceCurrencyFormatted: string;
+
     /**
      * Payment amount
      * 
@@ -161,6 +162,7 @@ export interface MobileTokenOperationAmountConversion extends MobileTokenOperati
      * use amountFormatted property instead when available
      */
     sourceAmount?: number;
+
     /** Currency */
     sourceCurrency?: string;
     /**
@@ -179,6 +181,7 @@ export interface MobileTokenOperationAmountConversion extends MobileTokenOperati
      * the amountFormatted will be "100,00".
      */
     targetAmountFormatted: string;
+
     /**
      * Formatted currency to the locale based on acceptLanguage
      * 
@@ -192,8 +195,10 @@ export interface MobileTokenOperationAmountConversion extends MobileTokenOperati
      * use amountFormatted property instead when available
      */
     targetAmount?: number;
+
     /** Currency */
     targetCurrency?: string;
+    
     /**
      * Formatted currency and amount to the locale based on acceptLanguage
      * 
