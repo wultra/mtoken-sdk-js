@@ -26,6 +26,8 @@ export * from './operations/UserOperationUIData';
 export * from './operations/UserOperationProximityCheck';
 export * from './operations/QROperation'
 export * from './operations/QROperationParser'
+export * from './operations/PACUtils'
+
 
 // PUSH
 export * from './push/Push';
