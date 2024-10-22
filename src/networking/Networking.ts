@@ -24,7 +24,7 @@ export class Networking {
 
     acceptLanguage = "en";
 
-    private pa: PowerAuth;
+    protected pa: PowerAuth;
     private baseURL: string;
 
     constructor(powerAuth: PowerAuth, baseURL: string) {
@@ -83,9 +83,9 @@ export class Networking {
         headers.set("User-Agent", "react-native-mtoken-sdk"); // TODO: improve!
 
         let request: RequestInit = {
-        method: method,
-        headers: headers,
-        body: requestSerialized
+            method: method,
+            headers: headers,
+            body: requestSerialized
         }
 
         if (requestProcessor) {
@@ -95,22 +95,22 @@ export class Networking {
         let result = await fetch(url, request);
         let responseBody = await result.text()
         let response = JSON.parse(responseBody, (key: string, value: any) => {
-        if (key == "operationExpires" || key == "operationCreated") {
-            return new Date(value);
-        }
-        return value
+            if (key == "operationExpires" || key == "operationCreated") {
+                return new Date(value);
+            }
+            return value
         }) as MobileTokenResponse<T>;
 
         if (response.status == "ERROR") {
-        if (response.responseObject == undefined) {
-            throw new MobileTokenException("Error retrieved but no error data", { ...result })
-        }
-        response.responseError = response.responseObject as any
-        response.responseObject = undefined
+            if (response.responseObject == undefined) {
+                throw new MobileTokenException("Error retrieved but no error data", { ...result })
+            }
+            response.responseError = response.responseObject as any
+            response.responseObject = undefined
         }
 
         if (response.status == "OK" && returnDataExpected && response.responseObject == undefined) {
-        throw new MobileTokenException("No data object retieved.", { ...result })
+            throw new MobileTokenException("No data object retieved.", { ...result })
         }
 
         return response;

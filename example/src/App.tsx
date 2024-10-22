@@ -3,6 +3,7 @@ import * as Notifications from 'expo-notifications';
 import { StyleSheet, View, Text, Alert, Button } from 'react-native';
 import { MobileToken, type UserOperation, QROperationParser } from 'react-native-mtoken-sdk';
 import { PowerAuth, PowerAuthActivation, PowerAuthAuthentication, type PowerAuthActivationStatus } from 'react-native-powerauth-mobile-sdk';
+import { TestExecutor } from './tests/TestExecutor';
 
 export default function App() {
 
@@ -251,6 +252,10 @@ export default function App() {
         } catch (err) {
           log(err);
         }
+      }} />
+      <Button title="Run tests" onPress={async () => {
+        const executor = new TestExecutor()
+        await executor.runAllTests();
       }} />
     </View>
   );
