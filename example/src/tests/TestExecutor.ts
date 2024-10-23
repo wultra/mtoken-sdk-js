@@ -14,11 +14,10 @@
 // and limitations under the License.
 //
 
-import type {  MobileTokenResponse, UserOperation, OperationAttributeAmount, OperationAttributeKeyValue, OperationAttributeNote, OperationAttributeAmountConversion, OperationAttributeImage, OperationAttributeHeading } from 'react-native-mtoken-sdk';
-import { AttributeType } from 'react-native-mtoken-sdk';
 import { TestSuite } from './TestSuite';
 import { TestSuite_Deserialization } from './TestSuite_Deserialization';
 import { TestSuite_PACUtils } from './TestSuite_PACUtils';
+import { TestSuite_QRParser } from './TestSuite_QRParser';
 
 export class TestExecutor {
 
@@ -27,6 +26,7 @@ export class TestExecutor {
     constructor() {
         this.suites.push(new TestSuite_Deserialization());
         this.suites.push(new TestSuite_PACUtils());
+        this.suites.push(new TestSuite_QRParser());
     }
 
     async runAllTests() {

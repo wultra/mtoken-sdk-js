@@ -41,6 +41,8 @@ export default function App() {
     }
 
     mtoken.setAcceptLanguage("cs");
+
+    await testExecutor.runAllTests();
   }
 
   const updateStatus = async () => {
@@ -254,8 +256,7 @@ export default function App() {
         }
       }} />
       <Button title="Run tests" onPress={async () => {
-        const executor = new TestExecutor()
-        await executor.runAllTests();
+        await testExecutor.runAllTests();
       }} />
     </View>
   );

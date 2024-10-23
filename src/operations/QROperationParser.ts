@@ -60,7 +60,7 @@ export class QROperationParser {
      * @throws MobileTokenException When there is no operation in provided string.
      * @return Parsed operation.
      */
-    static parse(string: String): QROperation {
+    static parse(string: string): QROperation {
         // Split string by newline
         const attributes = string.split("\n")
 
@@ -119,7 +119,7 @@ export class QROperationParser {
 
     private static parseAttributeText(text: string): string {
         if (text.includes("\\")) {
-            return text.replace("\\n", "\n").replace("\\\\", "\\")
+            return text.replace("\\n", "\n").replace("\\\\", "\\").replace("\\*", "\*")
         }
         return text
     }
@@ -207,7 +207,7 @@ export class QROperationParser {
                     var prev = fields[fields.length -1]
                     // Remove backslash from last stored value and append this new sequence
                     prev = prev.substring(0, prev.length - 1)
-                    prev = "$prev*$substring"
+                    prev = `${prev}*${substring}`
                     // Replace last element with updated string
                     fields[fields.length - 1] = prev
                 }
@@ -231,7 +231,6 @@ export class QROperationParser {
         fields.slice(1).forEach( stringField => {
 
             const typeId = stringField.length > 0 ? stringField[0] : undefined
-            console.log(`typeId: ${typeId}`)
 
             if (!!!typeId) {
                 result.push({ type: QROperationDataFieldType.EMPTY })
@@ -330,14 +329,15 @@ export class QROperationParser {
 
     private static parseDate(string: string): DateField {
         const dateString = string.substring(1)
-        console.log(string);
-        console.log(dateString);
         
         if (dateString.length != 8) {
             throw new MobileTokenException("Date needs to be 8 characters long")
         }
         try {
-            const date = new Date(dateString)
+            const year = Number(dateString.substring(0, 4))
+            const month = Number(dateString.substring(4, 6))
+            const day = Number(dateString.substring(6, 8))
+            const date = new Date(year, month - 1, day)
             return new DateField(date)
         } catch (e) {
             throw new MobileTokenException("Unparseable date")

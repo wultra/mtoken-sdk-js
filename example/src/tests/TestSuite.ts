@@ -46,17 +46,17 @@ export class TestSuite {
 
         for (const test of this.testFcs) {
             console.log("")
-            console.log(`Running test "${test}"`);
+            console.log(`${test} started...`);
             try {
                 if ((this as any)[test][Symbol.toStringTag] === 'AsyncFunction') {
                     await (this as any)[test]();
                 } else {
                     (this as any)[test]();
                 }
-                console.log(`- Test ${test} succeeded`);
+                console.log(`- SUCCESS: Test ${test}`);
                 successCount++;
             } catch(e) {
-                console.error(`- Test ${test} failed: ${e}`);
+                console.error(`- FAIL: Test ${test}: ${e}`);
             }
         }
 
@@ -88,5 +88,16 @@ export class TestSuite {
             console.trace();
             throw new Error(`Assertion failed: ${message}`);
         }
+    }
+
+    protected assertFalse(a: boolean, message: string = "Object is true") {
+        if (a) {
+            throw new Error(`Assertion failed: ${message}`);
+        }
+    }
+
+
+    protected fail(message: string = "Test failed") {
+        throw new Error(`Assertion failed: ${message}`);
     }
 }
