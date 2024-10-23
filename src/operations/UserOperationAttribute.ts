@@ -21,6 +21,13 @@
  * Every type of the attribute has it's own "strongly typed" implementation.
  */
 export interface UserOperationAttribute {
+
+    /** 
+     * ID (type) of the label. This is highly depended on the backend
+     * and can be used to change the appearance of the label
+     */
+    id: string;
+
     /** 
      * Type of the operation.
      * 
@@ -30,37 +37,24 @@ export interface UserOperationAttribute {
      */
     type: AttributeType | string;
     
-    /** Label for the value. */
-    label: AttributeLabel;
+    /** Label value */ 
+    label: string;
 }
 
 /** Attribute type. Based on this type, proper class should be chosen for "deserialization". */
 export enum AttributeType {
     /** Amount, like "100.00 CZK" */
-    Amount           = "AMOUNT", 
+    AMOUNT            = "AMOUNT", 
     /** Currency conversion, for example when changing money from USD to EUR */
-    AmountConversion = "AMOUNT_CONVERSION",
+    AMOUNT_CONVERSION = "AMOUNT_CONVERSION",
     /** Any key value pair */
-    KeyValue         = "KEY_VALUE",
+    KEY_VALUE          = "KEY_VALUE",
     /** Just like KEY_VALUE, emphasizing that the value is a note or message */
-    Note             = "NOTE",
+    NOTE              = "NOTE",
     /** Single highlighted text, written in a larger font, used as a section heading */
-    Heading          = "HEADING",
+    HEADING           = "HEADING",
     /** For image displaying */
-    Image            = "IMAGE"
-}
-
-/** Attribute label serves as a UI heading for the attribute. */
-export interface AttributeLabel {
-        
-    /** 
-     * ID (type) of the label. This is highly depended on the backend
-     * and can be used to change the appearance of the label
-     */
-    id: string;
-    
-    /**Label value */ 
-    value: string;
+    IMAGE            = "IMAGE"
 }
 
 /** Amount attribute is 1 row in operation, that represents "Payment Amount" */
@@ -73,14 +67,14 @@ export interface OperationAttributeAmount extends UserOperationAttribute {
      * For example when amount is 100 and the acceptLanguage is "cs" for czech,
      * the amountFormatted will be "100,00".
      */ 
-    amountFormatted: string;
+    amountFormatted?: string;
     
     /**
      * Formatted currency to the locale based on acceptLanguage
      * 
      * For example when the currency is CZK, this property will be "Kč"
      */
-    currencyFormatted: string;
+    currencyFormatted?: string;
     
     /**
      * Payment amount.
@@ -130,7 +124,7 @@ export interface OperationAttributeImage extends UserOperationAttribute {
 }
 
 /** Conversion attribute is 1 row in operation, that represents "Money Conversion" */
-export interface OperationAmountConversion extends UserOperationAttribute {
+export interface OperationAttributeAmountConversion extends UserOperationAttribute {
     
     /**
      * If the conversion is dynamic and the application should refresh it periodically
@@ -147,13 +141,13 @@ export interface OperationAmountConversion extends UserOperationAttribute {
      * For example when amount is 100 and the acceptLanguage is "cs" for czech,
      * the amountFormatted will be "100,00".
      */
-    sourceAmountFormatted: string; 
+    sourceAmountFormatted?: string; 
     /**
      * Formatted currency to the locale based on acceptLanguage
      * 
      * For example when the currency is CZK, this property will be "Kč"
      */
-    sourceCurrencyFormatted: string;
+    sourceCurrencyFormatted?: string;
 
     /**
      * Payment amount
@@ -180,14 +174,14 @@ export interface OperationAmountConversion extends UserOperationAttribute {
      * For example when amount is 100 and the acceptLanguage is "cs" for czech,
      * the amountFormatted will be "100,00".
      */
-    targetAmountFormatted: string;
+    targetAmountFormatted?: string;
 
     /**
      * Formatted currency to the locale based on acceptLanguage
      * 
      * For example when the currency is CZK, this property will be "Kč"
      */
-    targetCurrencyFormatted: string;
+    targetCurrencyFormatted?: string;
     /**
      * Payment amount
      * 

@@ -14,6 +14,8 @@
 // and limitations under the License.
 //
 
+import { MobileTokenLogger as D } from "../MobileTokenLogger";
+
 /** Data payload which is returned from the parser */
 export interface PACData {
 
@@ -32,24 +34,33 @@ export class PACUtils {
     /** Method accepts deeplink URL and returns payload data or null */
     static parseDeeplink(url: string): PACData | null {
 
+        D.info(`Parsing deeplink: ${url}`)
+
         // Deeplink can have two query items with operationId & optional totp or single query item with JWT value
 
-        const urlParams = new URLSearchParams(url);
-        let operationId = urlParams.get("oid");
-        if (operationId) {
-            let totp = urlParams.get("totp") || urlParams.get("potp");
-            return totp ? {
-                oid: operationId,
-                potp: totp
-            } : null;
+        const urlParams = this.getURLParams(url);
+
+        if (urlParams.oid) {
+
+            let totp = urlParams.totp ?? urlParams.potp;
+
+            if (!!!totp) {
+                D.info(`TOTP not found in URL: ${url}`)
+            }
+
+            return {
+                oid: decodeURIComponent(urlParams.oid),
+                potp: totp ? `${decodeURIComponent(totp)}` : undefined
+            }
         }
 
-        const first = urlParams.entries().next().value as string;
+        const first = Object.getOwnPropertyNames(urlParams).at(0)
+
         if (first) {
-            return this.parseJWT(first);
+            return this.parseJWT(urlParams[first]);
         }
 
-        console.error(`Failed to parse deeplink. Valid keys not found in URL: ${url}`)
+        D.error(`Failed to parse deeplink. Valid keys not found in URL: ${url}`)
 
         return null;
     }
@@ -57,11 +68,10 @@ export class PACUtils {
     /** Method accepts scanned code as a String and returns PAC data */
     static parseQRCode(code: string): PACData | null {
         
-        const uri = new URL(code)
-
-        if (uri.protocol) {
+        try {
+            const uri = new URL(code)
             return this.parseDeeplink(code)
-        } else {
+        } catch(e) {
             return this.parseJWT(code)
         }
     }
@@ -75,22 +85,37 @@ export class PACUtils {
                 try {
                     const decoded = atob(jwtBase64String)
                     const json = JSON.parse(decoded)
-                    return {
-                        oid: json.oid,
-                        potp: json.potp
+                    if (json.oid) {
+                        return {
+                            oid: json.oid,
+                            potp: json.potp ? `${json.potp}` : undefined // make sure it's string
+                        }
+                    } else {
+                        D.error(`Failed to decode QR JWT from: ${code}`)
+                        return null
                     }
                 } catch (e) {
-                    console.error(`Failed to decode QR JWT from: ${code}`)
-                    console.error(`With error: ${e}`)
+                    D.error(`Failed to decode QR JWT from: ${code}`)
+                    D.error(`With error: ${e}`)
                     return null
                 }
             }
         } else {
-            console.error(`JWT Payload is empty, jwtParts contain: ${jwtParts}`)
+            D.error(`JWT Payload is empty, jwtParts contain: ${jwtParts}`)
             return null
         }
 
-        console.error(`Failed to decode QR JWT from: ${code}`)
+        D.error(`Failed to decode QR JWT from: ${code}`)
         return null
+    }
+
+    private static getURLParams(url: string): any {
+        const regex = /[?&]([^=#]+)=([^&#]*)/g
+        const params = {} as any
+        var match
+        while (match = regex.exec(url)) {
+            params[match[1]] = match[2];
+        }
+        return params
     }
 }
