@@ -16,6 +16,7 @@
 
 import { PowerAuth, PowerAuthActivation, PowerAuthAuthentication, PowerAuthConfiguration } from "react-native-powerauth-mobile-sdk"
 import { MobileToken } from "react-native-mtoken-sdk"
+import Credentials from "./credentials.json"
 
 export class IntegrationUtils {
     
@@ -31,6 +32,28 @@ export class IntegrationUtils {
     private static serverMasterKey = ""
     private static activationName = "" // will be filled when activation is created
     private static registrationId = "" // will be filled when activation is created
+
+    static async prepareCredentials() {
+
+        const privateFileName = "credentials-private.json"
+        try {
+            const credentials = Credentials.cloudServerUrl.length != 0 ? Credentials : await import(`./${privateFileName}`)
+
+            console.log(`Loaded credentials: ${credentials.envName}`)
+
+            this.cloudServerUrl = credentials.cloudServerUrl
+            this.cloudServerLogin = credentials.cloudServerLogin
+            this.cloudServerPassword = credentials.cloudServerPassword
+            this.cloudApplicationId = credentials.cloudApplicationId
+            this.enrollmentUrl = credentials.enrollmentUrl
+            this.appKey = credentials.appKey
+            this.appSecret = credentials.appSecret
+            this.serverMasterKey = credentials.serverMasterKey
+        } catch (e) {
+            console.error(e)
+            throw "Failed to load credentials"
+        }
+    }
 
     static async prepareActivation(pin: string, userId: string | null = null): Promise<{ powerauth: PowerAuth, mtoken: MobileToken }> {
 

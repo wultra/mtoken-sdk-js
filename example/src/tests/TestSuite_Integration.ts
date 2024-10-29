@@ -27,6 +27,8 @@ export class TestSuite_Integration extends TestSuite {
 
     protected async beforeAll(): Promise<void> {
         console.log("")
+        console.log("beforeAll: loading test credentials...")
+        await IntegrationUtils.prepareCredentials()
         console.log("beforeAll: preparing activation...")
         const result = await IntegrationUtils.prepareActivation(this.pin)
         this.powerAuth = result.powerauth

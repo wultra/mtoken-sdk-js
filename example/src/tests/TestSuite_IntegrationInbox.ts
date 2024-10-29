@@ -25,6 +25,13 @@ export class TestSuite_IntegrationInbox extends TestSuite {
     private powerAuth!: PowerAuth
     private mtoken!: MobileToken
 
+    protected async beforeAll(): Promise<void> {
+        console.log("")
+        console.log("beforeAll: loading test credentials...")
+        await IntegrationUtils.prepareCredentials()
+        console.log("beforeAll: test credentials loaded!")
+    }
+
     protected async beforeEach(testname: string): Promise<void> {
         console.log("")
         console.log("beforeEach: preparing activation...")
@@ -80,7 +87,6 @@ export class TestSuite_IntegrationInbox extends TestSuite {
         // Mark first as read and receive its detail
         const messageId = receivedMessages[0].id
         const markRead = await this.mtoken.inbox.markRead(messageId)
-        console.log(markRead)
         this.assertEquals(markRead.status, "OK")
 
         // Now get message detail
