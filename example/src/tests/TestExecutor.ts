@@ -14,26 +14,26 @@
 // and limitations under the License.
 //
 
-import { TestSuite } from './TestSuite';
-import { TestSuite_Deserialization } from './TestSuite_Deserialization';
-import { TestSuite_Integration } from './TestSuite_Integration';
-import { TestSuite_IntegrationInbox } from './TestSuite_IntegrationInbox';
-import { TestSuite_PACUtils } from './TestSuite_PACUtils';
-import { TestSuite_QRParser } from './TestSuite_QRParser';
+import { TestSuite } from './TestSuite'
+import { TestSuite_Deserialization } from './TestSuite_Deserialization'
+import { TestSuite_Integration } from './TestSuite_Integration'
+import { TestSuite_IntegrationInbox } from './TestSuite_IntegrationInbox'
+import { TestSuite_PACUtils } from './TestSuite_PACUtils'
+import { TestSuite_QRParser } from './TestSuite_QRParser'
 
 export class TestExecutor {
 
-    private suites = new Array<TestSuite>();
+    private suites = new Array<TestSuite>()
 
     constructor() {
-        this.suites.push(new TestSuite_Deserialization());
-        this.suites.push(new TestSuite_PACUtils());
-        this.suites.push(new TestSuite_QRParser());
-        this.suites.push(new TestSuite_Integration());
-        this.suites.push(new TestSuite_IntegrationInbox());
+        this.suites.push(new TestSuite_Deserialization())
+        this.suites.push(new TestSuite_PACUtils())
+        this.suites.push(new TestSuite_QRParser())
+        this.suites.push(new TestSuite_Integration())
+        this.suites.push(new TestSuite_IntegrationInbox())
     }
 
-    async runAllTests() {
+    async runAllTests(): Promise<{ totalTests: number, succeededTests: number }> {
         console.log("")
         console.log("#######################")
         console.log("#    RUNNING TESTS")
@@ -44,12 +44,13 @@ export class TestExecutor {
 
         for (const suite of this.suites) {
             totalTests += suite.testCount;
-            succeededTests += await suite.runAllTests();
+            succeededTests += await suite.runAllTests()
         }
 
         console.log("")
         console.log("####################################################")
         console.log(`#    ALL TESTS FINISHED. ${succeededTests}/${totalTests} SUCCEEDED.`)
         console.log("####################################################")
+        return { totalTests: totalTests, succeededTests: succeededTests }
     }
 }
