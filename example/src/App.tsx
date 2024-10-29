@@ -169,8 +169,6 @@ export default function App() {
       <Button title='Authorize QR operation' onPress={async () => {
         try {
 
-          //const code = makeCode()
-
           Alert.prompt("QR Operation", "Insert QR code data", async code => {
             if (!code) {
               return;
@@ -260,21 +258,6 @@ export default function App() {
       }} />
     </View>
   );
-}
-
-function makeCode(
-  operationId: string     = "5ff1b1ed-a3cc-45a3-8ab0-ed60950312b6",
-  title: string           = "Payment",
-  message: string         = "Please confirm this payment",
-  operationData: string   = "A1*A100CZK*ICZ2730300000001165254011*D20180425*Thello world",
-  flags: string           = "BCFX",
-  otherAttrs: string[] | undefined   = undefined,
-  nonce: string           = "AD8bOO0Df73kNaIGb3Vmpg==",
-  signingKey: string      = "0",
-  signature: string       = "MEYCIQDby1Uq+MaxiAAGzKmE/McHzNOUrvAP2qqGBvSgcdtyjgIhAMo1sgqNa1pPZTFBhhKvCKFLGDuHuTTYexdmHFjUUIJW"
-  ): string {
-    let attrs = otherAttrs == null ? "" : otherAttrs.join("\n") + "\n"
-    return `${operationId}\n${title}\n${message}\n${operationData}\n${flags}\n${attrs}${nonce}\n${signingKey}${signature}`
 }
 
 const styles = StyleSheet.create({

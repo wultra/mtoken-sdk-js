@@ -35,6 +35,21 @@ export class TestSuite {
 
     get testCount() { return this.testFcs.length }
 
+    protected async beforeAll(): Promise<void> {
+
+    }
+
+    protected async afterAll(): Promise<void> {
+
+    }
+
+    protected async beforeEach(testname: string): Promise<void> {
+
+    }
+
+    protected async afterEach(testname: string, success: boolean): Promise<void> {
+        
+    }
 
     async runAllTests(): Promise<number> {
 
@@ -44,20 +59,41 @@ export class TestSuite {
         console.log(`-----------------------`);
         console.log(`# STARTING TEST SUITE "${this.suiteName}" (${this.testCount} tests)`);
 
+        try {
+            await this.runAmbigiousMethod("beforeAll")
+        } catch(e) {
+            this.fail(`beforeAll ${this.suiteName} failed: ${e}`)
+        }
+
         for (const test of this.testFcs) {
             console.log("")
             console.log(`${test} started...`);
             try {
-                if ((this as any)[test][Symbol.toStringTag] === 'AsyncFunction') {
-                    await (this as any)[test]();
-                } else {
-                    (this as any)[test]();
-                }
+                await this.runAmbigiousMethod("beforeEach", test)
+            } catch(e) {
+                this.fail(`- beforeEach ${test} failed: ${e}`);
+            }
+            let success: boolean
+            try {
+                await this.runAmbigiousMethod(test);
                 console.log(`- SUCCESS: Test ${test}`);
                 successCount++;
+                success = true
             } catch(e) {
                 console.error(`- FAIL: Test ${test}: ${e}`);
+                success = false
             }
+            try {
+                await this.runAmbigiousMethod("afterEach", test, success)
+            } catch(e) {
+                this.fail(`- afterEach ${test} failed: ${e}`);
+            }
+        }
+
+        try {
+            await this.runAmbigiousMethod("afterAll")
+        } catch(e) {
+            this.fail(`- afterAll ${this.suiteName} failed: ${e}`);
         }
 
         console.log("")
@@ -96,8 +132,11 @@ export class TestSuite {
         }
     }
 
-
     protected fail(message: string = "Test failed") {
         throw new Error(`Assertion failed: ${message}`);
+    }
+
+    private async runAmbigiousMethod(method: string, ...params: any[]) {
+        await Promise.resolve((this as any)[method]())
     }
 }

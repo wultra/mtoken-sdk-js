@@ -337,7 +337,7 @@ class TestQRData {
     message: string         = "Please confirm this payment"
     operationData: string   = "A1*A100CZK*ICZ2730300000001165254011*D20180425*Thello world"
     flags: string           = "BCFX"
-    otherAttrs: string[] | undefined   = undefined
+    otherAttrs: string[] | undefined = undefined
     nonce: string           = "AD8bOO0Df73kNaIGb3Vmpg=="
     signingKey: string      = "0"
     signature: string       = "MEYCIQDby1Uq+MaxiAAGzKmE/McHzNOUrvAP2qqGBvSgcdtyjgIhAMo1sgqNa1pPZTFBhhKvCKFLGDuHuTTYexdmHFjUUIJW"

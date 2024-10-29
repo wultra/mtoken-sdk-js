@@ -16,6 +16,8 @@
 
 import { TestSuite } from './TestSuite';
 import { TestSuite_Deserialization } from './TestSuite_Deserialization';
+import { TestSuite_Integration } from './TestSuite_Integration';
+import { TestSuite_IntegrationInbox } from './TestSuite_IntegrationInbox';
 import { TestSuite_PACUtils } from './TestSuite_PACUtils';
 import { TestSuite_QRParser } from './TestSuite_QRParser';
 
@@ -27,6 +29,8 @@ export class TestExecutor {
         this.suites.push(new TestSuite_Deserialization());
         this.suites.push(new TestSuite_PACUtils());
         this.suites.push(new TestSuite_QRParser());
+        this.suites.push(new TestSuite_Integration());
+        this.suites.push(new TestSuite_IntegrationInbox());
     }
 
     async runAllTests() {

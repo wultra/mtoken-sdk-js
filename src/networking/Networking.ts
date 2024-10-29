@@ -14,21 +14,21 @@
 // and limitations under the License.
 //
 
-import { KnownRestApiError } from "./KnownRestApiError";
-import { MobileTokenException } from "../MobileTokenException";
-import { PowerAuth, PowerAuthAuthentication } from 'react-native-powerauth-mobile-sdk';
+import { KnownRestApiError } from "./KnownRestApiError"
+import { MobileTokenException } from "../MobileTokenException"
+import { PowerAuth, PowerAuthAuthentication } from 'react-native-powerauth-mobile-sdk'
 
-export type RequestProcessor = (name: RequestInit) => RequestInit;
+export type RequestProcessor = (name: RequestInit) => RequestInit
 
 export class Networking {
 
-    acceptLanguage = "en";
+    acceptLanguage = "en"
 
-    protected pa: PowerAuth;
-    private baseURL: string;
+    protected pa: PowerAuth
+    private baseURL: string
 
     constructor(powerAuth: PowerAuth, baseURL: string) {
-        this.pa = powerAuth;
+        this.pa = powerAuth
         this.baseURL = baseURL
     }
 
@@ -38,14 +38,15 @@ export class Networking {
         endpoindPath: string,
         uriId: string,
         returnDataExpected: boolean,
-        requestProcessor?: RequestProcessor
+        requestProcessor?: RequestProcessor,
+        jsonConfig?: JsonConfig
     ): Promise<MobileTokenResponse<T>> {
 
-        let body = JSON.stringify(requestData);
-        let paHeader = await this.pa.requestSignature(auth, "POST", uriId, body);
-        let headers = new Headers();
-        headers.set(paHeader.key, paHeader.value);
-        return await this.post(JSON.stringify(requestData), endpoindPath, returnDataExpected, headers, requestProcessor);
+        let body = JSON.stringify(requestData)
+        let paHeader = await this.pa.requestSignature(auth, "POST", uriId, body)
+        let headers = new Headers()
+        headers.set(paHeader.key, paHeader.value)
+        return await this.post(body, endpoindPath, returnDataExpected, headers, requestProcessor, jsonConfig)
     }
 
     protected async postSignedWithToken<T>(
@@ -54,16 +55,18 @@ export class Networking {
         endpoindPath: string,
         tokenName: string,
         returnDataExpected: boolean,
-        requestProcessor?: RequestProcessor
+        requestProcessor?: RequestProcessor,
+        jsonConfig?: JsonConfig,
     ): Promise<MobileTokenResponse<T>> {
 
-        let token = await this.pa.tokenStore.requestAccessToken(tokenName, auth);
-        let paHeader = await this.pa.tokenStore.generateHeaderForToken(token.tokenName);
+        let body = JSON.stringify(requestData)
+        let token = await this.pa.tokenStore.requestAccessToken(tokenName, auth)
+        let paHeader = await this.pa.tokenStore.generateHeaderForToken(token.tokenName)
 
-        let headers = new Headers();
-        headers.set(paHeader.key, paHeader.value);
+        let headers = new Headers()
+        headers.set(paHeader.key, paHeader.value)
 
-        return await this.post(JSON.stringify(requestData), endpoindPath, returnDataExpected, headers, requestProcessor);
+        return await this.post(body, endpoindPath, returnDataExpected, headers, requestProcessor, jsonConfig)
     }
 
     protected async post<T>(
@@ -71,16 +74,17 @@ export class Networking {
         endpoindPath: string,
         returnDataExpected: boolean,
         headers: Headers,
-        requestProcessor?: RequestProcessor
+        requestProcessor?: RequestProcessor,
+        jsonConfig?: JsonConfig,
     ): Promise<MobileTokenResponse<T>> {
-        let method = "POST";
-        let url = (this.baseURL + endpoindPath).replace("//","/");
+        let method = "POST"
+        let url = (this.baseURL + endpoindPath).replace("//","/")
 
-        let jsonType = "application/json";
-        headers.set("Accept", jsonType);
-        headers.set("Content-Type", jsonType);
-        headers.set("Accept-Language", this.acceptLanguage);
-        headers.set("User-Agent", "react-native-mtoken-sdk"); // TODO: improve!
+        let jsonType = "application/json"
+        headers.set("Accept", jsonType)
+        headers.set("Content-Type", jsonType)
+        headers.set("Accept-Language", this.acceptLanguage)
+        headers.set("User-Agent", "react-native-mtoken-sdk") // TODO: improve!
 
         let request: RequestInit = {
             method: method,
@@ -89,17 +93,18 @@ export class Networking {
         }
 
         if (requestProcessor) {
-            request = requestProcessor(request);
+            request = requestProcessor(request)
         }
 
-        let result = await fetch(url, request);
+        let result = await fetch(url, request)
         let responseBody = await result.text()
         let response = JSON.parse(responseBody, (key: string, value: any) => {
-            if (key == "operationExpires" || key == "operationCreated") {
-                return new Date(value);
+
+            if (jsonConfig?.dateFields?.includes(key)) {
+                return new Date(value)
             }
             return value
-        }) as MobileTokenResponse<T>;
+        }) as MobileTokenResponse<T>
 
         if (response.status == "ERROR") {
             if (response.responseObject == undefined) {
@@ -113,19 +118,23 @@ export class Networking {
             throw new MobileTokenException("No data object retieved.", { ...result })
         }
 
-        return response;
+        return response
     }
+}
+
+export interface JsonConfig {
+    dateFields?: string[]
 }
 
 /** Response from the API. */
 export interface MobileTokenResponse<T> {
-    status: "OK" | "ERROR";
-    responseError?: MobileTokenResponseError;
-    responseObject?: T;
+    status: "OK" | "ERROR"
+    responseError?: MobileTokenResponseError
+    responseObject?: T
 } 
   
   /** Error object when error on the server happens. */
 export interface MobileTokenResponseError {
-    code: KnownRestApiError | string;
-    message: string;
+    code: KnownRestApiError | string
+    message: string
 }

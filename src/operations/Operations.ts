@@ -23,6 +23,8 @@ import type { QROperation } from "react-native-mtoken-sdk";
 /** Operation handling.  */
 export class Operations extends Networking {
 
+    private jsonDateFields = ["operationExpires", "operationCreated", "timestampReceived"]
+
     /**
     * Retrieves user operations that are pending approval.
     * 
@@ -36,7 +38,8 @@ export class Operations extends Networking {
             "/api/auth/token/app/operation/list",
             "possession_universal",
             true,
-            requestProcessor
+            requestProcessor,
+            { dateFields: this.jsonDateFields }
         );
     }
 
@@ -54,7 +57,8 @@ export class Operations extends Networking {
             "/api/auth/token/app/operation/detail",
             "possession_universal",
             true,
-            requestProcessor
+            requestProcessor,
+            { dateFields: this.jsonDateFields }
         );
     }
 
@@ -72,7 +76,8 @@ export class Operations extends Networking {
             "/api/auth/token/app/operation/history",
             "/operation/history",
             true,
-            requestProcessor
+            requestProcessor,
+            { dateFields: this.jsonDateFields }
         );
     }
 
@@ -85,8 +90,12 @@ export class Operations extends Networking {
      * @returns Server response
      */
     async authorize(operation: OnlineOperation, authentication: PowerAuthAuthentication, requestProcessor?: RequestProcessor): Promise<MobileTokenResponse<void>> {
+        let proximityCopy = undefined
+        if (operation.proximityCheck) {
+            proximityCopy = { otp: operation.proximityCheck.totp, type: operation.proximityCheck.type, timestampReceived: operation.proximityCheck.timestampReceived, timestampSent: new Date() }
+        }
         return await this.postSigned<void>(
-            { requestObject: { id: operation.id, data: operation.data } },
+            { requestObject: { id: operation.id, data: operation.data, proximityCheck: proximityCopy } },
             authentication,
             "/api/auth/token/app/operation/authorize",
             "/operation/authorize",
@@ -141,7 +150,8 @@ export class Operations extends Networking {
             "/api/auth/token/app/operation/detail/claim",
             "possession_universal",
             true,
-            requestProcessor
+            requestProcessor,
+            { dateFields: this.jsonDateFields }
         );
     }
 }

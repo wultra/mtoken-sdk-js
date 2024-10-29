@@ -23,6 +23,8 @@ import { PowerAuthAuthentication } from 'react-native-powerauth-mobile-sdk';
 /** Inbox handling. */
 export class Inbox extends Networking {
 
+    private jsonDateFields = [ "timestampCreated" ]
+
     /**
      * Get number of unread messages in the inbox.
      * 
@@ -31,7 +33,7 @@ export class Inbox extends Networking {
      */
     async unreadCount(requestProcessor?: RequestProcessor): Promise<MobileTokenResponse<InboxCount>> {
         return await this.postSignedWithToken<InboxCount>(
-            {},
+            { },
             PowerAuthAuthentication.possession(),
             "/api/inbox/count",
             "possession_universal",
@@ -56,7 +58,8 @@ export class Inbox extends Networking {
             "/api/inbox/message/list",
             "possession_universal",
             true,
-            requestProcessor
+            requestProcessor,
+            { dateFields: this.jsonDateFields }
         );
     }
 
@@ -74,7 +77,8 @@ export class Inbox extends Networking {
             "/api/inbox/message/detail",
             "possession_universal",
             true,
-            requestProcessor
+            requestProcessor,
+            { dateFields: this.jsonDateFields }
         );
     }
 

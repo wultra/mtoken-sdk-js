@@ -27,7 +27,7 @@ import type { UserOperationProximityCheck } from "./UserOperationProximityCheck"
 export interface UserOperation extends OnlineOperation {
 
     /** Processing status of the operation */
-    status: "APPROVED" | "REJECTED" | "PENDING" | "CANCELED" | "EXPIRED" | "FAILED";
+    status: "APPROVED" | "REJECTED" | "PENDING" | "CANCELED" | "EXPIRED" | "FAILED"
 
     /**
      * System name of the operation (for example login).
@@ -35,12 +35,12 @@ export interface UserOperation extends OnlineOperation {
      * Name of the operation shouldn't be visible to the user. You can use it to distinguish how 
      * the operation will be presented. (for example when the template for login is different than payment).
      */
-    name: string;
+    name: string
     
     /**
      * Date and time when the operation was created.
      */ 
-    operationCreated: Date;
+    operationCreated: Date
     
     /**
      * Date and time when the operation will expire.
@@ -48,19 +48,19 @@ export interface UserOperation extends OnlineOperation {
      * You should never use this for hiding the operation (visually) from the user
      * as the time set for the user system can differ with the backend.
      */ 
-    operationExpires: Date;
+    operationExpires: Date
     
     /**
      * Data that should be presented to the user.
      */ 
-    formData: OperationFormData;
+    formData: OperationFormData
     
     /** 
      * Enum-like reason why the status has changed.
      * 
      *  Max 32 characters are expected. Possible values depend on the backend implementation and configuration.
      */ 
-    statusReason?: string;
+    statusReason?: string
     
     /**
      * Allowed signature types.
@@ -69,7 +69,7 @@ export interface UserOperation extends OnlineOperation {
      * tapping an approve button. If the operation requires 2FA, this value also hints if
      * the user may use the biometry, or if a password is required.
      */ 
-    allowedSignatureType: AllowedOperationSignature;
+    allowedSignatureType: AllowedOperationSignature
     
     /**
      * UI data to be shown
@@ -77,24 +77,24 @@ export interface UserOperation extends OnlineOperation {
      * Accompanying information about the operation additional UI which should be presented such as
      * Pre-Approval Screen or Post-Approval Screen
      */
-    ui?: UserOperationUIData;
+    ui?: UserOperationUIData
 
     /** 
      * Proximity Check Data to be passed when OTP is handed to the app.
      */
-    proximityCheck?: UserOperationProximityCheck;
+    proximityCheck?: UserOperationProximityCheck
 }
 
-type SignatureFactor = "possession" | "possession_knowledge" | "possession_biometry";
+type SignatureFactor = "possession" | "possession_knowledge" | "possession_biometry"
 
 /** Allowed signature types that can be used for operation approval. */
 export interface AllowedOperationSignature {
     
     /** If operation should be signed with 1 or 2 factor authentication. */
-    type: "1FA" | "2FA";
+    type: "1FA" | "2FA"
 
     /** What factors are needed to signing this operation. */
-    variants: SignatureFactor[];
+    variants: SignatureFactor[]
 }
 
 /**
@@ -105,7 +105,7 @@ export interface AllowedOperationSignature {
 export interface OperationFormData {
     
     /** Title of the operation */
-    title: string;
+    title: string
     
     /** Message for the user. */
     message: string
@@ -115,14 +115,14 @@ export interface OperationFormData {
      * 
      * This includes messages for different outcomes of the operation such as success, rejection, and failure.
      */
-    resultTexts?: ResultTexts;
+    resultTexts?: ResultTexts
      
     /**
      * Other attributes.
      * 
      * Note that attributes can be presented with different classes (Starting with `MobileTokenOperationAttribute*`) based on the attribute type.  
      */ 
-    attributes: UserOperationAttribute[];
+    attributes: UserOperationAttribute[]
 }
 
 /**
@@ -132,12 +132,12 @@ export interface OperationFormData {
  */
 export interface ResultTexts {
     /** Optional message to be displayed when the approval of the operation is successful. */
-    success?: string;
+    success?: string
     
     /** Optional message to be displayed when the operation approval or rejection fails. */
-    failure?: string;
+    failure?: string
     
     /** Optional message to be displayed when the operation is rejected. */
-    reject?: string;
+    reject?: string
 }
 

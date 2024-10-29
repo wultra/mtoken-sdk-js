@@ -33,17 +33,25 @@ export class MobileToken {
      * 
      * @param powerAuth PowerAuth instance. Needs to be activated when calling any method of this class - othewise error will be thrown.
      * @param baseURL BaseURL of the server. If not provided, same URL as for PowerAuth it used.
+     * @param pushBaseURL In case that the push server is on different URL.
+     *                    This is a rare scenario which doesn't happen in regular setup.
+     *                    When not set, baseURL is used.
+     * @param inboxBaseURL In case that the inbox server is on different URL.
+     *                     This is a rare scenario which doesn't happen in regular setup.
+     *                     When not set, baseURL is used.
      */
-    constructor(powerAuth: PowerAuth, baseURL?: string) {
+    constructor(powerAuth: PowerAuth, baseURL?: string, pushBaseURL?: string, inboxBaseURL?: string) {
 
-        let url = baseURL ?? powerAuth.configuration?.baseEndpointUrl ?? ""
-        if (!url.endsWith("/")) {
-            url += "/";
+        let enrollmentURL = baseURL ?? powerAuth.configuration?.baseEndpointUrl ?? ""
+        if (!enrollmentURL.endsWith("/")) {
+            enrollmentURL += "/";
         }
+        let pushURL = pushBaseURL ?? enrollmentURL
+        let inboxURL = inboxBaseURL ?? enrollmentURL
 
-        this.operations = new Operations(powerAuth, url)
-        this.push = new Push(powerAuth, url);
-        this.inbox = new Inbox(powerAuth, url);
+        this.operations = new Operations(powerAuth, enrollmentURL)
+        this.push = new Push(powerAuth, pushURL);
+        this.inbox = new Inbox(powerAuth, inboxURL);
     }
 
     /**
