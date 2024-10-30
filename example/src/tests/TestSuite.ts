@@ -25,7 +25,7 @@ export class TestSuite {
         
         const anyThis = this as any
 
-        // Retrieve all function names from the object and call them
+        // Retrieve all function names that stars with the "test" and call them
         Object.getOwnPropertyNames(Object.getPrototypeOf(anyThis)).forEach(key => {
             if (typeof anyThis[key] === 'function' && key.startsWith("test")) {
                 this.testFcs.push(key);
@@ -35,18 +35,22 @@ export class TestSuite {
 
     get testCount() { return this.testFcs.length }
 
+    // called before all tests
     protected async beforeAll(): Promise<void> {
 
     }
 
+    // called after all tests
     protected async afterAll(): Promise<void> {
 
     }
 
+    // called before each test
     protected async beforeEach(testname: string): Promise<void> {
 
     }
 
+    // called after each test
     protected async afterEach(testname: string, success: boolean): Promise<void> {
         
     }
@@ -136,6 +140,7 @@ export class TestSuite {
         throw new Error(`Assertion failed: ${message}`);
     }
 
+    // run method regardles of synchronousnes
     private async runAmbigiousMethod(method: string, ...params: any[]) {
         await Promise.resolve((this as any)[method]())
     }

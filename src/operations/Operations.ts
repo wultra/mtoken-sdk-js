@@ -14,16 +14,16 @@
 // and limitations under the License.
 //
 
-import { Networking, type RequestProcessor, type MobileTokenResponse } from "../networking/Networking";
-import { type UserOperation } from "./UserOperation";
-import { type OnlineOperation } from "./OnlineOperation";
-import { PowerAuthAuthentication } from 'react-native-powerauth-mobile-sdk';
-import type { QROperation } from "react-native-mtoken-sdk";
+import { Networking, type RequestProcessor, type MobileTokenResponse } from "../networking/Networking"
+import { type UserOperation } from "./UserOperation"
+import { type OnlineOperation } from "./OnlineOperation"
+import { PowerAuthAuthentication } from 'react-native-powerauth-mobile-sdk'
+import type { QROperation } from "react-native-mtoken-sdk"
 
 /** Operation handling.  */
 export class Operations extends Networking {
 
-    private jsonDateFields = ["operationExpires", "operationCreated", "timestampReceived"]
+    private jsonDateFields = [ "operationExpires", "operationCreated", "timestampReceived" ]
 
     /**
     * Retrieves user operations that are pending approval.
@@ -40,7 +40,7 @@ export class Operations extends Networking {
             true,
             requestProcessor,
             { dateFields: this.jsonDateFields }
-        );
+        )
     }
 
     /**
@@ -59,7 +59,7 @@ export class Operations extends Networking {
             true,
             requestProcessor,
             { dateFields: this.jsonDateFields }
-        );
+        )
     }
 
     /**
@@ -78,7 +78,7 @@ export class Operations extends Networking {
             true,
             requestProcessor,
             { dateFields: this.jsonDateFields }
-        );
+        )
     }
 
     /**
@@ -101,7 +101,7 @@ export class Operations extends Networking {
             "/operation/authorize",
             false,
             requestProcessor
-        );
+        )
     }
 
     /**
@@ -133,7 +133,7 @@ export class Operations extends Networking {
             "/operation/cancel",
             false,
             requestProcessor
-        );
+        )
     }
 
     /**
@@ -152,7 +152,7 @@ export class Operations extends Networking {
             true,
             requestProcessor,
             { dateFields: this.jsonDateFields }
-        );
+        )
     }
 }
 

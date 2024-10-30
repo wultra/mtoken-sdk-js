@@ -14,10 +14,10 @@
 // and limitations under the License.
 //
 
-import type { UserOperationUIData } from "./UserOperationUIData";
-import type { OnlineOperation } from "./OnlineOperation";
-import type { UserOperationAttribute } from "./UserOperationAttribute";
-import type { UserOperationProximityCheck } from "./UserOperationProximityCheck";
+import type { UserOperationUIData } from "./UserOperationUIData"
+import type { OnlineOperation } from "./OnlineOperation"
+import type { UserOperationAttribute } from "./UserOperationAttribute"
+import type { UserOperationProximityCheck } from "./UserOperationProximityCheck"
 
 /**
  * `UserOperation` is object returned from the backend that can be either approved or rejected.

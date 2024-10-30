@@ -14,7 +14,7 @@
 // and limitations under the License.
 //
 
-import type { UserOperationAttribute } from "./UserOperationAttribute";
+import type { UserOperationAttribute } from "./UserOperationAttribute"
 
 /** Additional UI data */
 export interface UserOperationUIData {

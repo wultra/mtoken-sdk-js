@@ -14,16 +14,16 @@
 // and limitations under the License.
 //
 
-import { MobileTokenLogger as D } from "../MobileTokenLogger";
+import { MobileTokenLogger as D } from "../MobileTokenLogger"
 
 /** Data payload which is returned from the parser */
 export interface PACData {
 
     /** The ID of the operation associated with the TOTP */
-    oid: string;
+    oid: string
 
     /** The actual Time-based one time password (proximity OTP) */
-    potp?: string;
+    potp?: string
 }
 
 /**
@@ -38,11 +38,11 @@ export class PACUtils {
 
         // Deeplink can have two query items with operationId & optional totp or single query item with JWT value
 
-        const urlParams = this.getURLParams(url);
+        const urlParams = this.getURLParams(url)
 
         if (urlParams.oid) {
 
-            let totp = urlParams.totp ?? urlParams.potp;
+            let totp = urlParams.totp ?? urlParams.potp
 
             if (!!!totp) {
                 D.info(`TOTP not found in URL: ${url}`)
@@ -57,12 +57,12 @@ export class PACUtils {
         const first = Object.getOwnPropertyNames(urlParams).at(0)
 
         if (first) {
-            return this.parseJWT(urlParams[first]);
+            return this.parseJWT(urlParams[first])
         }
 
         D.error(`Failed to parse deeplink. Valid keys not found in URL: ${url}`)
 
-        return null;
+        return null
     }
 
     /** Method accepts scanned code as a String and returns PAC data */
@@ -114,7 +114,7 @@ export class PACUtils {
         const params = {} as any
         var match
         while (match = regex.exec(url)) {
-            params[match[1]] = match[2];
+            params[match[1]] = match[2]
         }
         return params
     }

@@ -34,7 +34,7 @@ import {
     AnyAccountField
  } from "./QROperation"
 import { MobileTokenException } from "../MobileTokenException"
-import { Buffer } from "buffer";
+import { Buffer } from "buffer"
 
 /**
  * Parser for QR operation
@@ -131,7 +131,7 @@ export class QROperationParser {
         if (signaturePayload.length == 0) {
             throw new MobileTokenException("Empty offline operation signature")
         }
-        const signingKey = SigningKeyUtil.fromTypeValue(signaturePayload[0]);
+        const signingKey = SigningKeyUtil.fromTypeValue(signaturePayload[0])
         if (signingKey == undefined) {
             throw new MobileTokenException("Invalid offline operation signature key")
         }
@@ -157,8 +157,8 @@ export class QROperationParser {
         }
 
         // Get and check version
-        const versionString = stringFields[0];
-        const versionChar = versionString[0];
+        const versionString = stringFields[0]
+        const versionChar = versionString[0]
         if (!!!versionChar) {
             throw new MobileTokenException("First fields is empty string")
         }
@@ -302,14 +302,14 @@ export class QROperationParser {
         const bic = components.length > 1 ? components[1] : undefined
         const allowedChars = "01234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ"
         for (let i = 0; i < iban.length; i++) {
-            const c = iban.charAt(i);
+            const c = iban.charAt(i)
             if (!allowedChars.includes(c)) {
                 throw new MobileTokenException("Invalid character in IBAN")
             }
         }
         if (bic) {
             for (let i = 0; i < bic.length; i++) {
-                const c = bic.charAt(i);
+                const c = bic.charAt(i)
                 if (!allowedChars.includes(c)) {
                     throw new MobileTokenException("Invalid character in BIC")
                 }

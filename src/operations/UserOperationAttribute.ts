@@ -26,7 +26,7 @@ export interface UserOperationAttribute {
      * ID (type) of the label. This is highly depended on the backend
      * and can be used to change the appearance of the label
      */
-    id: string;
+    id: string
 
     /** 
      * Type of the operation.
@@ -35,10 +35,10 @@ export interface UserOperationAttribute {
      * 
      * The possible string value is a fallback for unknown attribute types.
      */
-    type: AttributeType | string;
+    type: AttributeType | string
     
     /** Label value */ 
-    label: string;
+    label: string
 }
 
 /** Attribute type. Based on this type, proper class should be chosen for "deserialization". */
@@ -67,22 +67,22 @@ export interface OperationAttributeAmount extends UserOperationAttribute {
      * For example when amount is 100 and the acceptLanguage is "cs" for czech,
      * the amountFormatted will be "100,00".
      */ 
-    amountFormatted?: string;
+    amountFormatted?: string
     
     /**
      * Formatted currency to the locale based on acceptLanguage
      * 
      * For example when the currency is CZK, this property will be "Kč"
      */
-    currencyFormatted?: string;
+    currencyFormatted?: string
     
     /**
      * Payment amount.
      */
-    amount?: number;
+    amount?: number
     
     /** Currency */
-    currency?: string;
+    currency?: string
 
     /**
      * Formatted value and currency to the locale based on acceptLanguage
@@ -90,19 +90,19 @@ export interface OperationAttributeAmount extends UserOperationAttribute {
      * Both amount and currency are formatted, String will show e.g. "€" in front of the amount
      * or "EUR" behind the amount depending on the locale
      */
-    valueFormatted?: string;
+    valueFormatted?: string
 }
 
 /** Attribute that describes generic key-value row to display. */
 export interface OperationAttributeKeyValue extends UserOperationAttribute {
     /**Value of the attribute  */ 
-    value: string;
+    value: string
 }
 
 /** Attribute that describes note, that should be handled as "long text message". */
 export interface OperationAttributeNote extends UserOperationAttribute {
     /** Note  */ 
-    note: string;
+    note: string
 }
 
 /** Heading. This attribute has no value. It only acts as a "section separator". */
@@ -114,13 +114,13 @@ export interface OperationAttributeHeading extends UserOperationAttribute {
 export interface OperationAttributeImage extends UserOperationAttribute {
 
     /** Image thumbnail url to the public internet. */
-    thumbnailUrl: string;
+    thumbnailUrl: string
     
     /**
      * Full-size image that should be displayed on thumbnail click (when not null).
      * Url to the public internet
      */
-    originalUrl?: string;
+    originalUrl?: string
 }
 
 /** Conversion attribute is 1 row in operation, that represents "Money Conversion" */
@@ -132,7 +132,7 @@ export interface OperationAttributeAmountConversion extends UserOperationAttribu
      * This is just a hint for the application UI. This SDK does not offer feature to periodically
      * refresh conversion rate.
      */
-    dynamic: boolean; 
+    dynamic: boolean 
     
     /**
      * Formatted amount for presentation.
@@ -141,13 +141,13 @@ export interface OperationAttributeAmountConversion extends UserOperationAttribu
      * For example when amount is 100 and the acceptLanguage is "cs" for czech,
      * the amountFormatted will be "100,00".
      */
-    sourceAmountFormatted?: string; 
+    sourceAmountFormatted?: string 
     /**
      * Formatted currency to the locale based on acceptLanguage
      * 
      * For example when the currency is CZK, this property will be "Kč"
      */
-    sourceCurrencyFormatted?: string;
+    sourceCurrencyFormatted?: string
 
     /**
      * Payment amount
@@ -155,17 +155,17 @@ export interface OperationAttributeAmountConversion extends UserOperationAttribu
      * Amount might not be precise (due to floating point conversion during deserialization from json)
      * use amountFormatted property instead when available
      */
-    sourceAmount?: number;
+    sourceAmount?: number
 
     /** Currency */
-    sourceCurrency?: string;
+    sourceCurrency?: string
     /**
      * Formatted currency and amount to the locale based on acceptLanguage
      * 
      * Both amount and currency are formatted, String will show e.g. "€" in front of the amount
      * or "EUR" behind the amount depending on locale
      */
-    sourceValueFormatted?: string;
+    sourceValueFormatted?: string
     
     /**
      * Formatted amount for presentation.
@@ -174,24 +174,24 @@ export interface OperationAttributeAmountConversion extends UserOperationAttribu
      * For example when amount is 100 and the acceptLanguage is "cs" for czech,
      * the amountFormatted will be "100,00".
      */
-    targetAmountFormatted?: string;
+    targetAmountFormatted?: string
 
     /**
      * Formatted currency to the locale based on acceptLanguage
      * 
      * For example when the currency is CZK, this property will be "Kč"
      */
-    targetCurrencyFormatted?: string;
+    targetCurrencyFormatted?: string
     /**
      * Payment amount
      * 
      * Amount might not be precise (due to floating point conversion during deserialization from json)
      * use amountFormatted property instead when available
      */
-    targetAmount?: number;
+    targetAmount?: number
 
     /** Currency */
-    targetCurrency?: string;
+    targetCurrency?: string
     
     /**
      * Formatted currency and amount to the locale based on acceptLanguage
@@ -199,5 +199,5 @@ export interface OperationAttributeAmountConversion extends UserOperationAttribu
      * Both amount and currency are formatted, String will show e.g. "€" in front of the amount
      * or "EUR" behind the amount depending on locale
      */
-    targetValueFormatted?: string;
+    targetValueFormatted?: string
 }

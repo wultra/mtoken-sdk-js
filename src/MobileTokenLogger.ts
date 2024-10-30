@@ -14,6 +14,9 @@
 // and limitations under the License.
 //
 
+/**
+ * How much should Mobile Token library log into the console.
+ */
 export enum MobileTokenLoggerVerbosity {
     NONE  = 0,
     ERROR = 1,
@@ -22,11 +25,15 @@ export enum MobileTokenLoggerVerbosity {
     DEBUG = 4
 }
 
+/**
+ * Mobile Token logging utility
+ */
 export class MobileTokenLogger {
 
+    /** Which level of logs (and lower) should be logged into the console. */
     public static verbosity: MobileTokenLoggerVerbosity = MobileTokenLoggerVerbosity.WARN
+    /** Include time in the logs? */
     public static includeTime: boolean = true
-
 
     static debug(message: string | any) {
         this.log(message, MobileTokenLoggerVerbosity.DEBUG)
@@ -35,7 +42,6 @@ export class MobileTokenLogger {
     static info(message: string | any) {
         this.log(message, MobileTokenLoggerVerbosity.INFO)
     }
-    
 
     static warn(message: string | any) {
         this.log(message, MobileTokenLoggerVerbosity.WARN)
@@ -46,9 +52,11 @@ export class MobileTokenLogger {
     }
 
     private static log(message: string | any, level: MobileTokenLoggerVerbosity) {
+
         if (this.verbosity >= level) {
 
             let lvl: string
+            
             switch (level) {
                 case MobileTokenLoggerVerbosity.DEBUG:
                     lvl = "DBG"
