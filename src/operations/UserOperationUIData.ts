@@ -14,19 +14,19 @@
 // and limitations under the License.
 //
 
-import type { UserOperationAttribute } from "./UserOperationAttribute";
+import type { UserOperationAttribute } from "./UserOperationAttribute"
 
 /** Additional UI data */
 export interface UserOperationUIData {
 
     /** Confirm and Reject buttons should be flipped both in position and style */
-    flipButtons?: Boolean;
+    flipButtons?: boolean
 
     /** Block approval when on call (for example when on phone or skype call) */
-    blockApprovalOnCall?: Boolean;
+    blockApprovalOnCall?: boolean
 
     /** UI for pre-approval operation screen */
-    preApprovalScreen?: PreApprovalScreen;
+    preApprovalScreen?: PreApprovalScreen
 
     /**
      * UI for post-approval operation screen
@@ -35,7 +35,7 @@ export interface UserOperationUIData {
      * 
      * For example: (TODO!)
      */
-    postApprovalScreen?: PostApprovalScreen;
+    postApprovalScreen?: PostApprovalScreen
 }
 
 /**
@@ -48,27 +48,27 @@ export interface PreApprovalScreen {
     /**
      * Type of PreApprovalScreen (`WARNING`, `INFO`, `QR_SCAN` - might be undefined for future compatibility)
      */
-    type?: "INFO" | "WARNING" | "QR_SCAN" | "UNKNOWN";
+    type?: "INFO" | "WARNING" | "QR_SCAN" | "UNKNOWN"
 
     /**
      * Heading of the pre-approval screen
      */
-    heading: string;
+    heading: string
 
     /**
      * Message to the user
      */
-     message: string;
+     message: string
 
     /**
      * Array of items to be displayed as list of choices
      */
-    items?: string[];
+    items?: string[]
 
     /**
      * Type of the approval button
      */
-    approvalType?: "SLIDER" | "BUTTON";
+    approvalType?: "SLIDER" | "BUTTON"
 }
 
 export interface PostApprovalScreen {
@@ -77,53 +77,53 @@ export interface PostApprovalScreen {
      * 
      * Mighr be `undefined` for forward compatibility reasons.
      */
-    type?: "REVIEW" | "REDIRECT" | "GENERIC";
+    type?: "REVIEW" | "REDIRECT" | "GENERIC"
 }
 
 // --- REVIEW POST APPROVAL ---
 
 export interface PostApprovalScreenReview extends PostApprovalScreen {
     /** Heading of the post-approval screen */
-    heading: string;
+    heading: string
     /** Message to the user */
-    message: string;
+    message: string
     /** Payload with data for the review */
-    payload: ReviewPostApprovalScreenPayload;
+    payload: ReviewPostApprovalScreenPayload
 }
 
 /** Review payload */
 export interface ReviewPostApprovalScreenPayload {
     /** List of the operation attributes */
-    attributes: UserOperationAttribute[];
+    attributes: UserOperationAttribute[]
 }
 
 // --- REDIRECT POST APPROVAL ---
 
 export interface PostApprovalScreenRedirect extends PostApprovalScreen {
     /** Heading of the post-approval screen */
-    heading: string;
+    heading: string
     /** Message to the user */
-    message: string;
+    message: string
     /** Payload with data for the redirect */
-    payload: ReviewPostApprovalScreenPayload;
+    payload: ReviewPostApprovalScreenPayload
 }
 
 export interface RedirectPostApprovalScreenPayload {
     /** Label of the redirect URL */
-    redirectText: string;
+    redirectText: string
     /** URL to redirect, might be a website or application */
-    redirectUrl: String;
+    redirectUrl: string
     /** Time in seconds before automatic redirect */
-    countdown: Number;
+    countdown: number
 }
 
 // --- GENERIC PSOT APPROVAL ---
 
 export interface PostApprovalScreenGeneric extends PostApprovalScreen {
     /** Heading of the post-approval screen */
-    heading: string;
+    heading: string
     /** Message to the user */
-    message: string;
+    message: string
     /** Payload */
-    payload: any;
+    payload: any
 }

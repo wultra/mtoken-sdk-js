@@ -14,9 +14,9 @@
 // and limitations under the License.
 //
 
-import { Networking, type RequestProcessor, type MobileTokenResponse } from "../networking/Networking";
-import { Platform } from 'react-native';
-import { PowerAuthAuthentication } from 'react-native-powerauth-mobile-sdk';
+import { Networking, type RequestProcessor, type MobileTokenResponse } from "../networking/Networking"
+import { Platform } from 'react-native'
+import { PowerAuthAuthentication } from 'react-native-powerauth-mobile-sdk'
 
 /** Push handling */
 export class Push extends Networking {
@@ -32,8 +32,7 @@ export class Push extends Networking {
   async register(token: string, platform?: "ios" | "android" | "huawei", requestProcessor?: RequestProcessor): Promise<MobileTokenResponse<void>> {
 
     if (platform == undefined) {
-      // only
-      platform = Platform.OS == "ios" ? "ios" : "android";
+      platform = Platform.OS == "ios" ? "ios" : "android"
     }
 
     return await this.postSignedWithToken<void>(
@@ -43,6 +42,6 @@ export class Push extends Networking {
       "possession_universal",
       false,
       requestProcessor
-    );
+    )
   }
 }

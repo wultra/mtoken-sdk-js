@@ -14,6 +14,8 @@
 // and limitations under the License.
 //
 
+import type { UserOperationProximityCheck } from "react-native-mtoken-sdk"
+
 /**
  * An interface that defines minimum data needed for calculating the operation signature
  * and sending it to confirmation endpoint.
@@ -21,12 +23,17 @@
 export interface OnlineOperation {
 
     /** Unique operation identifier. */
-    id: string;
+    id: string
 
     /**
      * Actual data that will be signed.
      * 
      * This shouldn't be visible to the user.
      */
-    data: string;
+    data: string
+
+    /** 
+     * Additional information with proximity check data 
+     */
+    proximityCheck?: UserOperationProximityCheck
 }

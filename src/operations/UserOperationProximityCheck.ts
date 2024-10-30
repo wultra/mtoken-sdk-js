@@ -16,10 +16,10 @@
 
 export interface UserOperationProximityCheck {
     /** The actual Time-based one time password */
-    totp: string;
+    totp: string
 
     /** Type of the Proximity check */
-    type: "QR_CODE" | "DEEPLINK";
+    type: "QR_CODE" | "DEEPLINK"
 
     /** Timestamp when the operation was scanned (qrCode) or delivered to the device (deeplink) */
     timestampReceived: Date

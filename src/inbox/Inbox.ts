@@ -14,14 +14,17 @@
 // and limitations under the License.
 //
 
-import { Networking, type RequestProcessor, type MobileTokenResponse } from "../networking/Networking";
-import { type InboxCount } from "./InboxCount";
-import { type InboxMessage } from "./InboxMessage";
-import { type InboxMessageDetail } from "./InboxMessageDetail";
-import { PowerAuthAuthentication } from 'react-native-powerauth-mobile-sdk';
+import { Networking, type RequestProcessor, type MobileTokenResponse } from "../networking/Networking"
+import { type InboxCount } from "./InboxCount"
+import { type InboxMessage } from "./InboxMessage"
+import { type InboxMessageDetail } from "./InboxMessageDetail"
+import { PowerAuthAuthentication } from 'react-native-powerauth-mobile-sdk'
 
 /** Inbox handling. */
 export class Inbox extends Networking {
+
+    // name of the parsed fields that are expected to be the Date type.
+    private jsonDateFields = [ "timestampCreated" ]
 
     /**
      * Get number of unread messages in the inbox.
@@ -31,13 +34,13 @@ export class Inbox extends Networking {
      */
     async unreadCount(requestProcessor?: RequestProcessor): Promise<MobileTokenResponse<InboxCount>> {
         return await this.postSignedWithToken<InboxCount>(
-            {},
+            { },
             PowerAuthAuthentication.possession(),
             "/api/inbox/count",
             "possession_universal",
             true,
             requestProcessor
-        );
+        )
     }
 
     /**
@@ -56,8 +59,9 @@ export class Inbox extends Networking {
             "/api/inbox/message/list",
             "possession_universal",
             true,
-            requestProcessor
-        );
+            requestProcessor,
+            { dateFields: this.jsonDateFields }
+        )
     }
 
     /**
@@ -74,8 +78,9 @@ export class Inbox extends Networking {
             "/api/inbox/message/detail",
             "possession_universal",
             true,
-            requestProcessor
-        );
+            requestProcessor,
+            { dateFields: this.jsonDateFields }
+        )
     }
 
     /**
@@ -93,7 +98,7 @@ export class Inbox extends Networking {
             "possession_universal",
             false,
             requestProcessor
-        );
+        )
     }
 
     /**
@@ -110,6 +115,6 @@ export class Inbox extends Networking {
             "possession_universal",
             false,
             requestProcessor
-        );
+        )
     }
 }

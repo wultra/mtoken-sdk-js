@@ -18,12 +18,12 @@
 export class MobileTokenException {
 
     /** Description of the Exception */
-    description: string;
+    description: string
     /** Optional additional data that helps with the exception */
-    additionalData?: any;
+    additionalData?: any
     
     constructor(description: string, additionalData?: any) {
-      this.description = description;
-      this.additionalData = additionalData;
+      this.description = description
+      this.additionalData = additionalData
     }
   }

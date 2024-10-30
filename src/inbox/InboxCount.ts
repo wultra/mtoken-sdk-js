@@ -17,5 +17,5 @@
 /** Structure contains information about unread messages in inbox. */
 export interface InboxCount {
     /** Number of unread messages in inbox. */
-    countUnread: Number
+    countUnread: number
 }

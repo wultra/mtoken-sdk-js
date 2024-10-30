@@ -14,10 +14,10 @@
 // and limitations under the License.
 //
 
-import { Operations } from './operations/Operations';
-import { PowerAuth } from 'react-native-powerauth-mobile-sdk';
-import { Push } from './push/Push';
-import { Inbox } from './inbox/Inbox';
+import { Operations } from './operations/Operations'
+import { PowerAuth } from 'react-native-powerauth-mobile-sdk'
+import { Push } from './push/Push'
+import { Inbox } from './inbox/Inbox'
 
 /**
  * MobileToken class exposes API that enables to fetch, authorize or reject basic
@@ -25,25 +25,43 @@ import { Inbox } from './inbox/Inbox';
  */
 export class MobileToken {
 
-    operations: Operations;
-    push: Push;
-    inbox: Inbox;
+    /** Operations manager. Use for fetching pending list, approving the operations etc. */
+    operations: Operations
+    /** Push manager for registering the device to recieve PowerAuth push notification for given PowerAuth activation. */
+    push: Push
+    /** Inbox manager - recieve message to communicate with the user. */
+    inbox: Inbox
 
     /**
      * 
      * @param powerAuth PowerAuth instance. Needs to be activated when calling any method of this class - othewise error will be thrown.
      * @param baseURL BaseURL of the server. If not provided, same URL as for PowerAuth it used.
+     * @param pushBaseURL In case that the push server is on different URL.
+     *                    This is a rare scenario which doesn't happen in regular setup.
+     *                    When not set, baseURL is used.
+     * @param inboxBaseURL In case that the inbox server is on different URL.
+     *                     This is a rare scenario which doesn't happen in regular setup.
+     *                     When not set, baseURL is used.
      */
-    constructor(powerAuth: PowerAuth, baseURL?: string) {
+    constructor(powerAuth: PowerAuth, baseURL?: string, pushBaseURL?: string, inboxBaseURL?: string) {
 
-        let url = baseURL ?? powerAuth.configuration?.baseEndpointUrl ?? ""
-        if (!url.endsWith("/")) {
-            url += "/";
+        let enrollmentURL = baseURL ?? powerAuth.configuration?.baseEndpointUrl ?? ""
+        if (!enrollmentURL.endsWith("/")) {
+            enrollmentURL += "/"
         }
+        if (pushBaseURL && !pushBaseURL.endsWith("/")) {
+            pushBaseURL += "/"
+        }
+        if (inboxBaseURL && !inboxBaseURL.endsWith("/")) {
+            inboxBaseURL += "/"
+        }
+        
+        let pushURL = pushBaseURL ?? enrollmentURL
+        let inboxURL = inboxBaseURL ?? enrollmentURL
 
-        this.operations = new Operations(powerAuth, url)
-        this.push = new Push(powerAuth, url);
-        this.inbox = new Inbox(powerAuth, url);
+        this.operations = new Operations(powerAuth, enrollmentURL)
+        this.push = new Push(powerAuth, pushURL)
+        this.inbox = new Inbox(powerAuth, inboxURL)
     }
 
     /**
@@ -59,7 +77,8 @@ export class MobileToken {
      * will return operation texts in german (if available).
      */
     setAcceptLanguage(lang: string) {
-        this.operations.acceptLanguage = lang;
-        this.push.acceptLanguage = lang;
+        this.operations.acceptLanguage = lang
+        this.push.acceptLanguage = lang
+        this.inbox.acceptLanguage = lang
     }
 }
