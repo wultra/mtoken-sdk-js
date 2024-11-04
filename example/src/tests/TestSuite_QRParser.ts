@@ -113,14 +113,9 @@ export class TestSuite_QRParser extends TestSuite {
      */
 
     testMissingOperationId() {
-        try {
-            const code = new TestQRData()
-            code.operationId = ""
-            QROperationParser.parse(code.makeData())
-            this.fail("Exception expected")
-        } catch (e) {
-            // expected
-        }
+        const code = new TestQRData()
+        code.operationId = ""
+        this.assertThrow(() => QROperationParser.parse(code.makeData()))
     }
 
     testMissingTitleOrMessage() {
@@ -134,14 +129,9 @@ export class TestSuite_QRParser extends TestSuite {
 
     testMissingOrBadOperationDataVersion() {
         ["", "A", "2", "A100", "A-100"].forEach(data =>  {
-            try {
-                const code = new TestQRData()
-                code.operationData = data
-                QROperationParser.parse(code.makeData())
-                this.fail(`Operation data ${data} should not be accepted`)
-            } catch (e) {
-                // expected
-            }
+            const code = new TestQRData()
+            code.operationData = data
+            this.assertThrow(() => QROperationParser.parse(code.makeData()))
         })
     }
 
@@ -157,54 +147,34 @@ export class TestSuite_QRParser extends TestSuite {
 
     testMissingOrBadNonce() {
         ["", "AAAA", "MEYCIQDby1Uq+MaxiAAGzKmE/McHzNOUrvAP2qqGBvSgcdtyjgIhAMo1sgqNa1pPZTFBhhKvCKFLGDuHuTTYexdmHFjUUIJW"].forEach( nonce => {
-            try {
-                const code = new TestQRData()
-                code.nonce = nonce
-                QROperationParser.parse(code.makeData())
-                this.fail(`Nonce ${nonce} should not be accepted`)
-            } catch (e) {
-                // expected
-            }
+            const code = new TestQRData()
+            code.nonce = nonce
+            this.assertThrow(() => QROperationParser.parse(code.makeData()))
         })
     }
 
     testMissingOrBadSignature() {
-        try {
-            const code = new TestQRData()
-            code.signature = ""
-            code.signingKey = ""
-            QROperationParser.parse(code.makeData())
-            this.fail("This should not be parsed")
-        } catch (e) {
-            // expected
-        }
+        const code = new TestQRData()
+        code.signature = ""
+        code.signingKey = ""
+        this.assertThrow(() => QROperationParser.parse(code.makeData()));
         
         ["", "AAAA", "AD8bOO0Df73kNaIGb3Vmpg=="].forEach( s => {
-            try {
-                const code = new TestQRData()
-                code.signature = s
-                QROperationParser.parse(code.makeData())
-                this.fail(`Signature ${s} should not be accepted`)
-            } catch (e) {
-                // expected
-            }
+            const code = new TestQRData()
+            code.signature = s
+            this.assertThrow(() => QROperationParser.parse(code.makeData()))
         });
 
         ["", "2", "X"].forEach( sk => {
-            try {
-                const code = new TestQRData()
-                code.signingKey = sk
-                QROperationParser.parse(code.makeData())
-                this.fail(`Signing key ${sk} should not be accepted`)
-            } catch (e) {
-                // expected
-            }
+            const code = new TestQRData()
+            code.signingKey = sk
+            this.assertThrow(() => QROperationParser.parse(code.makeData()))
         })
     }
 
-    // /**
-    //  * String escaping
-    //  */
+    /**
+     * String escaping
+     */
 
     testAttributeStringEscaping() {
         const code = new TestQRData()
@@ -261,14 +231,9 @@ export class TestSuite_QRParser extends TestSuite {
         });
         // Invalid
         ["ACZK", "A", "A0", "AxCZK"].forEach( it => {
-            try {
-                const code = new TestQRData()
-                code.operationData = `A1*${it}`
-                QROperationParser.parse(code.makeData())
-                this.fail("This should not be parsed")
-            } catch (e) {
-                // expected
-            }
+            const code = new TestQRData()
+            code.operationData = `A1*${it}`
+            this.assertThrow(() => QROperationParser.parse(code.makeData()))
         })
     }
 
@@ -289,28 +254,18 @@ export class TestSuite_QRParser extends TestSuite {
         });
         // Invalid
         ["I", "Isomeiban,", "IGOODIBAN,badbic"].forEach( field => {
-            try {
-                const code = new TestQRData()
-                code.operationData = `A1*${field}`
-                QROperationParser.parse(code.makeData())
-                this.fail("This should not be parsed")
-            } catch (e) {
-                // expected
-            }
+            const code = new TestQRData()
+            code.operationData = `A1*${field}`
+            this.assertThrow(() => QROperationParser.parse(code.makeData()))
         })
     }
 
     testFieldDate() {
         // Invalid dates
         ["D", "D0", "D2004", "D20189999"].forEach( date => {
-            try {
-                const code = new TestQRData()
-                code.operationData = `A1*${date}`
-                QROperationParser.parse(code.makeData())
-                this.fail(`Date ${date} should not be accepted`)
-            } catch (e) {
-                // expected
-            }
+            const code = new TestQRData()
+            code.operationData = `A1*${date}`
+            this.assertThrow(() => { QROperationParser.parse(code.makeData()) })
         })
     }
 

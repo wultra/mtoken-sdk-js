@@ -20,6 +20,7 @@ import { PowerAuth, PowerAuthAuthentication } from 'react-native-powerauth-mobil
 import DeviceInfo from "react-native-device-info"
 import { SDK_VERSION } from "../SDKVersion"
 import { NativeModules, Platform } from "react-native"
+import { MobileTokenLogger, MobileTokenLoggerVerbosity } from "../MobileTokenLogger"
 
 export type RequestProcessor = (request: RequestInit) => RequestInit
 
@@ -36,7 +37,11 @@ export class Networking {
 
     constructor(powerAuth: PowerAuth, baseURL: string) {
         this.pa = powerAuth
-        this.baseURL = baseURL
+        if (baseURL.endsWith("/")) {
+            this.baseURL = baseURL.substring(0, baseURL.length - 1)
+        } else {
+            this.baseURL = baseURL
+        }
     }
 
     protected async postSigned<T>(
@@ -84,8 +89,9 @@ export class Networking {
         requestProcessor?: RequestProcessor,
         jsonConfig?: JsonConfig,
     ): Promise<MobileTokenResponse<T>> {
+
         let method = "POST"
-        let url = (this.baseURL + endpoindPath).replace("//","/")
+        let url = this.baseURL + endpoindPath
 
         let jsonType = "application/json"
         headers.set("Accept", jsonType)
@@ -110,8 +116,22 @@ export class Networking {
             request = requestProcessor(request)
         }
 
+        MobileTokenLogger.info(` -> POST ${url}`)
+        if (MobileTokenLogger.verbosity >= MobileTokenLoggerVerbosity.VERBOSE) {
+            MobileTokenLogger.verbose(this.getHeadersString(headers))
+            MobileTokenLogger.verbose(requestSerialized)
+        }
+
         let result = await fetch(url, request)
         let responseBody = await result.text()
+
+        MobileTokenLogger.info(` <- POST ${url} - ${result.status}`)
+
+        if (MobileTokenLogger.verbosity >= MobileTokenLoggerVerbosity.VERBOSE) {
+            MobileTokenLogger.verbose(this.getHeadersString(result.headers))
+            MobileTokenLogger.verbose(responseBody)
+        }
+
         let response = JSON.parse(responseBody, (key: string, value: any) => {
 
             if (jsonConfig?.dateFields?.includes(key)) {
@@ -148,6 +168,14 @@ export class Networking {
         // TOOD: to consider: add network from netinfo package?
         return `${product}/${sdkVer} ${appId}/${appVer} (${maker}; ${os}/${osVer}; ${model}; ${lang})`
     }
+
+    protected getHeadersString(headers: Headers): string {
+        let result = "Headers: {"
+        headers.forEach( (v: string, k: string) => {
+            result += ` "${k}:" "${v}",`
+        })
+        return result + "}"
+    }
 }
 
 /** Automatic values that will be used for User-Agent HTTP header. */
@@ -157,12 +185,12 @@ export enum UserAgent {
      * 
      * Example value: `TODO`
      */
-    LIBRARY_DEFAULT,
+    LIBRARY_DEFAULT = "LIBRARY_DEFAULT",
 
     /** 
      * System default.
      */
-    SYSTEM_DEFAULT
+    SYSTEM_DEFAULT = "SYSTEM_DEFAULT"
 }
 
 export interface JsonConfig {

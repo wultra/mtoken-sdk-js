@@ -14,7 +14,7 @@
 // and limitations under the License.
 //
 
-import { MobileTokenLogger as D } from "../MobileTokenLogger"
+import { MobileTokenLogger } from "../MobileTokenLogger"
 
 /** Data payload which is returned from the parser */
 export interface PACData {
@@ -31,10 +31,16 @@ export interface PACData {
  */
 export class PACUtils {
 
-    /** Method accepts deeplink URL and returns payload data or null */
-    static parseDeeplink(url: string): PACData | null {
+    /** 
+     * Method accepts deeplink URL and returns payload data or throws and exception.
+     * 
+     * @param url Deeplink URL
+     * @returns Data with parsed Proximity Antofraud Check data
+     * @throws Exception when parsing failed
+     */
+    static parseDeeplink(url: string): PACData {
 
-        D.info(`Parsing deeplink: ${url}`)
+        MobileTokenLogger.info(`Parsing deeplink: ${url}`)
 
         // Deeplink can have two query items with operationId & optional totp or single query item with JWT value
 
@@ -45,7 +51,7 @@ export class PACUtils {
             let totp = urlParams.totp ?? urlParams.potp
 
             if (!!!totp) {
-                D.info(`TOTP not found in URL: ${url}`)
+                MobileTokenLogger.info(`TOTP not found in URL: ${url}`)
             }
 
             return {
@@ -60,23 +66,28 @@ export class PACUtils {
             return this.parseJWT(urlParams[first])
         }
 
-        D.error(`Failed to parse deeplink. Valid keys not found in URL: ${url}`)
-
-        return null
+        throw MobileTokenLogger.errorAndException(`Failed to parse deeplink. Valid keys not found in URL: ${url}`)
     }
 
-    /** Method accepts scanned code as a String and returns PAC data */
-    static parseQRCode(code: string): PACData | null {
+    /** 
+     * Method accepts scanned code as a String and returns PAC data or throws an exception.
+     * 
+     * @param code Code retrieved from the QR
+     * @returns Data with parsed Proximity Antofraud Check data
+     * @throws Exception when cannot be parsed
+     */
+    static parseQRCode(code: string): PACData {
         
         try {
             const uri = new URL(code)
             return this.parseDeeplink(code)
         } catch(e) {
+            MobileTokenLogger.info(`Parsing JWT: ${code}`)
             return this.parseJWT(code)
         }
     }
 
-    private static parseJWT(code: string): PACData | null {
+    private static parseJWT(code: string): PACData {
         const jwtParts = code.split(".")
         if (jwtParts.length > 1) {
             // At this moment we don't care about header, we want only payload which is the second part of JWT
@@ -91,22 +102,17 @@ export class PACUtils {
                             potp: json.potp ? `${json.potp}` : undefined // make sure it's string
                         }
                     } else {
-                        D.error(`Failed to decode QR JWT from: ${code}`)
-                        return null
+                        throw MobileTokenLogger.errorAndException(`Failed to decode QR JWT from: ${code}`)
                     }
                 } catch (e) {
-                    D.error(`Failed to decode QR JWT from: ${code}`)
-                    D.error(`With error: ${e}`)
-                    return null
+                    throw MobileTokenLogger.errorAndException(`Failed to decode QR JWT from: ${code}. With error: ${e}`)
                 }
             }
         } else {
-            D.error(`JWT Payload is empty, jwtParts contain: ${jwtParts}`)
-            return null
+            throw MobileTokenLogger.errorAndException(`JWT Payload is empty, jwtParts contain: ${jwtParts}`)
         }
 
-        D.error(`Failed to decode QR JWT from: ${code}`)
-        return null
+        throw MobileTokenLogger.errorAndException(`Failed to decode QR JWT from: ${code}`)
     }
 
     private static getURLParams(url: string): any {

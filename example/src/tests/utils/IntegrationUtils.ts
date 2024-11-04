@@ -20,20 +20,20 @@ import Credentials from "./credentials.json"
 
 export class IntegrationUtils {
     
-    private static jsonMediaType = "application/json; charset=UTF-8"
+    private jsonMediaType = "application/json; charset=UTF-8"
 
-    private static cloudServerUrl = ""
-    private static cloudServerLogin = ""
-    private static cloudServerPassword = ""
-    private static cloudApplicationId = ""
-    private static enrollmentUrl = ""
-    private static appKey = ""
-    private static appSecret = ""
-    private static serverMasterKey = ""
-    private static activationName = "" // will be filled when activation is created
-    private static registrationId = "" // will be filled when activation is created
+    private cloudServerUrl = ""
+    private cloudServerLogin = ""
+    private cloudServerPassword = ""
+    private cloudApplicationId = ""
+    private enrollmentUrl = ""
+    private appKey = ""
+    private appSecret = ""
+    private serverMasterKey = ""
+    private activationName = "" // will be filled when activation is created
+    private registrationId = "" // will be filled when activation is created
 
-    static async prepareCredentials() {
+    async loadCredentials() {
 
         const privateFileName = "credentials-private.json"
         try {
@@ -55,7 +55,7 @@ export class IntegrationUtils {
         }
     }
 
-    static async prepareActivation(pin: string, userId: string | null = null): Promise<{ powerauth: PowerAuth, mtoken: MobileToken }> {
+    async prepareActivation(pin: string, userId: string | null = null): Promise<{ powerauth: PowerAuth, mtoken: MobileToken }> {
 
         // Be sure that each activation has its own user
         this.activationName = userId ?? (Math.random() + 1).toString(36)
@@ -101,14 +101,14 @@ export class IntegrationUtils {
         }
     }
 
-    static async removeRegistration(activationId: string | null = null) {
+    async removeRegistration(activationId: string | null = null) {
         const id = activationId ?? this.registrationId
         if (id.length > 0) {
             this.makeCall("", `${this.cloudServerUrl}/v2/registrations/${id}`, "DELETE")
         }
     }
 
-    static async createOperation(): Promise<OperationObject> {
+    async createOperation(): Promise<OperationObject> {
         const opBody = `
             {
               "userId": "${this.activationName}",
@@ -126,11 +126,11 @@ export class IntegrationUtils {
         return await this.makeCall(opBody, `${this.cloudServerUrl}/v2/operations`)
     }
 
-    static async cancelOperation(operationId: string, reason: string): Promise<any> {
+    async cancelOperation(operationId: string, reason: string): Promise<any> {
         return await this.makeCall("", `${this.cloudServerUrl}/v2/operations/${operationId}?statusReason=${reason}`, "DELETE")
     }
 
-    static async createNonPersonalizedPACOperation(): Promise<OperationObject> {
+    async createNonPersonalizedPACOperation(): Promise<OperationObject> {
         const opBody = `
             {
               "template": "login_preApproval",
@@ -147,15 +147,15 @@ export class IntegrationUtils {
         return await this.makeCall(opBody, `${this.cloudServerUrl}/v2/operations`)
     }
 
-    static async getOperation(operationId: string): Promise<OperationObject> {
+    async getOperation(operationId: string): Promise<OperationObject> {
         return await this.makeCall("", `${this.cloudServerUrl}/v2/operations/${operationId}`, "GET")
     }
 
-    static async getQROperation(operationId: string): Promise<QRData> {
+    async getQROperation(operationId: string): Promise<QRData> {
         return await this.makeCall("", `${this.cloudServerUrl}/v2/operations/${operationId}/offline/qr?registrationId=${this.registrationId}`, "GET")
     }
 
-    static async verifyQROperation(operation: OperationObject, qrData: QRData, otp: String): Promise<QROperationVerify> {
+    async verifyQROperation(operation: OperationObject, qrData: QRData, otp: String): Promise<QROperationVerify> {
         const body = `
             {
               "otp": "${otp}",
@@ -166,7 +166,7 @@ export class IntegrationUtils {
         return this.makeCall(body, `${this.cloudServerUrl}/v2/operations/${operation.operationId}/offline/otp`)
     }
 
-    static async createInboxMessages(count: number, type: string = "text"): Promise<NewInboxMessage[]> {
+    async createInboxMessages(count: number, type: string = "text"): Promise<NewInboxMessage[]> {
         const result: NewInboxMessage[] = []
         for (let i = 0; i < count; i++) {
             const body = `
@@ -185,7 +185,7 @@ export class IntegrationUtils {
         return result
     }
 
-    private static async makeCall(payload: string | undefined, url: string, method: string = "POST"): Promise<any> {
+    private async makeCall(payload: string | undefined, url: string, method: string = "POST"): Promise<any> {
         const creds = `${this.cloudServerLogin}:${this.cloudServerPassword}`
         const request: RequestInit = {
             body: payload,

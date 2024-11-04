@@ -24,13 +24,14 @@ export class TestSuite_Integration extends TestSuite {
     private pin = "1234"
     private powerAuth!: PowerAuth
     private mtoken!: MobileToken
+    private utils = new IntegrationUtils()
 
     protected async beforeAll(): Promise<void> {
         console.log("")
         console.log("beforeAll: loading test credentials...")
-        await IntegrationUtils.prepareCredentials()
+        await this.utils.loadCredentials()
         console.log("beforeAll: preparing activation...")
-        const result = await IntegrationUtils.prepareActivation(this.pin)
+        const result = await this.utils.prepareActivation(this.pin)
         this.powerAuth = result.powerauth
         this.mtoken = result.mtoken
         console.log("beforeAll: activation prepared!")
@@ -40,7 +41,7 @@ export class TestSuite_Integration extends TestSuite {
         if (this.powerAuth) {
             console.log("")
             console.log("afterAll: removing activation...")
-            IntegrationUtils.removeRegistration(await this.powerAuth.getActivationIdentifier())
+            this.utils.removeRegistration(await this.powerAuth.getActivationIdentifier())
             this.powerAuth.removeActivationLocal()
             console.log("afterAll: activation removed!")
         }
@@ -51,7 +52,7 @@ export class TestSuite_Integration extends TestSuite {
     }
 
     async testApprovePayment() {
-        await IntegrationUtils.createOperation()
+        await this.utils.createOperation()
         
         const operations = (await this.mtoken.operations.pendingList()).responseObject!!
 
@@ -69,7 +70,7 @@ export class TestSuite_Integration extends TestSuite {
     }
 
     async testRejectPayment() {
-        const op = await IntegrationUtils.createOperation()
+        const op = await this.utils.createOperation()
         const operations = await this.mtoken.operations.pendingList()
         const opFromList = operations.responseObject!!.find( it => it.id == op.operationId )
         if (opFromList == undefined) {
@@ -81,7 +82,7 @@ export class TestSuite_Integration extends TestSuite {
 
     async testOperationHistory() {
         // lets create 1 operation and leave it in the state of "pending"
-        const op = await IntegrationUtils.createOperation()
+        const op = await this.utils.createOperation()
         const auth = PowerAuthAuthentication.password(this.pin)
         const history = await this.mtoken.operations.history(auth)
         this.assertNotNull(history.responseObject)
@@ -92,10 +93,10 @@ export class TestSuite_Integration extends TestSuite {
 
     async testQROperation() {
         // create regular operation
-        const op = await IntegrationUtils.createOperation()
+        const op = await this.utils.createOperation()
 
         // get QR data of the operation
-        const qrData = await IntegrationUtils.getQROperation(op.operationId)
+        const qrData = await this.utils.getQROperation(op.operationId)
 
         // parse the data
         const qrOperation = QROperationParser.parse(qrData.operationQrCodeData)
@@ -105,27 +106,27 @@ export class TestSuite_Integration extends TestSuite {
         const otp = await this.mtoken.operations.authorizeOffline(qrOperation, auth)
 
         // verify the operation on the backend with the OTP
-        const verifiedResult = await IntegrationUtils.verifyQROperation(op, qrData, otp)
+        const verifiedResult = await this.utils.verifyQROperation(op, qrData, otp)
 
         this.assertTrue(verifiedResult.otpValid, "OTP is not valid")
     }
 
     async testDetail() {
-        const op = await IntegrationUtils.createNonPersonalizedPACOperation()
+        const op = await this.utils.createNonPersonalizedPACOperation()
         const operation = await this.mtoken.operations.detail(op.operationId)
         this.assertNotNull(operation, "Failed to create & get the operation")
         this.assertEquals(op.operationId, operation.responseObject!!.id, "Operations ids are not equal")
     }
 
     async testClaim() {
-        const op = await IntegrationUtils.createNonPersonalizedPACOperation()
+        const op = await this.utils.createNonPersonalizedPACOperation()
         
         const resp = await this.mtoken.operations.claim(op.operationId)
         const operation = resp.responseObject!!
         this.assertNotNull(operation, "Failed to claim the operation")
         this.assertEquals(operation.ui!!.preApprovalScreen!!.type, "QR_SCAN")
 
-        const totp = (await IntegrationUtils.getOperation(op.operationId)).proximityOtp
+        const totp = (await this.utils.getOperation(op.operationId)).proximityOtp
         this.assertNotNull(totp, "Even with proximityCheckEnabled: true, in proximityOtp nil")
 
         operation.proximityCheck = { totp: totp!!, type: "QR_CODE", timestampReceived: new Date() }
@@ -143,10 +144,10 @@ export class TestSuite_Integration extends TestSuite {
 
     async testOperationCanceledWithReason() {
         // create regular operation
-        const op = await IntegrationUtils.createOperation()
+        const op = await this.utils.createOperation()
         const cancelReason = "PREARRANGED_REASON"
         // cancel the operation
-        await IntegrationUtils.cancelOperation(op.operationId, cancelReason)
+        await this.utils.cancelOperation(op.operationId, cancelReason)
 
         const operations = (await this.mtoken.operations.history(PowerAuthAuthentication.password(this.pin))).responseObject
         this.assertNotNull(operations, "Operations not retrieved")
