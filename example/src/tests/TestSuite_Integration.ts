@@ -164,15 +164,13 @@ export class TestSuite_Integration extends TestSuite {
         this.mtoken.setUserAgent(UserAgent.LIBRARY_DEFAULT)
         await this.mtoken.operations.pendingList( request => {
             const headers = request.headers as Headers
-            const userAgent = headers.get("user-agent")!!
-            console.log(userAgent)
-            this.assertTrue(userAgent.startsWith(expectedDefaultUserAgentProductName), `user-agent should start with ${expectedDefaultUserAgentProductName}`)
+            this.assertTrue(headers.get("user-agent")!!.startsWith(expectedDefaultUserAgentProductName), `user-agent should start with ${expectedDefaultUserAgentProductName}`)
             return request
         })
 
         // test custom user agent
         this.mtoken.setUserAgent(testUserAgent)
-        await this.mtoken.operations.pendingList( request => {
+        await this.mtoken.inbox.unreadCount( request => {
             const headers = request.headers as Headers
             this.assertEquals(headers.get("user-agent"), testUserAgent)
             return request
@@ -186,6 +184,27 @@ export class TestSuite_Integration extends TestSuite {
             this.assertEquals(headers.get("user-agent"), undefined)
             return request
         })
+    }
 
+    async testAcceptLanguage() {
+
+        const en = "en"
+        const cs = "cs"
+
+        // set eng lang
+        this.mtoken.setAcceptLanguage(en)
+        await this.mtoken.operations.pendingList( request => {
+            const headers = request.headers as Headers
+            this.assertEquals(headers.get("accept-language")!!, en)
+            return request
+        })
+
+        // set czech lang
+        this.mtoken.setAcceptLanguage(cs)
+        await this.mtoken.inbox.unreadCount( request => {
+            const headers = request.headers as Headers
+            this.assertEquals(headers.get("accept-language"), cs)
+            return request
+        })
     }
 }
