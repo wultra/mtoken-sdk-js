@@ -17,12 +17,19 @@
 import { KnownRestApiError } from "./KnownRestApiError"
 import { MobileTokenException } from "../MobileTokenException"
 import { PowerAuth, PowerAuthAuthentication } from 'react-native-powerauth-mobile-sdk'
+import DeviceInfo from "react-native-device-info"
+import { SDK_VERSION } from "../SDKVersion"
+import { NativeModules, Platform } from "react-native"
 
-export type RequestProcessor = (name: RequestInit) => RequestInit
+export type RequestProcessor = (request: RequestInit) => RequestInit
 
+/** @internal */
 export class Networking {
 
+    /** @internal */
     acceptLanguage = "en"
+    /** @internal */
+    userAgent: UserAgent | string = UserAgent.LIBRARY_DEFAULT
 
     protected pa: PowerAuth
     private baseURL: string
@@ -84,7 +91,14 @@ export class Networking {
         headers.set("Accept", jsonType)
         headers.set("Content-Type", jsonType)
         headers.set("Accept-Language", this.acceptLanguage)
-        headers.set("User-Agent", "react-native-mtoken-sdk") // TODO: improve!
+
+        if (this.userAgent == UserAgent.LIBRARY_DEFAULT) {
+            headers.set("User-Agent", this.getDefaultUserAgent())
+        } else if (this.userAgent == UserAgent.SYSTEM_DEFAULT) {
+            // leave empty to default to system value
+        } else {
+            headers.set("User-Agent", this.userAgent)
+        }
 
         let request: RequestInit = {
             method: method,
@@ -120,6 +134,35 @@ export class Networking {
 
         return response
     }
+
+    protected getDefaultUserAgent(): string {
+        const product = "ReactNativeMobileToken"
+        const sdkVer = SDK_VERSION
+        const appVer = DeviceInfo.getVersion()
+        const appId = DeviceInfo.getBundleId()
+        const lang = Platform.OS === 'ios' ? (NativeModules.SettingsManager.settings.AppleLocale || NativeModules.SettingsManager.settings.AppleLanguages[0]) : NativeModules.I18nManager.localeIdentifier
+        const maker = DeviceInfo.getManufacturerSync()
+        const os = Platform.OS
+        const osVer = Platform.Version
+        const model = DeviceInfo.getModel()
+        // TOOD: to consider: add network from netinfo package?
+        return `${product}/${sdkVer} ${appId}/${appVer} (${maker}; ${os}/${osVer}; ${model}; ${lang})`
+    }
+}
+
+/** Automatic values that will be used for User-Agent HTTP header. */
+export enum UserAgent {
+    /** 
+     * Default value provided by the libary. 
+     * 
+     * Example value: `TODO`
+     */
+    LIBRARY_DEFAULT,
+
+    /** 
+     * System default.
+     */
+    SYSTEM_DEFAULT
 }
 
 export interface JsonConfig {

@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react'
-import { StyleSheet, View, Alert, Button, ScrollView, Text } from 'react-native'
+import { useEffect, useState } from 'react'
+import { StyleSheet, View, Alert, Button, Text } from 'react-native'
 import { TestExecutor } from './tests/TestExecutor'
 
 export default function App() {
@@ -15,7 +15,6 @@ export default function App() {
 
   const [isRunning, setIsRunning] = useState(false)
 
-
   const testExecutor = new TestExecutor()
 
   const prepare = async (): Promise<void> => {
@@ -23,6 +22,7 @@ export default function App() {
   }
 
   const runTests = async () => {
+    testExecutor.stopAllTests()
     setIsRunning(true)
     const result = await testExecutor.runAllTests()
     Alert.alert(`Test result: ${result.succeededTests}/ ${result.totalTests} succeeded`)
@@ -35,7 +35,7 @@ export default function App() {
         await runTests()
       }} />}
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({

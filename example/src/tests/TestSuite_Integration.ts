@@ -17,7 +17,7 @@
 import { PowerAuth, PowerAuthAuthentication } from 'react-native-powerauth-mobile-sdk';
 import { TestSuite } from './TestSuite';
 import { IntegrationUtils } from './utils/IntegrationUtils';
-import { MobileToken, QROperationParser } from 'react-native-mtoken-sdk';
+import { MobileToken, QROperationParser, UserAgent } from 'react-native-mtoken-sdk';
 
 export class TestSuite_Integration extends TestSuite {
 
@@ -153,5 +153,39 @@ export class TestSuite_Integration extends TestSuite {
         const opRecord = operations!!.find( it => it.id == op.operationId)
         this.assertNotNull(opRecord)
         this.assertEquals(opRecord!!.statusReason, cancelReason, `${opRecord?.statusReason} should be ${cancelReason}`)
+    }
+
+    async testTestUserAgents() {
+
+        const expectedDefaultUserAgentProductName = "ReactNativeMobileToken"
+        const testUserAgent = "test-agent"
+
+        // test default behavior (libraryDefault)
+        this.mtoken.setUserAgent(UserAgent.LIBRARY_DEFAULT)
+        await this.mtoken.operations.pendingList( request => {
+            const headers = request.headers as Headers
+            const userAgent = headers.get("user-agent")!!
+            console.log(userAgent)
+            this.assertTrue(userAgent.startsWith(expectedDefaultUserAgentProductName), `user-agent should start with ${expectedDefaultUserAgentProductName}`)
+            return request
+        })
+
+        // test custom user agent
+        this.mtoken.setUserAgent(testUserAgent)
+        await this.mtoken.operations.pendingList( request => {
+            const headers = request.headers as Headers
+            this.assertEquals(headers.get("user-agent"), testUserAgent)
+            return request
+        })
+
+
+        // test system default (should be undefined in the request)
+        this.mtoken.setUserAgent(UserAgent.SYSTEM_DEFAULT)
+        await this.mtoken.operations.pendingList( request => {
+            const headers = request.headers as Headers
+            this.assertEquals(headers.get("user-agent"), undefined)
+            return request
+        })
+
     }
 }

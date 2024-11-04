@@ -183,6 +183,7 @@
     "version": "0.40.0"
   },
   "dependencies": {
+    "react-native-device-info": "^14.0.0",
     "react-native-powerauth-mobile-sdk": "^2.5.1"
   }
 }

@@ -8,6 +8,7 @@
     "jsx": "react-jsx",
     "lib": ["ESNext", "DOM"],
     "module": "ESNext",
+    "stripInternal": true,
     "moduleResolution": "Bundler",
     "resolveJsonModule": true,
     "skipLibCheck": true,

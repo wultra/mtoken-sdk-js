@@ -18,6 +18,7 @@ import { Operations } from './operations/Operations'
 import { PowerAuth } from 'react-native-powerauth-mobile-sdk'
 import { Push } from './push/Push'
 import { Inbox } from './inbox/Inbox'
+import type { UserAgent } from './networking/Networking'
 
 /**
  * MobileToken class exposes API that enables to fetch, authorize or reject basic
@@ -80,5 +81,16 @@ export class MobileToken {
         this.operations.acceptLanguage = lang
         this.push.acceptLanguage = lang
         this.inbox.acceptLanguage = lang
+    }
+
+    /** 
+     * User agent that will be used in a HTTP hader. 
+     * 
+     * Note that user-agent can be overriden by request processor in each API call.
+     */
+    setUserAgent(userAgent: UserAgent | string) {
+        this.operations.userAgent = userAgent
+        this.push.userAgent = userAgent
+        this.inbox.userAgent = userAgent
     }
 }
