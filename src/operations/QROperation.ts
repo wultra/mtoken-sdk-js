@@ -49,14 +49,6 @@ export interface QROperation {
      * This flag may be used as warning, presented in UI
      */
     isNewerFormat: boolean
-    
-    // internal var dataForOfflineSigning: Data {
-    //     if let totp = totp {
-    //         return "\(operationId)&\(operationData.sourceString)&\(totp)".data(using: .utf8)!
-    //     } else {
-    //         return "\(operationId)&\(operationData.sourceString)".data(using: .utf8)!
-    //     }
-    // }
 }
 
 export interface QROperationFlags {
@@ -107,7 +99,7 @@ export class QROperationDataVersionUtil {
 export enum QROperationDataFieldType {
     /** Empty field for optional and not used fields */
     EMPTY,
-    /** Field is of type `AccountField` */
+    /** Field is of type `AmountField` */
     AMOUNT,
     /** Field is of type `AccountField` */
     ACCOUNT,

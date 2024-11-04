@@ -53,4 +53,10 @@ export class TestExecutor {
         console.log("####################################################")
         return { totalTests: totalTests, succeededTests: succeededTests }
     }
+
+    stopAllTests() {
+        for (const suite of this.suites) {
+            suite.stop()
+        }
+    }
 }

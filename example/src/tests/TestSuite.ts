@@ -16,19 +16,21 @@
 
 export class TestSuite {
 
-    private testFcs = new Array<string>();
-    protected suiteName: string;
+    private testFcs = new Array<string>()
+    protected suiteName: string
+
+    private isStopped = false
 
     constructor() {
 
-        this.suiteName = this.constructor.name.replace(/(Test|Suite)$/g, '');
+        this.suiteName = this.constructor.name.replace(/(Test|Suite)$/g, '')
         
         const anyThis = this as any
 
         // Retrieve all function names that stars with the "test" and call them
         Object.getOwnPropertyNames(Object.getPrototypeOf(anyThis)).forEach(key => {
             if (typeof anyThis[key] === 'function' && key.startsWith("test")) {
-                this.testFcs.push(key);
+                this.testFcs.push(key)
             }
         });
     }
@@ -57,6 +59,12 @@ export class TestSuite {
 
     async runAllTests(): Promise<number> {
 
+        if (this.isStopped != true) {
+            return 0
+        }
+
+        this.isStopped = false;
+
         let successCount = 0;
 
         console.log("")
@@ -70,6 +78,9 @@ export class TestSuite {
         }
 
         for (const test of this.testFcs) {
+            if (this.isStopped) {
+                return successCount
+            }
             console.log("")
             console.log(`${test} started...`);
             try {
@@ -104,6 +115,12 @@ export class TestSuite {
         console.log(`# TEST SUITE "${this.suiteName}" FINISHED WITH ${successCount}/${this.testFcs.length} SUCCESS.`)
         return successCount
     }
+
+    stop() {
+        console.log(`Stopping ${this.suiteName} tests...`)
+        this.isStopped = true
+    }
+
 
     protected assertEquals(a: any, b: any, message: string = "Objects are not equal") {
         if (a != b) {

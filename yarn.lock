@@ -12596,6 +12596,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-native-device-info@npm:^14.0.0":
+  version: 14.0.0
+  resolution: "react-native-device-info@npm:14.0.0"
+  peerDependencies:
+    react-native: "*"
+  checksum: 10/7fb7b21e43940793fa5cc5fe55237e383403b44fc31b2b47ba93f31624a616bc0d24320a3eb23f25cb0ad31ee6dba6372febb88857e38c33a677181b9e719c10
+  languageName: node
+  linkType: hard
+
 "react-native-mtoken-sdk-example@workspace:example":
   version: 0.0.0-use.local
   resolution: "react-native-mtoken-sdk-example@workspace:example"
@@ -12609,6 +12618,7 @@ __metadata:
     react-dom: "npm:18.2.0"
     react-native: "npm:0.74.5"
     react-native-builder-bob: "npm:^0.29.0"
+    react-native-device-info: "npm:^14.0.0"
     react-native-powerauth-mobile-sdk: "npm:^2.5.1"
     react-native-web: "npm:~0.19.10"
   languageName: unknown
@@ -12634,6 +12644,7 @@ __metadata:
     react: "npm:18.2.0"
     react-native: "npm:0.74.5"
     react-native-builder-bob: "npm:^0.29.0"
+    react-native-device-info: "npm:^14.0.0"
     react-native-powerauth-mobile-sdk: "npm:^2.5.1"
     release-it: "npm:^15.0.0"
     typescript: "npm:^5.2.2"
