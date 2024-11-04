@@ -19,6 +19,7 @@ import { PowerAuth } from 'react-native-powerauth-mobile-sdk'
 import { Push } from './push/Push'
 import { Inbox } from './inbox/Inbox'
 import type { UserAgent } from './networking/Networking'
+import { MobileTokenLogger } from './MobileTokenLogger'
 
 /**
  * MobileToken class exposes API that enables to fetch, authorize or reject basic
@@ -47,22 +48,17 @@ export class MobileToken {
     constructor(powerAuth: PowerAuth, baseURL?: string, pushBaseURL?: string, inboxBaseURL?: string) {
 
         let enrollmentURL = baseURL ?? powerAuth.configuration?.baseEndpointUrl ?? ""
-        if (!enrollmentURL.endsWith("/")) {
-            enrollmentURL += "/"
-        }
-        if (pushBaseURL && !pushBaseURL.endsWith("/")) {
-            pushBaseURL += "/"
-        }
-        if (inboxBaseURL && !inboxBaseURL.endsWith("/")) {
-            inboxBaseURL += "/"
-        }
-        
         let pushURL = pushBaseURL ?? enrollmentURL
         let inboxURL = inboxBaseURL ?? enrollmentURL
 
         this.operations = new Operations(powerAuth, enrollmentURL)
         this.push = new Push(powerAuth, pushURL)
         this.inbox = new Inbox(powerAuth, inboxURL)
+
+        MobileTokenLogger.debug("Mobile Token object created with:")
+        MobileTokenLogger.debug(" - baseURL: " + enrollmentURL)
+        MobileTokenLogger.debug(" - pushURL: " + pushURL)
+        MobileTokenLogger.debug(" - inboxURL: " + inboxURL)
     }
 
     /**
@@ -81,6 +77,7 @@ export class MobileToken {
         this.operations.acceptLanguage = lang
         this.push.acceptLanguage = lang
         this.inbox.acceptLanguage = lang
+        MobileTokenLogger.info(`accent language set to ${lang}`)
     }
 
     /** 
@@ -92,5 +89,6 @@ export class MobileToken {
         this.operations.userAgent = userAgent
         this.push.userAgent = userAgent
         this.inbox.userAgent = userAgent
+        MobileTokenLogger.info(`User-Agent set to ${userAgent}`)
     }
 }

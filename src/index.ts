@@ -16,6 +16,7 @@
 
 export * from './MobileToken'
 export * from './MobileTokenException'
+export * from './MobileTokenLogger'
 
 // OPERATIONS
 export * from './operations/Operations'

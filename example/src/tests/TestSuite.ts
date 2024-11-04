@@ -140,6 +140,15 @@ export class TestSuite {
         }
     }
 
+    protected assertThrow(call: () => void, message: string = "Function did not throw") {
+        try {
+            call()
+        } catch(e) {
+            return
+        }
+        throw new Error(`Assertion failed: ${message}`);
+    }
+
     protected assertTrue(a: boolean, message: string = "Object is false") {
         if (!a) {
             console.trace();

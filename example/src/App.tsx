@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { StyleSheet, View, Alert, Button, Text } from 'react-native'
 import { TestExecutor } from './tests/TestExecutor'
+import { MobileTokenLogger, MobileTokenLoggerVerbosity } from 'react-native-mtoken-sdk'
 
 export default function App() {
 
@@ -15,13 +16,14 @@ export default function App() {
 
   const [isRunning, setIsRunning] = useState(false)
 
-  const testExecutor = new TestExecutor()
+  const [testExecutor] = useState(new TestExecutor())
 
   const prepare = async (): Promise<void> => {
     await runTests()
   }
 
   const runTests = async () => {
+    MobileTokenLogger.verbosity = MobileTokenLoggerVerbosity.NONE
     testExecutor.stopAllTests()
     setIsRunning(true)
     const result = await testExecutor.runAllTests()

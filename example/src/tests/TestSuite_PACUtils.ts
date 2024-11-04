@@ -21,12 +21,12 @@ export class TestSuite_PACUtils extends TestSuite {
     
     testParseQRCodeWithEmptyCode() {
         const code = ""
-        this.assertNull(PACUtils.parseQRCode(code))
+        this.assertThrow(() => PACUtils.parseQRCode(code))
     }
 
     testQRPACParserWithShortInvalidCode() {
         const code = "abc"
-        this.assertNull(PACUtils.parseQRCode(code))
+        this.assertThrow(() => PACUtils.parseQRCode(code))
     }
 
     testQRTPACParserWithValidDeeplinkCode() {
@@ -58,31 +58,31 @@ export class TestSuite_PACUtils extends TestSuite {
     }
 
     testQRPACParserWithInvalidJWT() {
-        this.assertNull(PACUtils.parseQRCode("eyJhbGciOiJub25lIiwidHlwZSI6IkpXVCJ9eyJvaWQiOiIzYjllZGZkMi00ZDgyLTQ3N2MtYjRiMy0yMGZhNWM5OWM5OTMiLCJwb3RwIjoiMTQzNTc0NTgifQ=="))
+        this.assertThrow(() => PACUtils.parseQRCode("eyJhbGciOiJub25lIiwidHlwZSI6IkpXVCJ9eyJvaWQiOiIzYjllZGZkMi00ZDgyLTQ3N2MtYjRiMy0yMGZhNWM5OWM5OTMiLCJwb3RwIjoiMTQzNTc0NTgifQ=="))
     }
 
     testQRPACParserWithInvalidJWT2() {
-        this.assertNull(PACUtils.parseQRCode("eyJ0eXAiOiJKV1QiLCJhbGciOiJub25lIn0.1eyJvaWQiOiJMRG5JY0NjRGhjRHdHNVNLejhLeWdQeG9PbXh3dHpJc29zMEUrSFBYUHlvIiwicG90cCI6IjU4NTkwMDU5In0"))
+        this.assertThrow(() => PACUtils.parseQRCode("eyJ0eXAiOiJKV1QiLCJhbGciOiJub25lIn0.1eyJvaWQiOiJMRG5JY0NjRGhjRHdHNVNLejhLeWdQeG9PbXh3dHpJc29zMEUrSFBYUHlvIiwicG90cCI6IjU4NTkwMDU5In0"))
     }
 
     testQRPACParserWithInvalidJWT3() {
-        this.assertNull(PACUtils.parseQRCode(""))
+        this.assertThrow(() => PACUtils.parseQRCode(""))
     }
 
     testQRPACParserWithInvalidJWT4() {
-        this.assertNull(PACUtils.parseQRCode("eyJ0eXAiOiJKV1QiLCJhbGciOiJub25lIn0.1eyJvaWQiOiJMRG5JY0NjR.GhjRHdHNVNLejhLeWdQeG9PbXh3dHpJc29zMEUrSFBYUHlvIiwicG90cCI6IjU4NTkwMDU5In0====="))
+        this.assertThrow(() => PACUtils.parseQRCode("eyJ0eXAiOiJKV1QiLCJhbGciOiJub25lIn0.1eyJvaWQiOiJMRG5JY0NjR.GhjRHdHNVNLejhLeWdQeG9PbXh3dHpJc29zMEUrSFBYUHlvIiwicG90cCI6IjU4NTkwMDU5In0====="))
     }
 
     testDeeplinkParserWithInvalidPACCode() {
-        this.assertNull(PACUtils.parseQRCode("operation?oid=df6128fc-ca51-44b7-befa-ca0e1408aa63&potp=56725494"))
+        this.assertThrow(() => PACUtils.parseQRCode("operation?oid=df6128fc-ca51-44b7-befa-ca0e1408aa63&potp=56725494"))
     }
 
     testDeeplinkPACParserWithInvalidURL() {
-        this.assertNull(PACUtils.parseDeeplink("scheme://an-invalid-url.com"))
+        this.assertThrow(() => PACUtils.parseDeeplink("scheme://an-invalid-url.com"))
     }
 
     testDeeplinkParserWithValidURLButInvalidQuery() {
-        this.assertNull(PACUtils.parseDeeplink("scheme://operation?code=abc"))
+        this.assertThrow(() => PACUtils.parseDeeplink("scheme://operation?code=abc"))
     }
 
     testDeeplinkPACParserWithValidJWTCode() {

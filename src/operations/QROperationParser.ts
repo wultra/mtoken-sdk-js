@@ -15,7 +15,6 @@
 //
 
 import { 
-    SigningKey, 
     SigningKeyUtil, 
     type QROperation, 
     type QROperationSignature, 
@@ -35,6 +34,7 @@ import {
  } from "./QROperation"
 import { MobileTokenException } from "../MobileTokenException"
 import { Buffer } from "buffer"
+import { MobileTokenLogger } from "../MobileTokenLogger"
 
 /**
  * Parser for QR operation
@@ -65,7 +65,7 @@ export class QROperationParser {
         const attributes = string.split("\n")
 
         if (attributes.length < this.minimumAttributeFields) {
-            throw new MobileTokenException(`QR operation needs to have at least ${this.minimumAttributeFields} attributes but have ${attributes.length}`)
+            throw MobileTokenLogger.errorAndException(`Offline operation: QR operation needs to have at least ${this.minimumAttributeFields} attributes but have ${attributes.length}`)
         }
 
         // Acquire all attributes
@@ -82,7 +82,7 @@ export class QROperationParser {
 
         // Validate operationId
         if (operationId.length == 0) {
-            throw new MobileTokenException("QR operation ID is empty!.")
+            throw MobileTokenLogger.errorAndException("Offline operation: QR operation ID is empty!.")
         }
 
         const signature = this.parseSignature(signatureString)
@@ -90,7 +90,7 @@ export class QROperationParser {
         // validate nonce
         const nonceByteArray = Buffer.from(nonce, 'base64')
         if (nonceByteArray.length != 16) {
-            throw new MobileTokenException("Invalid nonce data")
+            throw MobileTokenLogger.errorAndException("Offline operation: Invalid nonce data")
         }
 
         // Parse operation data fields
@@ -129,16 +129,16 @@ export class QROperationParser {
      */
     private static parseSignature(signaturePayload: string): QROperationSignature {
         if (signaturePayload.length == 0) {
-            throw new MobileTokenException("Empty offline operation signature")
+            throw MobileTokenLogger.errorAndException("Empty offline operation signature")
         }
         const signingKey = SigningKeyUtil.fromTypeValue(signaturePayload[0])
         if (signingKey == undefined) {
-            throw new MobileTokenException("Invalid offline operation signature key")
+            throw MobileTokenLogger.errorAndException("Invalid offline operation signature key")
         }
         const signatureBase64 = signaturePayload.substring(1)
         const signatureByteArray = Buffer.from(signatureBase64, 'base64')
         if (signatureByteArray.length < 64 || signatureByteArray.length > 255) {
-            throw new MobileTokenException("Invalid offline operation signature data")
+            throw MobileTokenLogger.errorAndException("Invalid offline operation signature data")
         }
         return {
             signingKey: signingKey, 
@@ -153,28 +153,28 @@ export class QROperationParser {
     private static parseOperationData(string: string): QROperationData {
         const stringFields = this.splitOperationData(string)
         if (stringFields.length == 0) {
-            throw new MobileTokenException("No fields at all")
+            throw MobileTokenLogger.errorAndException("No fields at all in the offline operation data")
         }
 
         // Get and check version
         const versionString = stringFields[0]
         const versionChar = versionString[0]
         if (!!!versionChar) {
-            throw new MobileTokenException("First fields is empty string")
+            throw MobileTokenLogger.errorAndException("First fields is empty string in the offline operation data")
         }
         if (versionChar.charCodeAt(0) < 'A'.charCodeAt(0) || versionChar.charCodeAt(0) > 'Z'.charCodeAt(0)) { // TODO: is OK?
-            throw new MobileTokenException("Version has to be an one capital letter")
+            throw MobileTokenLogger.errorAndException("Offline operation: Version has to be an one capital letter")
         }
         const version = QROperationDataVersionUtil.parse(versionChar)
 
         const templateId = Number(versionString.substring(1))
 
         if (!!!templateId) {
-            throw new MobileTokenException("TemplateID is not an integer")
+            throw MobileTokenLogger.errorAndException("Offline operation: TemplateID is not an integer")
         }
 
         if (templateId < 0 || templateId > 99) {
-            throw new MobileTokenException("TemplateID is out of range.")
+            throw MobileTokenLogger.errorAndException("OfflineOperation: TemplateID is out of range.")
         }
 
         // Parse operation data fields
@@ -274,7 +274,7 @@ export class QROperationParser {
         })
 
         if (result.length > this.maximumDataFields) {
-            throw new MobileTokenException("Too many fields")
+            throw MobileTokenLogger.errorAndException("Offline operation: Too many fields")
         }
         return result
     }
@@ -282,11 +282,14 @@ export class QROperationParser {
     private static parseAmount(string: string): AmountField {
         const value = string.substring(1)
         if (value.length < 4) {
-            throw new MobileTokenException("Insufficient length for number+currency")
+            throw MobileTokenLogger.errorAndException("Offline operation: Insufficient length for number+currency")
         }
         const currency = value.substring(value.length - 3).toUpperCase()
         const amountString = value.substring(0, value.length - 3)
         const amount = Number(amountString)
+        if (Number.isNaN(amount)) {
+            throw MobileTokenLogger.errorAndException("Offline operation: Amount is not a number")
+        }
         return new AmountField(amount, currency)
     }
 
@@ -296,7 +299,7 @@ export class QROperationParser {
         const ibanBic = string.substring(1)
         const components = ibanBic.split(",").filter(v => v.length != 0)
         if (components.length > 2 || components.length == 0) {
-            throw new MobileTokenException("Unsupported format")
+            throw MobileTokenLogger.errorAndException("Offline operation: Unsupported format")
         }
         const iban = components[0]
         const bic = components.length > 1 ? components[1] : undefined
@@ -331,16 +334,30 @@ export class QROperationParser {
         const dateString = string.substring(1)
         
         if (dateString.length != 8) {
-            throw new MobileTokenException("Date needs to be 8 characters long")
+            throw MobileTokenLogger.errorAndException("Offline operation: Date needs to be 8 characters long")
         }
         try {
             const year = Number(dateString.substring(0, 4))
             const month = Number(dateString.substring(4, 6))
             const day = Number(dateString.substring(6, 8))
+
+            if (Number.isNaN(year) || Number.isNaN(month) || Number.isNaN(day)) {
+                throw MobileTokenLogger.errorAndException(`Offline operation: Year, month and day need to be integers. Year: ${year}, month: ${month}, day: ${day}`)
+            }
+
+            if (day < 1 || day > 31) {
+                throw MobileTokenLogger.errorAndException(`Offline operation: Day needs to be between 1 and 31. Day: ${day}`)
+            }
+
+            if (month < 1 || month > 12) {
+                throw MobileTokenLogger.errorAndException(`Offline operation: Month needs to be between 1 and 12. Month: ${month}`)
+            }
+
             const date = new Date(year, month - 1, day)
+            console.log(date)
             return new DateField(date)
         } catch (e) {
-            throw new MobileTokenException("Unparseable date")
+            throw MobileTokenLogger.errorAndException("Offline operation: Unparseable date")
         }
     }
 

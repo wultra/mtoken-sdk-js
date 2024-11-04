@@ -24,18 +24,19 @@ export class TestSuite_IntegrationInbox extends TestSuite {
     private pin = "1234"
     private powerAuth!: PowerAuth
     private mtoken!: MobileToken
+    private utils = new IntegrationUtils()
 
     protected async beforeAll(): Promise<void> {
         console.log("")
         console.log("beforeAll: loading test credentials...")
-        await IntegrationUtils.prepareCredentials()
+        await this.utils.loadCredentials()
         console.log("beforeAll: test credentials loaded!")
     }
 
     protected async beforeEach(testname: string): Promise<void> {
         console.log("")
         console.log("beforeEach: preparing activation...")
-        const result = await IntegrationUtils.prepareActivation(this.pin)
+        const result = await this.utils.prepareActivation(this.pin)
         this.powerAuth = result.powerauth
         this.mtoken = result.mtoken
         console.log("beforeEach: activation prepared!")
@@ -45,7 +46,7 @@ export class TestSuite_IntegrationInbox extends TestSuite {
         if (this.powerAuth) {
             console.log("")
             console.log("afterEach: removing activation...")
-            await IntegrationUtils.removeRegistration(await this.powerAuth.getActivationIdentifier())
+            await this.utils.removeRegistration(await this.powerAuth.getActivationIdentifier())
             this.powerAuth.removeActivationLocal()
             console.log("afterEach: activation removed!")
         }
@@ -56,7 +57,7 @@ export class TestSuite_IntegrationInbox extends TestSuite {
         this.assertEquals(0, await this.fetchUnreadMessagesCount())
 
         // Now prepare messages
-        const messages = await IntegrationUtils.createInboxMessages(messagesToTest)
+        const messages = await this.utils.createInboxMessages(messagesToTest)
         this.assertEquals(messagesToTest, await this.fetchUnreadMessagesCount())
 
         // Read first page
@@ -79,7 +80,7 @@ export class TestSuite_IntegrationInbox extends TestSuite {
 
     async testMarkMessageRead() {
         const count = 4
-        const messages = await IntegrationUtils.createInboxMessages(count)
+        const messages = await this.utils.createInboxMessages(count)
         const receivedMessages = (await this.mtoken.inbox.list(0, 50, false)).responseObject!!
 
         this.compareMessages(messages, receivedMessages)
