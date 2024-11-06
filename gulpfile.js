@@ -15,55 +15,175 @@
 //
 
 // Dependencies
-const gulp = require("gulp"); // gulp itself
-const ts = require("gulp-typescript"); // to be able to compile typescript
-const { rimraf } = require('rimraf'); // folder cleaner
-const fs = require('fs');
-const exec = require('child_process').exec;
+const gulp = require("gulp") // gulp itself
+const ts = require("gulp-typescript") // to be able to compile typescript
+const replace = require('gulp-replace')
+const concat = require('gulp-concat')
+const stripImportExport = require("gulp-strip-import-export")
+const { rimraf } = require('rimraf') // folder cleaner
+const { build } = require("esbuild")
+const fs = require('fs')
+const exec = require('child_process').exec
 
 // Out files
-const buildDir = "build";
-const tmpDir = ".build";
+const buildDir = "build"
+const tmpDir = ".build"
 
 /***********************
 * REACT-NATIVE SECTION *
 ************************/
 {
-    const RN_packageJson = "package.json";
-    const RN_tsConfig = "tsconfig.json";
-    const RN_buildDir = `${buildDir}/react-native`;
-    const RN_sources = "src/**/**.ts";
-    const RN_libDir = "lib";
+    const RN_packageJson = "package.json"
+    const RN_tsConfig = "tsconfig.json"
+    const RN_buildDir = `${buildDir}/react-native`
+    const RN_sources = "src/**/**.ts"
+    const RN_libDir = "lib"
 
-    const clearRN = () => rimraf([ RN_buildDir ]);
+    const clearRN = () => rimraf([ RN_buildDir ])
 
     const compileRNTask = () =>
         gulp
             .src(RN_sources)
             .pipe(ts(RN_tsConfig))
-            .pipe(gulp.dest(`${RN_buildDir}/${RN_libDir}`));
+            .pipe(gulp.dest(`${RN_buildDir}/${RN_libDir}`))
 
     const copyRNPackageJson = () => 
         gulp
             .src(RN_packageJson)
-            .pipe(gulp.dest(RN_buildDir));
+            .pipe(gulp.dest(RN_buildDir))
 
-    const packRNPackage = () => exec(`pushd ${RN_buildDir} && npm pack`);
+    const packRNPackage = () => exec(`pushd ${RN_buildDir} && npm pack`)
 
-    var RN_buildTask = gulp.series(clearRN, compileRNTask, copyRNPackageJson, packRNPackage);
+    var RN_buildTask = gulp.series(clearRN, compileRNTask, copyRNPackageJson, packRNPackage)
 }
+
+/***********************
+*  CORDOVA.JS SECTION  *
+************************/
+{
+    const CDV_patchSourcesDir = "cordova"
+    const CDV_packageJson = `${CDV_patchSourcesDir}/package.json`
+    const CDV_pluginXml = `${CDV_patchSourcesDir}/plugin.xml`
+    const CDV_buildDir = `${buildDir}/cdv`
+    const CDV_tempDir = `${tmpDir}/cdv`
+    const CDV_libDir = "lib"
+    const CDV_outFileDir = `${CDV_buildDir}/${CDV_libDir}`
+    const CDV_pluginName = "WultraMobileTokenSDK"
+    const CDV_outFile = `${CDV_outFileDir}/${CDV_pluginName}.js`
+
+    const clearCDVall = () => rimraf([ CDV_buildDir, CDV_tempDir ])
+    const clearCDVtemp = () => rimraf([ CDV_tempDir ])
+
+    const copyCDVSourceFiles = () =>
+        gulp
+            .src("src/**/**.ts", { base: ".", allowEmpty: true })
+            // .pipe(replace(/.+ @cordova-remove *[^\n]*/g, "")) // remove lines with @cordova-remove
+            .pipe(replace(/.*import.+react-native-powerauth-mobile-sdk *[^\n]*/g, "import 'cordova-powerauth-mobile-sdk'\n"))
+            .pipe(gulp.dest(CDV_tempDir))
+
+    const copyCDVPatchSourceFiles = () =>
+        gulp
+            .src([`${CDV_patchSourcesDir}/src/**/**.ts`], { base: CDV_patchSourcesDir })
+            .pipe(gulp.dest(CDV_tempDir))
+            
+
+    const compileCDVTask = () => 
+        build({
+            entryPoints: [`${CDV_tempDir}/src/index.ts`],
+            outfile: CDV_outFile,
+            external: ["cordova-powerauth-mobile-sdk"],
+            bundle: true,
+            format: "cjs",
+            target: "ios13",
+            //minify: true
+        })
+
+    const createCDVDtsTask = () =>
+        gulp
+            .src([`${CDV_tempDir}/src/MobileToken*.ts`, `${CDV_tempDir}/src/SDKVersion.ts`, `${CDV_tempDir}/src/PlatformUtils.ts`, `${CDV_tempDir}/src/*/**.ts`])
+            .pipe(ts({ declaration: true, emitDeclarationOnly: true }))
+            .pipe(concat(`typings.d.ts`))
+            .pipe(stripImportExport())
+            .pipe(replace(/.*import.+cordova-powerauth-mobile-sdk *[^\n]*/g, ""))
+            .pipe(gulp.dest(CDV_buildDir))
+
+    // TODO: extract from the code
+    const objectsToExport = [
+        "MobileToken",
+        "MobileTokenLogger",
+        "MobileTokenLoggerVerbosity",
+        "MobileTokenException",
+        "Inbox",
+        "KnownRestApiError",
+        "UserAgent",
+        "Operations",
+        "PACUtils",
+        "QROperationParser",
+        "SignatureFactor",
+        "AttributeType",
+        "Push"
+    ]
+
+    const exportModules = () => {
+        return new Promise(function(resolve) {
+            objectsToExport.forEach( v => {
+                fs.writeFileSync(
+                    `${CDV_outFileDir}/${v}.js`, 
+                    // TODO: extract
+                    `require("cordova-mtoken-sdk.${CDV_pluginName}");\nmodule.exports = ${CDV_pluginName}.${v};`
+                );
+            })
+            resolve()
+        });
+    }
+
+    const copyCDVStaticFiles = () => 
+        gulp
+            .src([CDV_packageJson, CDV_pluginXml])
+            .pipe(
+                replace(
+                    "<!-- PLACEHOLDER_MODULES -->",
+                    [CDV_pluginName, ...objectsToExport]
+                        .map((v) => `    <js-module src="${CDV_libDir}/${v}.js" name="${v}"><clobbers target="${v}" /></js-module>`)
+                        .join("\n")
+                )
+            )
+            .pipe(gulp.dest(CDV_buildDir))
+        
+    const packCDVPackage = () => exec(`pushd ${CDV_buildDir} && npm pack`)
+
+    // join cordova compile and modify for export task
+    var CDV_buildTask = gulp.series(
+        clearCDVall,
+        copyCDVSourceFiles,
+        copyCDVPatchSourceFiles,
+        compileCDVTask,
+        createCDVDtsTask,
+        exportModules,
+        copyCDVStaticFiles,
+        packCDVPackage,
+        clearCDVtemp
+    )
+}
+
+/***********************
+*   FINAL GULP TASKS   *
+************************/
+
+let cleanBuild = () => rimraf([ buildDir ])
+let cleanTemp = () => rimraf([ tmpDir ])
 
 // first, delete output folders, then compile cordova and capacitor in parallel
 const buildAllTask = gulp.series(
-    //cleanBuild,
-    //cleanTemp,
+    cleanBuild,
+    cleanTemp,
     gulp.parallel(
         RN_buildTask,
-        //CAP_buildTask,
-        //CDV_buildTask
+        CDV_buildTask
     ),
-    //cleanTemp
-);
+    cleanTemp
+)
 
-gulp.task("default", buildAllTask);
-gulp.task("rn", RN_buildTask);
+gulp.task("default", buildAllTask)
+gulp.task("rn", RN_buildTask)
+gulp.task("cdv", CDV_buildTask)

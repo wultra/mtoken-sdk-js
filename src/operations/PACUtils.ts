@@ -60,7 +60,7 @@ export class PACUtils {
             }
         }
 
-        const first = Object.getOwnPropertyNames(urlParams).at(0)
+        const first = Object.getOwnPropertyNames(urlParams)[0]
 
         if (first) {
             return this.parseJWT(urlParams[first])

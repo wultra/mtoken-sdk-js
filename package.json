@@ -19,14 +19,19 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/wultra/react-native-mtoken-sdk.git"
+    "url": "git+https://github.com/wultra/mtoken-sdk-js.git"
   },
   "author": "Wultra <support@wultra.com> (https://wultra.com)",
   "license": "Apache-2.0",
-  "homepage": "https://github.com/wultra/react-native-mtoken-sdk#readme",
+  "homepage": "https://www.wultra.com/mobile-security-suite",
   "devDependencies": {
     "@types/react": "^18.2.44",
+    "cordova-powerauth-mobile-sdk": "https://github.com/wultra/react-native-powerauth-mobile-sdk/releases/download/cordova-0.2.0/cordova-powerauth-mobile-sdk-0.2.0.tgz",
+    "esbuild": "^0.24.0",
     "gulp": "^5.0.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-replace": "^1.1.4",
+    "gulp-strip-import-export": "^1.0.0",
     "gulp-typescript": "^6.0.0-alpha.1",
     "react": "18.2.0",
     "react-native": "0.74.5",

@@ -2,6 +2,8 @@
 #
 .DS_Store
 
+.build
+
 # TEST CREDENTIALS
 exampleReactNative/src/tests/utils/credentials-private.json
 

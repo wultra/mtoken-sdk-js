@@ -14,24 +14,7 @@
 // and limitations under the License.
 //
 
-import { 
-    SigningKeyUtil, 
-    type QROperation, 
-    type QROperationSignature, 
-    type QROperationData, 
-    QROperationDataVersionUtil, 
-    type QROperationDataField, 
-    QROperationDataFieldType,
-    type QROperationFlags,
-    DateField,
-    NoteField,
-    TextField,
-    AmountField,
-    AccountField,
-    FallbackField,
-    ReferenceField,
-    AnyAccountField
- } from "./QROperation"
+import { SigningKeyUtil, type QROperation, type QROperationSignature, type QROperationData, QROperationDataVersionUtil, type QROperationDataField, QROperationDataFieldType, type QROperationFlags, DateField, NoteField, TextField, AmountField, AccountField, FallbackField, ReferenceField, AnyAccountField } from "./QROperation"
 import { MobileTokenException } from "../MobileTokenException"
 import { Buffer } from "buffer"
 import { MobileTokenLogger } from "../MobileTokenLogger"

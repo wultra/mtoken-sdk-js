@@ -17,10 +17,8 @@
 import { KnownRestApiError } from "./KnownRestApiError"
 import { MobileTokenException } from "../MobileTokenException"
 import { PowerAuth, PowerAuthAuthentication } from 'react-native-powerauth-mobile-sdk'
-import DeviceInfo from "react-native-device-info"
-import { SDK_VERSION } from "../SDKVersion"
-import { NativeModules, Platform } from "react-native"
 import { MobileTokenLogger, MobileTokenLoggerVerbosity } from "../MobileTokenLogger"
+import { PlatformUtils } from "../PlatformUtils"
 
 export type RequestProcessor = (request: RequestInit) => RequestInit
 
@@ -99,7 +97,7 @@ export class Networking {
         headers.set("Accept-Language", this.acceptLanguage)
 
         if (this.userAgent == UserAgent.LIBRARY_DEFAULT) {
-            headers.set("User-Agent", this.getDefaultUserAgent())
+            headers.set("User-Agent", PlatformUtils.getDefaultUserAgent())
         } else if (this.userAgent == UserAgent.SYSTEM_DEFAULT) {
             // leave empty to default to system value
         } else {
@@ -153,24 +151,6 @@ export class Networking {
         }
 
         return response
-    }
-
-    protected getDefaultUserAgent(): string {
-        const product = "ReactNativeMobileToken"
-        const sdkVer = SDK_VERSION
-        const os = Platform.OS
-            const osVer = Platform.Version
-        try {
-            const appVer = DeviceInfo.getVersion()
-            const appId = DeviceInfo.getBundleId()
-            const maker = DeviceInfo.getManufacturerSync()
-            const model = DeviceInfo.getModel()
-            // TOOD: to consider: add network from netinfo package?
-            return `${product}/${sdkVer} ${appId}/${appVer} (${maker}; ${os}/${osVer}; ${model}`
-        } catch(e) {
-            MobileTokenLogger.debug(`Failed to create user agent: ${e}`)
-            return `${product}/${sdkVer} ${os}/${osVer}`
-        }
     }
 
     protected getHeadersString(headers: Headers): string {

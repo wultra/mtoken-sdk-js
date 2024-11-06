@@ -15,8 +15,8 @@
 //
 
 import { Networking, type RequestProcessor, type MobileTokenResponse } from "../networking/Networking"
-import { Platform } from 'react-native'
 import { PowerAuthAuthentication } from 'react-native-powerauth-mobile-sdk'
+import { PlatformUtils } from "../PlatformUtils"
 
 /** Push handling */
 export class Push extends Networking {
@@ -31,9 +31,7 @@ export class Push extends Networking {
    */
   async register(token: string, platform?: "ios" | "android" | "huawei", requestProcessor?: RequestProcessor): Promise<MobileTokenResponse<void>> {
 
-    if (platform == undefined) {
-      platform = Platform.OS == "ios" ? "ios" : "android"
-    }
+    platform = platform || PlatformUtils.getPlatform()
 
     return await this.postSignedWithToken<void>(
       { requestObject: { token: token, platform: platform } },

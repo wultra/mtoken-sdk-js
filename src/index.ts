@@ -41,3 +41,7 @@ export * from './inbox/InboxMessageDetail'
 // NETWORKING
 export * from './networking/KnownRestApiError'
 export * from './networking/Networking'
+
+// INTERNAL
+export * from './PlatformUtils'
+export * from './SDKVersion'
