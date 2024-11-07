@@ -158,15 +158,19 @@ export class Networking {
     protected getDefaultUserAgent(): string {
         const product = "ReactNativeMobileToken"
         const sdkVer = SDK_VERSION
-        const appVer = DeviceInfo.getVersion()
-        const appId = DeviceInfo.getBundleId()
-        const lang = Platform.OS === 'ios' ? (NativeModules.SettingsManager.settings.AppleLocale || NativeModules.SettingsManager.settings.AppleLanguages[0]) : NativeModules.I18nManager.localeIdentifier
-        const maker = DeviceInfo.getManufacturerSync()
         const os = Platform.OS
-        const osVer = Platform.Version
-        const model = DeviceInfo.getModel()
-        // TOOD: to consider: add network from netinfo package?
-        return `${product}/${sdkVer} ${appId}/${appVer} (${maker}; ${os}/${osVer}; ${model}; ${lang})`
+            const osVer = Platform.Version
+        try {
+            const appVer = DeviceInfo.getVersion()
+            const appId = DeviceInfo.getBundleId()
+            const maker = DeviceInfo.getManufacturerSync()
+            const model = DeviceInfo.getModel()
+            // TOOD: to consider: add network from netinfo package?
+            return `${product}/${sdkVer} ${appId}/${appVer} (${maker}; ${os}/${osVer}; ${model}`
+        } catch(e) {
+            MobileTokenLogger.debug(`Failed to create user agent: ${e}`)
+            return `${product}/${sdkVer} ${os}/${osVer}`
+        }
     }
 
     protected getHeadersString(headers: Headers): string {

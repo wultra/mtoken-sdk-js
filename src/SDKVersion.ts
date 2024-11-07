@@ -16,4 +16,5 @@
 
 // TODO: this needs to be modified during package-prepare!
 
+/* @internal */
 export const SDK_VERSION = "1.0.0"

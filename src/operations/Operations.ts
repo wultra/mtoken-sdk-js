@@ -18,7 +18,7 @@ import { Networking, type RequestProcessor, type MobileTokenResponse } from "../
 import { type UserOperation } from "./UserOperation"
 import { type OnlineOperation } from "./OnlineOperation"
 import { PowerAuthAuthentication } from 'react-native-powerauth-mobile-sdk'
-import type { QROperation } from "react-native-mtoken-sdk"
+import type { QROperation } from './QROperation'
 
 /** Operation handling.  */
 export class Operations extends Networking {
@@ -90,7 +90,7 @@ export class Operations extends Networking {
      * @returns Server response
      */
     async authorize(operation: OnlineOperation, authentication: PowerAuthAuthentication, requestProcessor?: RequestProcessor): Promise<MobileTokenResponse<void>> {
-        let proximityCopy = undefined
+        let proximityCopy: any = undefined
         if (operation.proximityCheck) {
             proximityCopy = { otp: operation.proximityCheck.totp, type: operation.proximityCheck.type, timestampReceived: operation.proximityCheck.timestampReceived, timestampSent: new Date() }
         }

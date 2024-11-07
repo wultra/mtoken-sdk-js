@@ -3,7 +3,7 @@
 .DS_Store
 
 # TEST CREDENTIALS
-example/src/tests/utils/credentials-private.json
+exampleReactNative/src/tests/utils/credentials-private.json
 
 # XDE
 .expo/

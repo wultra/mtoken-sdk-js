@@ -14,7 +14,7 @@
 // and limitations under the License.
 //
 
-import type { UserOperationProximityCheck } from "react-native-mtoken-sdk"
+import type { UserOperationProximityCheck } from './UserOperationProximityCheck'
 
 /**
  * An interface that defines minimum data needed for calculating the operation signature

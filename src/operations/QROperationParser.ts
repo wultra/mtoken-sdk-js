@@ -354,7 +354,6 @@ export class QROperationParser {
             }
 
             const date = new Date(year, month - 1, day)
-            console.log(date)
             return new DateField(date)
         } catch (e) {
             throw MobileTokenLogger.errorAndException("Offline operation: Unparseable date")
