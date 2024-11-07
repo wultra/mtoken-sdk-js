@@ -98,6 +98,12 @@ const tmpDir = ".build"
             //minify: true
         })
 
+    const patchCDVCompiledTask = () =>
+        gulp
+            .src(CDV_outFile)
+            .pipe(replace(/.*require\("cordova-powerauth-mobile-sdk"\)*./g, ""))
+            .pipe(gulp.dest(CDV_outFileDir))
+
     const createCDVDtsTask = () =>
         gulp
             .src([`${CDV_tempDir}/src/MobileToken*.ts`, `${CDV_tempDir}/src/SDKVersion.ts`, `${CDV_tempDir}/src/PlatformUtils.ts`, `${CDV_tempDir}/src/*/**.ts`])
@@ -119,7 +125,10 @@ const tmpDir = ".build"
         "Operations",
         "PACUtils",
         "QROperationParser",
+        "SigningKey",
+        "QROperationDataVersion",
         "SignatureFactor",
+        "QROperationDataFieldType",
         "AttributeType",
         "Push"
     ]
@@ -158,6 +167,7 @@ const tmpDir = ".build"
         copyCDVSourceFiles,
         copyCDVPatchSourceFiles,
         compileCDVTask,
+        patchCDVCompiledTask,
         createCDVDtsTask,
         exportModules,
         copyCDVStaticFiles,

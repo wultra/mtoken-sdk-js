@@ -158,7 +158,7 @@ export class TestSuite_Integration extends TestSuite {
 
     async testTestUserAgents() {
 
-        const expectedDefaultUserAgentProductName = "ReactNativeMobileToken"
+        const expectedDefaultUserAgentProductName = "MobileTokenJS"
         const testUserAgent = "test-agent"
 
         // test default behavior (libraryDefault)

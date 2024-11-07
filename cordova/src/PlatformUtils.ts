@@ -15,6 +15,7 @@
 //
 
 import { MobileTokenLogger } from "./MobileTokenLogger"
+import { SDK_VERSION } from "./SDKVersion"
 
 export class PlatformUtils {
 
@@ -27,7 +28,21 @@ export class PlatformUtils {
     }
 
     static getDefaultUserAgent(): string {
-        return "cordova-test"
+        const product = "MobileTokenJS"
+        const sdkVer = SDK_VERSION
+        const os = this.getPlatform()
+        // TODO: !!!
+        const osVer = "1.0" // Platform.Version
+        try {
+            const appVer = "1.0" // DeviceInfo.getVersion()
+            const appId = "fake.id" // DeviceInfo.getBundleId()
+            const maker = "Wultra" // DeviceInfo.getManufacturerSync()
+            const model = "Talisman" // DeviceInfo.getModel()
+            return `${product}/${sdkVer} ${appId}/${appVer} (${maker}; ${os}/${osVer}; ${model}`
+        } catch(e) {
+            MobileTokenLogger.debug(`Failed to create user agent: ${e}`)
+            return `${product}/${sdkVer} ${os}/${osVer}`
+        }
     }
 
 }

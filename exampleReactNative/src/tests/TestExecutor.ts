@@ -43,7 +43,7 @@ export class TestExecutor {
         let succeededTests = 0
 
         for (const suite of this.suites) {
-            totalTests += suite.testCount;
+            totalTests += suite.testCount
             succeededTests += await suite.runAllTests()
         }
 

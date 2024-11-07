@@ -17,9 +17,9 @@
 export class TestSuite {
 
     private testFcs = new Array<string>()
-    protected suiteName: string
+    suiteName: string
 
-    private isStopped = false
+    private isStopped = true
 
     constructor() {
 
@@ -32,7 +32,7 @@ export class TestSuite {
             if (typeof anyThis[key] === 'function' && key.startsWith("test")) {
                 this.testFcs.push(key)
             }
-        });
+        })
     }
 
     get testCount() { return this.testFcs.length }
@@ -59,17 +59,17 @@ export class TestSuite {
 
     async runAllTests(): Promise<number> {
 
-        if (this.isStopped != true) {
+        if (!this.isStopped) {
+            console.log(`Stopping ${this.suiteName} tests...`)
             return 0
         }
 
-        this.isStopped = false;
-
-        let successCount = 0;
+        this.isStopped = false
+        let successCount = 0
 
         console.log("")
-        console.log(`-----------------------`);
-        console.log(`# STARTING TEST SUITE "${this.suiteName}" (${this.testCount} tests)`);
+        console.log(`-----------------------`)
+        console.log(`# STARTING TEST SUITE "${this.suiteName}" (${this.testCount} tests)`)
 
         try {
             await this.runAmbigiousMethod("beforeAll")
@@ -82,33 +82,33 @@ export class TestSuite {
                 return successCount
             }
             console.log("")
-            console.log(`${test} started...`);
+            console.log(`${test} started...`)
             try {
                 await this.runAmbigiousMethod("beforeEach", test)
             } catch(e) {
-                this.fail(`- beforeEach ${test} failed: ${e}`);
+                this.fail(`- beforeEach ${test} failed: ${e}`)
             }
             let success: boolean
             try {
-                await this.runAmbigiousMethod(test);
-                console.log(`- SUCCESS: Test ${test}`);
-                successCount++;
+                await this.runAmbigiousMethod(test)
+                console.log(`- SUCCESS: Test ${test}`)
+                successCount++
                 success = true
             } catch(e) {
-                console.error(`- FAIL: Test ${test}: ${e}`);
+                console.error(`- FAIL: Test ${test}: ${e}`)
                 success = false
             }
             try {
                 await this.runAmbigiousMethod("afterEach", test, success)
             } catch(e) {
-                this.fail(`- afterEach ${test} failed: ${e}`);
+                this.fail(`- afterEach ${test} failed: ${e}`)
             }
         }
 
         try {
             await this.runAmbigiousMethod("afterAll")
         } catch(e) {
-            this.fail(`- afterAll ${this.suiteName} failed: ${e}`);
+            this.fail(`- afterAll ${this.suiteName} failed: ${e}`)
         }
 
         console.log("")
@@ -124,19 +124,19 @@ export class TestSuite {
 
     protected assertEquals(a: any, b: any, message: string = "Objects are not equal") {
         if (a != b) {
-            throw new Error(`Assertion failed: ${message}: ${a} != ${b}`);
+            throw new Error(`Assertion failed: ${message}: ${a} != ${b}`)
         }
     }
 
     protected assertNotNull(a: any, message: string = "Object is null") {
         if (a == null) {
-            throw new Error(`Assertion failed: ${message}`);
+            throw new Error(`Assertion failed: ${message}`)
         }
     }
 
     protected assertNull(a: any, message: string = "Object is not null") {
         if (a != null) {
-            throw new Error(`Assertion failed: ${message}`);
+            throw new Error(`Assertion failed: ${message}`)
         }
     }
 
@@ -146,24 +146,23 @@ export class TestSuite {
         } catch(e) {
             return
         }
-        throw new Error(`Assertion failed: ${message}`);
+        throw new Error(`Assertion failed: ${message}`)
     }
 
     protected assertTrue(a: boolean, message: string = "Object is false") {
         if (!a) {
-            console.trace();
-            throw new Error(`Assertion failed: ${message}`);
+            throw new Error(`Assertion failed: ${message}`)
         }
     }
 
     protected assertFalse(a: boolean, message: string = "Object is true") {
         if (a) {
-            throw new Error(`Assertion failed: ${message}`);
+            throw new Error(`Assertion failed: ${message}`)
         }
     }
 
     protected fail(message: string = "Test failed") {
-        throw new Error(`Assertion failed: ${message}`);
+        throw new Error(`Assertion failed: ${message}`)
     }
 
     // run method regardles of synchronousnes

@@ -26,7 +26,7 @@ export class PlatformUtils {
     }
 
     static getDefaultUserAgent(): string {
-        const product = "ReactNativeMobileToken"
+        const product = "MobileTokenJS"
         const sdkVer = SDK_VERSION
         const os = this.getPlatform()
         const osVer = Platform.Version

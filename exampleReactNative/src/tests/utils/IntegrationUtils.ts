@@ -16,7 +16,7 @@
 
 import { PowerAuth, PowerAuthActivation, PowerAuthAuthentication, PowerAuthConfiguration } from "react-native-powerauth-mobile-sdk"
 import { MobileToken } from "react-native-mtoken-sdk"
-import Credentials from "./credentials.json"
+import { IntegrationCredentials } from "./IntegrationCredentials"
 
 export class IntegrationUtils {
     
@@ -35,24 +35,15 @@ export class IntegrationUtils {
 
     async loadCredentials() {
 
-        const privateFileName = "credentials-private.json"
-        try {
-            const credentials = Credentials.cloudServerUrl.length != 0 ? Credentials : await import(`./${privateFileName}`)
-
-            console.log(`Loaded credentials: ${credentials.envName}`)
-
-            this.cloudServerUrl = credentials.cloudServerUrl
-            this.cloudServerLogin = credentials.cloudServerLogin
-            this.cloudServerPassword = credentials.cloudServerPassword
-            this.cloudApplicationId = credentials.cloudApplicationId
-            this.enrollmentUrl = credentials.enrollmentUrl
-            this.appKey = credentials.appKey
-            this.appSecret = credentials.appSecret
-            this.serverMasterKey = credentials.serverMasterKey
-        } catch (e) {
-            console.error(e)
-            throw "Failed to load credentials"
-        }
+        const credentials = await IntegrationCredentials.loadCredentials()
+        this.cloudServerUrl = credentials.cloudServerUrl
+        this.cloudServerLogin = credentials.cloudServerLogin
+        this.cloudServerPassword = credentials.cloudServerPassword
+        this.cloudApplicationId = credentials.cloudApplicationId
+        this.enrollmentUrl = credentials.enrollmentUrl
+        this.appKey = credentials.appKey
+        this.appSecret = credentials.appSecret
+        this.serverMasterKey = credentials.serverMasterKey
     }
 
     async prepareActivation(pin: string, userId: string | null = null): Promise<{ powerauth: PowerAuth, mtoken: MobileToken }> {
@@ -148,11 +139,11 @@ export class IntegrationUtils {
     }
 
     async getOperation(operationId: string): Promise<OperationObject> {
-        return await this.makeCall("", `${this.cloudServerUrl}/v2/operations/${operationId}`, "GET")
+        return await this.makeCall(undefined, `${this.cloudServerUrl}/v2/operations/${operationId}`, "GET")
     }
 
     async getQROperation(operationId: string): Promise<QRData> {
-        return await this.makeCall("", `${this.cloudServerUrl}/v2/operations/${operationId}/offline/qr?registrationId=${this.registrationId}`, "GET")
+        return await this.makeCall(undefined, `${this.cloudServerUrl}/v2/operations/${operationId}/offline/qr?registrationId=${this.registrationId}`, "GET")
     }
 
     async verifyQROperation(operation: OperationObject, qrData: QRData, otp: String): Promise<QROperationVerify> {
