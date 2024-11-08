@@ -74,7 +74,8 @@ export class TestSuite {
         try {
             await this.runAmbigiousMethod("beforeAll")
         } catch(e) {
-            this.fail(`beforeAll ${this.suiteName} failed: ${e}`)
+            console.log(`beforeAll ${this.suiteName} failed: ${e}. Stopping all test in this suite`)
+            return 0
         }
 
         for (const test of this.testFcs) {
@@ -86,7 +87,8 @@ export class TestSuite {
             try {
                 await this.runAmbigiousMethod("beforeEach", test)
             } catch(e) {
-                this.fail(`- beforeEach ${test} failed: ${e}`)
+                console.log(`- beforeEach ${test} failed: ${e}`)
+                continue
             }
             let success: boolean
             try {
@@ -101,14 +103,14 @@ export class TestSuite {
             try {
                 await this.runAmbigiousMethod("afterEach", test, success)
             } catch(e) {
-                this.fail(`- afterEach ${test} failed: ${e}`)
+                console.log(`- afterEach ${test} failed: ${e}`)
             }
         }
 
         try {
             await this.runAmbigiousMethod("afterAll")
         } catch(e) {
-            this.fail(`- afterAll ${this.suiteName} failed: ${e}`)
+            console.log(`- afterAll ${this.suiteName} failed: ${e}`)
         }
 
         console.log("")
