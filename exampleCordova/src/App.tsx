@@ -34,7 +34,7 @@ function onDeviceReady() {
   document.getElementById('deviceready').classList.add('ready');
 
   async function runTests() {
-    MobileTokenLogger.verbosity = MobileTokenLoggerVerbosity.NONE
+    WMTLogger.verbosity = WMTLoggerVerbosity.NONE
     contentEl?.classList.add('testsrunning')
     const testExecutor = new TestExecutor()
     const result = await testExecutor.runAllTests()

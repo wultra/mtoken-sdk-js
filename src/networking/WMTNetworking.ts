@@ -14,21 +14,21 @@
 // and limitations under the License.
 //
 
-import { KnownRestApiError } from "./KnownRestApiError"
-import { MobileTokenException } from "../MobileTokenException"
+import { WMTKnownRestApiError } from "./WMTKnownRestApiError"
+import { WMTException } from "../WMTException"
 import { PowerAuth, PowerAuthAuthentication } from 'react-native-powerauth-mobile-sdk'
-import { MobileTokenLogger, MobileTokenLoggerVerbosity } from "../MobileTokenLogger"
-import { PlatformUtils } from "../PlatformUtils"
+import { WMTLogger, WMTLoggerVerbosity } from "../WMTLogger"
+import { WMTPlatformUtils } from "../WMTPlatformUtils"
 
-export type RequestProcessor = (request: RequestInit) => RequestInit
+export type WMTRequestProcessor = (request: RequestInit) => RequestInit
 
 /** @internal */
-export class Networking {
+export class WMTNetworking {
 
     /** @internal */
     acceptLanguage = "en"
     /** @internal */
-    userAgent: UserAgent | string = UserAgent.LIBRARY_DEFAULT
+    userAgent: WMTUserAgent | string = WMTUserAgent.LIBRARY_DEFAULT
 
     protected pa: PowerAuth
     private baseURL: string
@@ -48,9 +48,9 @@ export class Networking {
         endpoindPath: string,
         uriId: string,
         returnDataExpected: boolean,
-        requestProcessor?: RequestProcessor,
-        jsonConfig?: JsonConfig
-    ): Promise<MobileTokenResponse<T>> {
+        requestProcessor?: WMTRequestProcessor,
+        jsonConfig?: WMTJsonConfig
+    ): Promise<WMTResponse<T>> {
 
         let body = JSON.stringify(requestData)
         let paHeader = await this.pa.requestSignature(auth, "POST", uriId, body)
@@ -65,9 +65,9 @@ export class Networking {
         endpoindPath: string,
         tokenName: string,
         returnDataExpected: boolean,
-        requestProcessor?: RequestProcessor,
-        jsonConfig?: JsonConfig,
-    ): Promise<MobileTokenResponse<T>> {
+        requestProcessor?: WMTRequestProcessor,
+        jsonConfig?: WMTJsonConfig,
+    ): Promise<WMTResponse<T>> {
 
         let body = JSON.stringify(requestData)
         let token = await this.pa.tokenStore.requestAccessToken(tokenName, auth)
@@ -84,9 +84,9 @@ export class Networking {
         endpoindPath: string,
         returnDataExpected: boolean,
         headers: Headers,
-        requestProcessor?: RequestProcessor,
-        jsonConfig?: JsonConfig,
-    ): Promise<MobileTokenResponse<T>> {
+        requestProcessor?: WMTRequestProcessor,
+        jsonConfig?: WMTJsonConfig,
+    ): Promise<WMTResponse<T>> {
 
         let method = "POST"
         let url = this.baseURL + endpoindPath
@@ -96,9 +96,9 @@ export class Networking {
         headers.set("Content-Type", jsonType)
         headers.set("Accept-Language", this.acceptLanguage)
 
-        if (this.userAgent == UserAgent.LIBRARY_DEFAULT) {
-            headers.set("User-Agent", PlatformUtils.getDefaultUserAgent())
-        } else if (this.userAgent == UserAgent.SYSTEM_DEFAULT) {
+        if (this.userAgent == WMTUserAgent.LIBRARY_DEFAULT) {
+            headers.set("User-Agent", WMTPlatformUtils.getDefaultUserAgent())
+        } else if (this.userAgent == WMTUserAgent.SYSTEM_DEFAULT) {
             // leave empty to default to system value
         } else {
             headers.set("User-Agent", this.userAgent)
@@ -114,20 +114,20 @@ export class Networking {
             request = requestProcessor(request)
         }
 
-        MobileTokenLogger.info(` -> POST ${url}`)
-        if (MobileTokenLogger.verbosity >= MobileTokenLoggerVerbosity.VERBOSE) {
-            MobileTokenLogger.verbose(this.getHeadersString(headers))
-            MobileTokenLogger.verbose(requestSerialized)
+        WMTLogger.info(` -> POST ${url}`)
+        if (WMTLogger.verbosity >= WMTLoggerVerbosity.VERBOSE) {
+            WMTLogger.verbose(this.getHeadersString(headers))
+            WMTLogger.verbose(requestSerialized)
         }
 
         let result = await fetch(url, request)
         let responseBody = await result.text()
 
-        MobileTokenLogger.info(` <- POST ${url} - ${result.status}`)
+        WMTLogger.info(` <- POST ${url} - ${result.status}`)
 
-        if (MobileTokenLogger.verbosity >= MobileTokenLoggerVerbosity.VERBOSE) {
-            MobileTokenLogger.verbose(this.getHeadersString(result.headers))
-            MobileTokenLogger.verbose(responseBody)
+        if (WMTLogger.verbosity >= WMTLoggerVerbosity.VERBOSE) {
+            WMTLogger.verbose(this.getHeadersString(result.headers))
+            WMTLogger.verbose(responseBody)
         }
 
         let response = JSON.parse(responseBody, (key: string, value: any) => {
@@ -136,18 +136,18 @@ export class Networking {
                 return new Date(value)
             }
             return value
-        }) as MobileTokenResponse<T>
+        }) as WMTResponse<T>
 
         if (response.status == "ERROR") {
             if (response.responseObject == undefined) {
-                throw new MobileTokenException("Error retrieved but no error data", { ...result })
+                throw new WMTException("Error retrieved but no error data", { ...result })
             }
             response.responseError = response.responseObject as any
             response.responseObject = undefined
         }
 
         if (response.status == "OK" && returnDataExpected && response.responseObject == undefined) {
-            throw new MobileTokenException("No data object retieved.", { ...result })
+            throw new WMTException("No data object retieved.", { ...result })
         }
 
         return response
@@ -163,7 +163,7 @@ export class Networking {
 }
 
 /** Automatic values that will be used for User-Agent HTTP header. */
-export enum UserAgent {
+export enum WMTUserAgent {
     /** 
      * Default value provided by the libary. 
      * 
@@ -177,19 +177,20 @@ export enum UserAgent {
     SYSTEM_DEFAULT = "SYSTEM_DEFAULT"
 }
 
-export interface JsonConfig {
+/* @internal */
+export interface WMTJsonConfig {
     dateFields?: string[]
 }
 
 /** Response from the API. */
-export interface MobileTokenResponse<T> {
+export interface WMTResponse<T> {
     status: "OK" | "ERROR"
-    responseError?: MobileTokenResponseError
+    responseError?: WMTResponseError
     responseObject?: T
 } 
   
   /** Error object when error on the server happens. */
-export interface MobileTokenResponseError {
-    code: KnownRestApiError | string
+export interface WMTResponseError {
+    code: WMTKnownRestApiError | string
     message: string
 }

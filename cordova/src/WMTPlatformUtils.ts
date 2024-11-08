@@ -14,10 +14,10 @@
 // and limitations under the License.
 //
 
-import { MobileTokenLogger } from "./MobileTokenLogger"
-import { SDK_VERSION } from "./SDKVersion"
+import { WMTLogger } from "./WMTLogger"
+import { WMT_SDK_VERSION } from "./WMTSDKVersion"
 
-export class PlatformUtils {
+export class WMTPlatformUtils {
 
     static getPlatform():  "ios" | "android" {
         if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
@@ -29,7 +29,7 @@ export class PlatformUtils {
 
     static getDefaultUserAgent(): string {
         const product = "MobileTokenJS"
-        const sdkVer = SDK_VERSION
+        const sdkVer = WMT_SDK_VERSION
         const os = this.getPlatform()
         // TODO: !!!
         const osVer = "1.0" // Platform.Version
@@ -40,7 +40,7 @@ export class PlatformUtils {
             const model = "Talisman" // DeviceInfo.getModel()
             return `${product}/${sdkVer} ${appId}/${appVer} (${maker}; ${os}/${osVer}; ${model}`
         } catch(e) {
-            MobileTokenLogger.debug(`Failed to create user agent: ${e}`)
+            WMTLogger.debug(`Failed to create user agent: ${e}`)
             return `${product}/${sdkVer} ${os}/${osVer}`
         }
     }

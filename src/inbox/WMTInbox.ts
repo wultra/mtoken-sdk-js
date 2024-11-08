@@ -14,14 +14,14 @@
 // and limitations under the License.
 //
 
-import { Networking, type RequestProcessor, type MobileTokenResponse } from "../networking/Networking"
-import { type InboxCount } from "./InboxCount"
-import { type InboxMessage } from "./InboxMessage"
-import { type InboxMessageDetail } from "./InboxMessageDetail"
+import { WMTNetworking, type WMTRequestProcessor, type WMTResponse } from "../networking/WMTNetworking"
+import { type WMTInboxCount } from "./WMTInboxCount"
+import { type WMTInboxMessage } from "./WMTInboxMessage"
+import { type WMTInboxMessageDetail } from "./WMTInboxMessageDetail"
 import { PowerAuthAuthentication } from 'react-native-powerauth-mobile-sdk'
 
 /** Inbox handling. */
-export class Inbox extends Networking {
+export class WMTInbox extends WMTNetworking {
 
     // name of the parsed fields that are expected to be the Date type.
     private jsonDateFields = [ "timestampCreated" ]
@@ -32,8 +32,8 @@ export class Inbox extends Networking {
      * @param requestProcessor You may modify the request via this processor. It's highly recommended to only modify HTTP headers.
      * @returns Server response (with the unread count)
      */
-    async unreadCount(requestProcessor?: RequestProcessor): Promise<MobileTokenResponse<InboxCount>> {
-        return await this.postSignedWithToken<InboxCount>(
+    async unreadCount(requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<WMTInboxCount>> {
+        return await this.postSignedWithToken<WMTInboxCount>(
             { },
             PowerAuthAuthentication.possession(),
             "/api/inbox/count",
@@ -52,8 +52,8 @@ export class Inbox extends Networking {
      * @param requestProcessor You may modify the request via this processor. It's highly recommended to only modify HTTP headers.
      * @returns Server response (with the list of messages)
      */
-    async list(pageNumber: Number, pageSize: Number, onlyUnread: boolean, requestProcessor?: RequestProcessor): Promise<MobileTokenResponse<InboxMessage[]>> {
-        return await this.postSignedWithToken<InboxMessage[]>(
+    async list(pageNumber: Number, pageSize: Number, onlyUnread: boolean, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<WMTInboxMessage[]>> {
+        return await this.postSignedWithToken<WMTInboxMessage[]>(
             { requestObject: { page: pageNumber, size: pageSize, onlyUnread: onlyUnread } },
             PowerAuthAuthentication.possession(),
             "/api/inbox/message/list",
@@ -71,8 +71,8 @@ export class Inbox extends Networking {
      * @param requestProcessor You may modify the request via this processor. It's highly recommended to only modify HTTP headers.
      * @returns Server response (with the message detail)
      */
-    async detail(messageId: string, requestProcessor?: RequestProcessor): Promise<MobileTokenResponse<InboxMessageDetail>> {
-        return await this.postSignedWithToken<InboxMessageDetail>(
+    async detail(messageId: string, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<WMTInboxMessageDetail>> {
+        return await this.postSignedWithToken<WMTInboxMessageDetail>(
             { requestObject: { id: messageId } },
             PowerAuthAuthentication.possession(),
             "/api/inbox/message/detail",
@@ -90,7 +90,7 @@ export class Inbox extends Networking {
      * @param requestProcessor You may modify the request via this processor. It's highly recommended to only modify HTTP headers.
      * @returns  Server response
      */
-    async markRead(messageId: string, requestProcessor?: RequestProcessor): Promise<MobileTokenResponse<void>> {
+    async markRead(messageId: string, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<void>> {
         return await this.postSignedWithToken<void>(
             { requestObject: { id: messageId } },
             PowerAuthAuthentication.possession(),
@@ -107,7 +107,7 @@ export class Inbox extends Networking {
      * @param requestProcessor You may modify the request via this processor. It's highly recommended to only modify HTTP headers.
      * @returns  Server response
      */
-    async markAllRead(requestProcessor?: RequestProcessor): Promise<MobileTokenResponse<void>> {
+    async markAllRead(requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<void>> {
         return await this.postSignedWithToken<void>(
             {},
             PowerAuthAuthentication.possession(),

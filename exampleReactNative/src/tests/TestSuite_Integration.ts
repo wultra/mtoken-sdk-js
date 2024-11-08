@@ -17,13 +17,13 @@
 import { PowerAuth, PowerAuthAuthentication } from 'react-native-powerauth-mobile-sdk';
 import { TestSuite } from './TestSuite';
 import { IntegrationUtils } from './utils/IntegrationUtils';
-import { MobileToken, QROperationParser, UserAgent } from 'react-native-mtoken-sdk';
+import { WultraMobileToken, WMTQROperationParser, WMTUserAgent } from 'react-native-mtoken-sdk';
 
 export class TestSuite_Integration extends TestSuite {
 
     private pin = "1234"
     private powerAuth!: PowerAuth
-    private mtoken!: MobileToken
+    private mtoken!: WultraMobileToken
     private utils = new IntegrationUtils()
 
     protected async beforeAll(): Promise<void> {
@@ -99,7 +99,7 @@ export class TestSuite_Integration extends TestSuite {
         const qrData = await this.utils.getQROperation(op.operationId)
 
         // parse the data
-        const qrOperation = QROperationParser.parse(qrData.operationQrCodeData)
+        const qrOperation = WMTQROperationParser.parse(qrData.operationQrCodeData)
 
         // get the OTP with the "offline" signing
         const auth = PowerAuthAuthentication.password(this.pin)
@@ -162,7 +162,7 @@ export class TestSuite_Integration extends TestSuite {
         const testUserAgent = "test-agent"
 
         // test default behavior (libraryDefault)
-        this.mtoken.setUserAgent(UserAgent.LIBRARY_DEFAULT)
+        this.mtoken.setUserAgent(WMTUserAgent.LIBRARY_DEFAULT)
         await this.mtoken.operations.pendingList( request => {
             const headers = request.headers as Headers
             this.assertTrue(headers.get("user-agent")!!.startsWith(expectedDefaultUserAgentProductName), `user-agent should start with ${expectedDefaultUserAgentProductName}`)
@@ -179,7 +179,7 @@ export class TestSuite_Integration extends TestSuite {
 
 
         // test system default (should be undefined in the request)
-        this.mtoken.setUserAgent(UserAgent.SYSTEM_DEFAULT)
+        this.mtoken.setUserAgent(WMTUserAgent.SYSTEM_DEFAULT)
         await this.mtoken.operations.pendingList( request => {
             const headers = request.headers as Headers
             this.assertEquals(headers.get("user-agent"), undefined)

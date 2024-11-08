@@ -15,7 +15,7 @@
 //
 
 /** Structure contains information about message in inbox. */
-export interface InboxMessage {
+export interface WMTInboxMessage {
     /** Message's identifier. */
     id: string
     /** Message's subject. */

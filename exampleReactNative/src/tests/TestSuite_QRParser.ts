@@ -14,7 +14,7 @@
 // and limitations under the License.
 //
 
-import { AccountField, AmountField, DateField, FallbackField, NoteField, QROperationDataFieldType, QROperationDataVersion, QROperationParser, type QROperationSignature, SigningKey, TextField } from 'react-native-mtoken-sdk';
+import { WMTAccountField, WMTAmountField, WMTDateField, WMTFallbackField, WMTNoteField, WMTQROperationDataFieldType, WMTQROperationDataVersion, WMTQROperationParser, type WMTQROperationSignature, WMTSigningKey, WMTTextField } from 'react-native-mtoken-sdk';
 import { TestSuite } from './TestSuite';
 import { Buffer } from "buffer";
 
@@ -38,7 +38,7 @@ export class TestSuite_QRParser extends TestSuite {
 
         const expectedSignedData = Buffer.from(expectedSignedDataString, 'utf-8')
 
-        const operation = QROperationParser.parse(code)
+        const operation = WMTQROperationParser.parse(code)
         this.assertEquals("5ff1b1ed-a3cc-45a3-8ab0-ed60950312b6", operation.operationId)
         this.assertEquals("5ff1b1ed-a3cc-45a3-8ab0-ed60950312b6", operation.operationId)
         this.assertEquals("Payment", operation.title)
@@ -49,32 +49,32 @@ export class TestSuite_QRParser extends TestSuite {
         this.assertTrue(operation.flags.fraudWarning, "fraud warning flag missing")
         this.assertEquals("AD8bOO0Df73kNaIGb3Vmpg==", operation.nonce)
         this.assertEquals("MEYCIQDby1Uq+MaxiAAGzKmE/McHzNOUrvAP2qqGBvSgcdtyjgIhAMo1sgqNa1pPZTFBhhKvCKFLGDuHuTTYexdmHFjUUIJW", operation.signature.signatureString)
-        this.assertEquals(SigningKey.MASTER, operation.signature.signingKey)
+        this.assertEquals(WMTSigningKey.MASTER, operation.signature.signingKey)
         this.assertTrue(operation.signedData.equals(expectedSignedData as any), "Signed data does not equals")
 
         // Operation data
-        this.assertEquals(QROperationDataVersion.V1, operation.operationData.version)
+        this.assertEquals(WMTQROperationDataVersion.V1, operation.operationData.version)
         this.assertEquals(1, operation.operationData.templateId)
         this.assertEquals(4, operation.operationData.fields.length)
         this.assertEquals("A1*A100CZK*ICZ2730300000001165254011*D20180425*Thello world", operation.operationData.sourceString)
 
         const fields = operation.operationData.fields
-        const f0 = fields[0] as AmountField
-        this.assertEquals(f0.type, QROperationDataFieldType.AMOUNT)
+        const f0 = fields[0] as WMTAmountField
+        this.assertEquals(f0.type, WMTQROperationDataFieldType.AMOUNT)
         this.assertEquals(100, f0.amount)
         this.assertEquals("CZK", f0.currency)
         
-        const f1 = fields[1] as AccountField
-        this.assertEquals(f1.type, QROperationDataFieldType.ACCOUNT)
+        const f1 = fields[1] as WMTAccountField
+        this.assertEquals(f1.type, WMTQROperationDataFieldType.ACCOUNT)
         this.assertEquals("CZ2730300000001165254011", f1.iban)
         this.assertEquals(null, f1.bic)
         
-        const f2 = fields[2] as DateField
-        this.assertEquals(f2.type, QROperationDataFieldType.DATE)
+        const f2 = fields[2] as WMTDateField
+        this.assertEquals(f2.type, WMTQROperationDataFieldType.DATE)
         this.assertEquals(f2.date.getTime(), new Date(2018, 3, 25).getTime())
         
-        const f3 = fields[3] as TextField
-        this.assertEquals(f3.type, QROperationDataFieldType.TEXT)
+        const f3 = fields[3] as WMTTextField
+        this.assertEquals(f3.type, WMTQROperationDataFieldType.TEXT)
         this.assertEquals(f3.text, "hello world")
     }
 
@@ -97,14 +97,14 @@ export class TestSuite_QRParser extends TestSuite {
         
         const expectedSignedData = Buffer.from(expectedSignedDataString, 'utf-8')
 
-        const operation = QROperationParser.parse(qrcode.makeData())
+        const operation = WMTQROperationParser.parse(qrcode.makeData())
 
         this.assertTrue(operation.isNewerFormat)
         this.assertTrue(operation.signedData.equals(expectedSignedData as any), "Signed data does not equals")
-        this.assertEquals(QROperationDataVersion.VX, operation.operationData.version)
+        this.assertEquals(WMTQROperationDataVersion.VX, operation.operationData.version)
         this.assertEquals(1, operation.operationData.fields.length)
-        const f = operation.operationData.fields[0] as FallbackField
-        this.assertEquals(f.type, QROperationDataFieldType.FALLBACK)
+        const f = operation.operationData.fields[0] as WMTFallbackField
+        this.assertEquals(f.type, WMTQROperationDataFieldType.FALLBACK)
         this.assertEquals("test", f.text)
     }
 
@@ -115,14 +115,14 @@ export class TestSuite_QRParser extends TestSuite {
     testMissingOperationId() {
         const code = new TestQRData()
         code.operationId = ""
-        this.assertThrow(() => QROperationParser.parse(code.makeData()))
+        this.assertThrow(() => WMTQROperationParser.parse(code.makeData()))
     }
 
     testMissingTitleOrMessage() {
         const code = new TestQRData()
         code.title = ""
         code.message = ""
-        const operation = QROperationParser.parse(code.makeData())
+        const operation = WMTQROperationParser.parse(code.makeData())
         this.assertEquals("", operation.title)
         this.assertEquals("", operation.message)
     }
@@ -131,14 +131,14 @@ export class TestSuite_QRParser extends TestSuite {
         ["", "A", "2", "A100", "A-100"].forEach(data =>  {
             const code = new TestQRData()
             code.operationData = data
-            this.assertThrow(() => QROperationParser.parse(code.makeData()))
+            this.assertThrow(() => WMTQROperationParser.parse(code.makeData()))
         })
     }
 
     testMissingFlags() {
         const code = new TestQRData()
         code.flags = ""
-        const operation = QROperationParser.parse(code.makeData())
+        const operation = WMTQROperationParser.parse(code.makeData())
         this.assertFalse(operation.flags.biometricsAllowed)
         this.assertFalse(operation.flags.blockWhenOnCall)
         this.assertFalse(operation.flags.flipButtons)
@@ -149,7 +149,7 @@ export class TestSuite_QRParser extends TestSuite {
         ["", "AAAA", "MEYCIQDby1Uq+MaxiAAGzKmE/McHzNOUrvAP2qqGBvSgcdtyjgIhAMo1sgqNa1pPZTFBhhKvCKFLGDuHuTTYexdmHFjUUIJW"].forEach( nonce => {
             const code = new TestQRData()
             code.nonce = nonce
-            this.assertThrow(() => QROperationParser.parse(code.makeData()))
+            this.assertThrow(() => WMTQROperationParser.parse(code.makeData()))
         })
     }
 
@@ -157,18 +157,18 @@ export class TestSuite_QRParser extends TestSuite {
         const code = new TestQRData()
         code.signature = ""
         code.signingKey = ""
-        this.assertThrow(() => QROperationParser.parse(code.makeData()));
+        this.assertThrow(() => WMTQROperationParser.parse(code.makeData()));
         
         ["", "AAAA", "AD8bOO0Df73kNaIGb3Vmpg=="].forEach( s => {
             const code = new TestQRData()
             code.signature = s
-            this.assertThrow(() => QROperationParser.parse(code.makeData()))
+            this.assertThrow(() => WMTQROperationParser.parse(code.makeData()))
         });
 
         ["", "2", "X"].forEach( sk => {
             const code = new TestQRData()
             code.signingKey = sk
-            this.assertThrow(() => QROperationParser.parse(code.makeData()))
+            this.assertThrow(() => WMTQROperationParser.parse(code.makeData()))
         })
     }
 
@@ -180,7 +180,7 @@ export class TestSuite_QRParser extends TestSuite {
         const code = new TestQRData()
         code.title = "Hello\\nWorld\\\\xyz"
         code.message = "Hello\\nWorld\\\\xyz\\*"
-        const operation = QROperationParser.parse(code.makeData())
+        const operation = WMTQROperationParser.parse(code.makeData())
         this.assertEquals("Hello\nWorld\\xyz", operation.title)
         this.assertEquals("Hello\nWorld\\xyz\*", operation.message)
     }
@@ -190,21 +190,21 @@ export class TestSuite_QRParser extends TestSuite {
         const code = new TestQRData()
         code.operationData = "A1*Thello \\* asterisk*Nnew\\nline*Xback\\\\slash"
         const data = code.makeData()
-        const operation = QROperationParser.parse(data)
+        const operation = WMTQROperationParser.parse(data)
 
         this.assertEquals(3, operation.operationData.fields.length)
 
         const fields = operation.operationData.fields
-        const f0 = fields[0] as TextField
-        this.assertEquals(f0.type, QROperationDataFieldType.TEXT)
+        const f0 = fields[0] as WMTTextField
+        this.assertEquals(f0.type, WMTQROperationDataFieldType.TEXT)
         this.assertEquals(f0.text, "hello * asterisk")
         
-        const f1 = fields[1] as NoteField
-        this.assertEquals(f1.type, QROperationDataFieldType.NOTE)
+        const f1 = fields[1] as WMTNoteField
+        this.assertEquals(f1.type, WMTQROperationDataFieldType.NOTE)
         this.assertEquals("new\nline", f1.text)
 
-        const f2 = fields[2] as FallbackField
-        this.assertEquals(f2.type, QROperationDataFieldType.FALLBACK)
+        const f2 = fields[2] as WMTFallbackField
+        this.assertEquals(f2.type, WMTQROperationDataFieldType.FALLBACK)
         this.assertEquals("back\\slash", f2.text)
     }
 
@@ -223,9 +223,9 @@ export class TestSuite_QRParser extends TestSuite {
         valid.forEach( it => {
             const code = new TestQRData()
             code.operationData = `A1*${it[0]}`
-            const operation = QROperationParser.parse(code.makeData())
-            const field = operation.operationData.fields[0] as AmountField
-            this.assertEquals(field.type, QROperationDataFieldType.AMOUNT) 
+            const operation = WMTQROperationParser.parse(code.makeData())
+            const field = operation.operationData.fields[0] as WMTAmountField
+            this.assertEquals(field.type, WMTQROperationDataFieldType.AMOUNT) 
             this.assertEquals(it[1], field.amount)
             this.assertEquals(it[2], field.currency)
         });
@@ -233,7 +233,7 @@ export class TestSuite_QRParser extends TestSuite {
         ["ACZK", "A", "A0", "AxCZK"].forEach( it => {
             const code = new TestQRData()
             code.operationData = `A1*${it}`
-            this.assertThrow(() => QROperationParser.parse(code.makeData()))
+            this.assertThrow(() => WMTQROperationParser.parse(code.makeData()))
         })
     }
 
@@ -246,9 +246,9 @@ export class TestSuite_QRParser extends TestSuite {
         valid.forEach( it => {
                 const code = new TestQRData()
                 code.operationData = `A1*${it[0]}`
-                const operation = QROperationParser.parse(code.makeData())
-                const field = operation.operationData.fields[0] as AccountField
-                this.assertEquals(field.type, QROperationDataFieldType.ACCOUNT)
+                const operation = WMTQROperationParser.parse(code.makeData())
+                const field = operation.operationData.fields[0] as WMTAccountField
+                this.assertEquals(field.type, WMTQROperationDataFieldType.ACCOUNT)
                 this.assertEquals(it[1], field.iban)
                 this.assertEquals(it[2], field.bic)
         });
@@ -256,7 +256,7 @@ export class TestSuite_QRParser extends TestSuite {
         ["I", "Isomeiban,", "IGOODIBAN,badbic"].forEach( field => {
             const code = new TestQRData()
             code.operationData = `A1*${field}`
-            this.assertThrow(() => QROperationParser.parse(code.makeData()))
+            this.assertThrow(() => WMTQROperationParser.parse(code.makeData()))
         })
     }
 
@@ -265,7 +265,7 @@ export class TestSuite_QRParser extends TestSuite {
         ["D", "D0", "D2004", "D20189999"].forEach( date => {
             const code = new TestQRData()
             code.operationData = `A1*${date}`
-            this.assertThrow(() => { QROperationParser.parse(code.makeData()) })
+            this.assertThrow(() => { WMTQROperationParser.parse(code.makeData()) })
         })
     }
 
@@ -274,14 +274,14 @@ export class TestSuite_QRParser extends TestSuite {
         const code = new TestQRData()
         code.operationData = "A1*A10CZK****Ttest"
         
-        const operation = QROperationParser.parse(code.makeData())
+        const operation = WMTQROperationParser.parse(code.makeData())
         const fields = operation.operationData.fields
         this.assertEquals(5, fields.length)
-        this.assertEquals(fields[0].type, QROperationDataFieldType.AMOUNT)
-        this.assertEquals(fields[1].type, QROperationDataFieldType.EMPTY)
-        this.assertEquals(fields[2].type, QROperationDataFieldType.EMPTY)
-        this.assertEquals(fields[3].type, QROperationDataFieldType.EMPTY)
-        this.assertEquals(fields[4].type, QROperationDataFieldType.TEXT)
+        this.assertEquals(fields[0].type, WMTQROperationDataFieldType.AMOUNT)
+        this.assertEquals(fields[1].type, WMTQROperationDataFieldType.EMPTY)
+        this.assertEquals(fields[2].type, WMTQROperationDataFieldType.EMPTY)
+        this.assertEquals(fields[3].type, WMTQROperationDataFieldType.EMPTY)
+        this.assertEquals(fields[4].type, WMTQROperationDataFieldType.TEXT)
     }
 }
 

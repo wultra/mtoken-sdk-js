@@ -14,15 +14,15 @@
 // and limitations under the License.
 //
 
-import { SigningKeyUtil, type QROperation, type QROperationSignature, type QROperationData, QROperationDataVersionUtil, type QROperationDataField, QROperationDataFieldType, type QROperationFlags, DateField, NoteField, TextField, AmountField, AccountField, FallbackField, ReferenceField, AnyAccountField } from "./QROperation"
-import { MobileTokenException } from "../MobileTokenException"
+import { WMTSigningKeyUtil, type WMTQROperation, type WMTQROperationSignature, type WMTQROperationData, WMTQROperationDataVersionUtil, type WMTQROperationDataField, WMTQROperationDataFieldType, type WMTQROperationFlags, WMTDateField, WMTNoteField, WMTTextField, WMTAmountField, WMTAccountField, WMTFallbackField, WMTReferenceField, WMTAnyAccountField } from "./WMTQROperation"
+import { WMTException } from "../WMTException"
 import { Buffer } from "buffer"
-import { MobileTokenLogger } from "../MobileTokenLogger"
+import { WMTLogger } from "../WMTLogger"
 
 /**
  * Parser for QR operation
  */
-export class QROperationParser {
+export class WMTQROperationParser {
 
     // Minimum lines in input string supported by this parser
     private static readonly minimumAttributeFields = 7
@@ -43,12 +43,12 @@ export class QROperationParser {
      * @throws MobileTokenException When there is no operation in provided string.
      * @return Parsed operation.
      */
-    static parse(string: string): QROperation {
+    static parse(string: string): WMTQROperation {
         // Split string by newline
         const attributes = string.split("\n")
 
         if (attributes.length < this.minimumAttributeFields) {
-            throw MobileTokenLogger.errorAndException(`Offline operation: QR operation needs to have at least ${this.minimumAttributeFields} attributes but have ${attributes.length}`)
+            throw WMTLogger.errorAndException(`Offline operation: QR operation needs to have at least ${this.minimumAttributeFields} attributes but have ${attributes.length}`)
         }
 
         // Acquire all attributes
@@ -65,7 +65,7 @@ export class QROperationParser {
 
         // Validate operationId
         if (operationId.length == 0) {
-            throw MobileTokenLogger.errorAndException("Offline operation: QR operation ID is empty!.")
+            throw WMTLogger.errorAndException("Offline operation: QR operation ID is empty!.")
         }
 
         const signature = this.parseSignature(signatureString)
@@ -73,7 +73,7 @@ export class QROperationParser {
         // validate nonce
         const nonceByteArray = Buffer.from(nonce, 'base64')
         if (nonceByteArray.length != 16) {
-            throw MobileTokenLogger.errorAndException("Offline operation: Invalid nonce data")
+            throw WMTLogger.errorAndException("Offline operation: Invalid nonce data")
         }
 
         // Parse operation data fields
@@ -110,18 +110,18 @@ export class QROperationParser {
     /**
      * Returns operation signature object if provided string contains valid key type and signature.
      */
-    private static parseSignature(signaturePayload: string): QROperationSignature {
+    private static parseSignature(signaturePayload: string): WMTQROperationSignature {
         if (signaturePayload.length == 0) {
-            throw MobileTokenLogger.errorAndException("Empty offline operation signature")
+            throw WMTLogger.errorAndException("Empty offline operation signature")
         }
-        const signingKey = SigningKeyUtil.fromTypeValue(signaturePayload[0])
+        const signingKey = WMTSigningKeyUtil.fromTypeValue(signaturePayload[0])
         if (signingKey == undefined) {
-            throw MobileTokenLogger.errorAndException("Invalid offline operation signature key")
+            throw WMTLogger.errorAndException("Invalid offline operation signature key")
         }
         const signatureBase64 = signaturePayload.substring(1)
         const signatureByteArray = Buffer.from(signatureBase64, 'base64')
         if (signatureByteArray.length < 64 || signatureByteArray.length > 255) {
-            throw MobileTokenLogger.errorAndException("Invalid offline operation signature data")
+            throw WMTLogger.errorAndException("Invalid offline operation signature data")
         }
         return {
             signingKey: signingKey, 
@@ -133,31 +133,31 @@ export class QROperationParser {
     /**
      * Parses and translates input string into `QROperationFormData` structure.
      */
-    private static parseOperationData(string: string): QROperationData {
+    private static parseOperationData(string: string): WMTQROperationData {
         const stringFields = this.splitOperationData(string)
         if (stringFields.length == 0) {
-            throw MobileTokenLogger.errorAndException("No fields at all in the offline operation data")
+            throw WMTLogger.errorAndException("No fields at all in the offline operation data")
         }
 
         // Get and check version
         const versionString = stringFields[0]
         const versionChar = versionString[0]
         if (!!!versionChar) {
-            throw MobileTokenLogger.errorAndException("First fields is empty string in the offline operation data")
+            throw WMTLogger.errorAndException("First fields is empty string in the offline operation data")
         }
         if (versionChar.charCodeAt(0) < 'A'.charCodeAt(0) || versionChar.charCodeAt(0) > 'Z'.charCodeAt(0)) { // TODO: is OK?
-            throw MobileTokenLogger.errorAndException("Offline operation: Version has to be an one capital letter")
+            throw WMTLogger.errorAndException("Offline operation: Version has to be an one capital letter")
         }
-        const version = QROperationDataVersionUtil.parse(versionChar)
+        const version = WMTQROperationDataVersionUtil.parse(versionChar)
 
         const templateId = Number(versionString.substring(1))
 
         if (!!!templateId) {
-            throw MobileTokenLogger.errorAndException("Offline operation: TemplateID is not an integer")
+            throw WMTLogger.errorAndException("Offline operation: TemplateID is not an integer")
         }
 
         if (templateId < 0 || templateId > 99) {
-            throw MobileTokenLogger.errorAndException("OfflineOperation: TemplateID is out of range.")
+            throw WMTLogger.errorAndException("OfflineOperation: TemplateID is out of range.")
         }
 
         // Parse operation data fields
@@ -207,16 +207,16 @@ export class QROperationParser {
     /**
      * Parses input string into array of Field enumerations. Returns nil if some field has
      */
-    private static parseDataFields(fields: string[]): QROperationDataField[] {
+    private static parseDataFields(fields: string[]): WMTQROperationDataField[] {
 
-        const result: QROperationDataField[] = []
+        const result: WMTQROperationDataField[] = []
 
         fields.slice(1).forEach( stringField => {
 
             const typeId = stringField.length > 0 ? stringField[0] : undefined
 
             if (!!!typeId) {
-                result.push({ type: QROperationDataFieldType.EMPTY })
+                result.push({ type: WMTQROperationDataFieldType.EMPTY })
                 return
             }
 
@@ -231,7 +231,7 @@ export class QROperationParser {
                     break
                 // Any account
                 case 'Q': 
-                    result.push(new AnyAccountField(this.parseFieldText(stringField)))
+                    result.push(new WMTAnyAccountField(this.parseFieldText(stringField)))
                     break
                 // Date
                 case 'D': 
@@ -239,50 +239,50 @@ export class QROperationParser {
                     break
                 // Reference
                 case 'R': 
-                    result.push(new ReferenceField(this.parseFieldText(stringField)))
+                    result.push(new WMTReferenceField(this.parseFieldText(stringField)))
                     break
                 // Note
                 case 'N': 
-                    result.push(new NoteField(this.parseFieldText(stringField)))
+                    result.push(new WMTNoteField(this.parseFieldText(stringField)))
                     break
                 // Text (generic)
                 case 'T': 
-                    result.push(new TextField(this.parseFieldText(stringField)))
+                    result.push(new WMTTextField(this.parseFieldText(stringField)))
                     break
                 // Fallback
                 default: 
-                    result.push(new FallbackField(this.parseFieldText(stringField), typeId))
+                    result.push(new WMTFallbackField(this.parseFieldText(stringField), typeId))
                     break
             }
         })
 
         if (result.length > this.maximumDataFields) {
-            throw MobileTokenLogger.errorAndException("Offline operation: Too many fields")
+            throw WMTLogger.errorAndException("Offline operation: Too many fields")
         }
         return result
     }
 
-    private static parseAmount(string: string): AmountField {
+    private static parseAmount(string: string): WMTAmountField {
         const value = string.substring(1)
         if (value.length < 4) {
-            throw MobileTokenLogger.errorAndException("Offline operation: Insufficient length for number+currency")
+            throw WMTLogger.errorAndException("Offline operation: Insufficient length for number+currency")
         }
         const currency = value.substring(value.length - 3).toUpperCase()
         const amountString = value.substring(0, value.length - 3)
         const amount = Number(amountString)
         if (Number.isNaN(amount)) {
-            throw MobileTokenLogger.errorAndException("Offline operation: Amount is not a number")
+            throw WMTLogger.errorAndException("Offline operation: Amount is not a number")
         }
-        return new AmountField(amount, currency)
+        return new WMTAmountField(amount, currency)
     }
 
     // Parses IBAN[,BIC] into account field enumeration.
-    private static parseIban(string: string): AccountField {
+    private static parseIban(string: string): WMTAccountField {
         // Try to split IBAN to IBAN & BIC
         const ibanBic = string.substring(1)
         const components = ibanBic.split(",").filter(v => v.length != 0)
         if (components.length > 2 || components.length == 0) {
-            throw MobileTokenLogger.errorAndException("Offline operation: Unsupported format")
+            throw WMTLogger.errorAndException("Offline operation: Unsupported format")
         }
         const iban = components[0]
         const bic = components.length > 1 ? components[1] : undefined
@@ -290,18 +290,18 @@ export class QROperationParser {
         for (let i = 0; i < iban.length; i++) {
             const c = iban.charAt(i)
             if (!allowedChars.includes(c)) {
-                throw new MobileTokenException("Invalid character in IBAN")
+                throw new WMTException("Invalid character in IBAN")
             }
         }
         if (bic) {
             for (let i = 0; i < bic.length; i++) {
                 const c = bic.charAt(i)
                 if (!allowedChars.includes(c)) {
-                    throw new MobileTokenException("Invalid character in BIC")
+                    throw new WMTException("Invalid character in BIC")
                 }
             }
         }
-        return new AccountField(iban, bic)
+        return new WMTAccountField(iban, bic)
     }
 
     private static parseFieldText(string: string): string {
@@ -313,11 +313,11 @@ export class QROperationParser {
         return text
     }
 
-    private static parseDate(string: string): DateField {
+    private static parseDate(string: string): WMTDateField {
         const dateString = string.substring(1)
         
         if (dateString.length != 8) {
-            throw MobileTokenLogger.errorAndException("Offline operation: Date needs to be 8 characters long")
+            throw WMTLogger.errorAndException("Offline operation: Date needs to be 8 characters long")
         }
         try {
             const year = Number(dateString.substring(0, 4))
@@ -325,25 +325,25 @@ export class QROperationParser {
             const day = Number(dateString.substring(6, 8))
 
             if (Number.isNaN(year) || Number.isNaN(month) || Number.isNaN(day)) {
-                throw MobileTokenLogger.errorAndException(`Offline operation: Year, month and day need to be integers. Year: ${year}, month: ${month}, day: ${day}`)
+                throw WMTLogger.errorAndException(`Offline operation: Year, month and day need to be integers. Year: ${year}, month: ${month}, day: ${day}`)
             }
 
             if (day < 1 || day > 31) {
-                throw MobileTokenLogger.errorAndException(`Offline operation: Day needs to be between 1 and 31. Day: ${day}`)
+                throw WMTLogger.errorAndException(`Offline operation: Day needs to be between 1 and 31. Day: ${day}`)
             }
 
             if (month < 1 || month > 12) {
-                throw MobileTokenLogger.errorAndException(`Offline operation: Month needs to be between 1 and 12. Month: ${month}`)
+                throw WMTLogger.errorAndException(`Offline operation: Month needs to be between 1 and 12. Month: ${month}`)
             }
 
             const date = new Date(year, month - 1, day)
-            return new DateField(date)
+            return new WMTDateField(date)
         } catch (e) {
-            throw MobileTokenLogger.errorAndException("Offline operation: Unparseable date")
+            throw WMTLogger.errorAndException("Offline operation: Unparseable date")
         }
     }
 
-    private static parseOperationFlags(string: string): QROperationFlags {
+    private static parseOperationFlags(string: string): WMTQROperationFlags {
         return { 
             biometricsAllowed: string.includes("B"), 
             flipButtons: string.includes("X"), 

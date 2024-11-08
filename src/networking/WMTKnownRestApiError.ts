@@ -15,7 +15,7 @@
 //
 
 /** Known PowerAuth server error codes. */
-export enum KnownRestApiError {
+export enum WMTKnownRestApiError {
     
     // COMMON ERRORS
     
@@ -100,3 +100,4 @@ export enum KnownRestApiError {
     // /// Communication with remote system failed
     // RemoteCommunicationError         = "REMOTE_COMMUNICATION_ERROR"
   }
+  

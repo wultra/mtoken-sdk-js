@@ -14,17 +14,17 @@
 // and limitations under the License.
 //
 
-import type { UserOperationUIData } from "./UserOperationUIData"
-import type { OnlineOperation } from "./OnlineOperation"
-import type { UserOperationAttribute } from "./UserOperationAttribute"
-import type { UserOperationProximityCheck } from "./UserOperationProximityCheck"
+import type { WMTUserOperationUIData } from "./WMTUserOperationUIData"
+import type { WMTOnlineOperation } from "./WMTOnlineOperation"
+import type { WMTUserOperationAttribute } from "./WMTUserOperationAttribute"
+import type { WMTUserOperationProximityCheck } from "./WMTUserOperationProximityCheck"
 
 /**
  * `UserOperation` is object returned from the backend that can be either approved or rejected.
  * It is usually visually presented to the user as a non-editable form with information about
  * the real-world operation (for example login or payment).
  */
-export interface UserOperation extends OnlineOperation {
+export interface WMTUserOperation extends WMTOnlineOperation {
 
     /** Processing status of the operation */
     status: "APPROVED" | "REJECTED" | "PENDING" | "CANCELED" | "EXPIRED" | "FAILED"
@@ -53,7 +53,7 @@ export interface UserOperation extends OnlineOperation {
     /**
      * Data that should be presented to the user.
      */ 
-    formData: OperationFormData
+    formData: WMTOperationFormData
     
     /** 
      * Enum-like reason why the status has changed.
@@ -69,7 +69,7 @@ export interface UserOperation extends OnlineOperation {
      * tapping an approve button. If the operation requires 2FA, this value also hints if
      * the user may use the biometry, or if a password is required.
      */ 
-    allowedSignatureType: AllowedOperationSignature
+    allowedSignatureType: WMTAllowedOperationSignature
     
     /**
      * UI data to be shown
@@ -77,24 +77,24 @@ export interface UserOperation extends OnlineOperation {
      * Accompanying information about the operation additional UI which should be presented such as
      * Pre-Approval Screen or Post-Approval Screen
      */
-    ui?: UserOperationUIData
+    ui?: WMTUserOperationUIData
 
     /** 
      * Proximity Check Data to be passed when OTP is handed to the app.
      */
-    proximityCheck?: UserOperationProximityCheck
+    proximityCheck?: WMTUserOperationProximityCheck
 }
 
-type SignatureFactor = "possession" | "possession_knowledge" | "possession_biometry"
+export type WMTSignatureFactor = "possession" | "possession_knowledge" | "possession_biometry"
 
 /** Allowed signature types that can be used for operation approval. */
-export interface AllowedOperationSignature {
+export interface WMTAllowedOperationSignature {
     
     /** If operation should be signed with 1 or 2 factor authentication. */
     type: "1FA" | "2FA"
 
     /** What factors are needed to signing this operation. */
-    variants: SignatureFactor[]
+    variants: WMTSignatureFactor[]
 }
 
 /**
@@ -102,7 +102,7 @@ export interface AllowedOperationSignature {
  * 
  *  Note that the data returned from the server are localized based on the `MobileToken.acceptLanguage` property.
  */
-export interface OperationFormData {
+export interface WMTOperationFormData {
     
     /** Title of the operation */
     title: string
@@ -115,14 +115,14 @@ export interface OperationFormData {
      * 
      * This includes messages for different outcomes of the operation such as success, rejection, and failure.
      */
-    resultTexts?: ResultTexts
+    resultTexts?: WMTResultTexts
      
     /**
      * Other attributes.
      * 
      * Note that attributes can be presented with different classes (Starting with `MobileTokenOperationAttribute*`) based on the attribute type.  
      */ 
-    attributes: UserOperationAttribute[]
+    attributes: WMTUserOperationAttribute[]
 }
 
 /**
@@ -130,7 +130,7 @@ export interface OperationFormData {
  * 
  * This includes messages for different outcomes of the operation such as success, rejection, and failure.
  */
-export interface ResultTexts {
+export interface WMTResultTexts {
     /** Optional message to be displayed when the approval of the operation is successful. */
     success?: string
     

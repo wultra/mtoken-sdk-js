@@ -14,25 +14,25 @@
 // and limitations under the License.
 //
 
-import { Operations } from './operations/Operations'
+import { WMTOperations } from './operations/WMTOperations'
 import { PowerAuth } from 'react-native-powerauth-mobile-sdk'
-import { Push } from './push/Push'
-import { Inbox } from './inbox/Inbox'
-import type { UserAgent } from './networking/Networking'
-import { MobileTokenLogger } from './MobileTokenLogger'
+import { WMTPush } from './push/WMTPush'
+import { WMTInbox } from './inbox/WMTInbox'
+import type { WMTUserAgent } from './networking/WMTNetworking'
+import { WMTLogger } from './WMTLogger'
 
 /**
  * MobileToken class exposes API that enables to fetch, authorize or reject basic
  * operations created in the PowerAuth stack.
  */
-export class MobileToken {
+export class WultraMobileToken {
 
     /** Operations manager. Use for fetching pending list, approving the operations etc. */
-    operations: Operations
+    operations: WMTOperations
     /** Push manager for registering the device to recieve PowerAuth push notification for given PowerAuth activation. */
-    push: Push
+    push: WMTPush
     /** Inbox manager - recieve message to communicate with the user. */
-    inbox: Inbox
+    inbox: WMTInbox
 
     /**
      * 
@@ -51,14 +51,14 @@ export class MobileToken {
         let pushURL = pushBaseURL ?? enrollmentURL
         let inboxURL = inboxBaseURL ?? enrollmentURL
 
-        this.operations = new Operations(powerAuth, enrollmentURL)
-        this.push = new Push(powerAuth, pushURL)
-        this.inbox = new Inbox(powerAuth, inboxURL)
+        this.operations = new WMTOperations(powerAuth, enrollmentURL)
+        this.push = new WMTPush(powerAuth, pushURL)
+        this.inbox = new WMTInbox(powerAuth, inboxURL)
 
-        MobileTokenLogger.debug("Mobile Token object created with:")
-        MobileTokenLogger.debug(" - baseURL: " + enrollmentURL)
-        MobileTokenLogger.debug(" - pushURL: " + pushURL)
-        MobileTokenLogger.debug(" - inboxURL: " + inboxURL)
+        WMTLogger.debug("Mobile Token object created with:")
+        WMTLogger.debug(" - baseURL: " + enrollmentURL)
+        WMTLogger.debug(" - pushURL: " + pushURL)
+        WMTLogger.debug(" - inboxURL: " + inboxURL)
     }
 
     /**
@@ -77,7 +77,7 @@ export class MobileToken {
         this.operations.acceptLanguage = lang
         this.push.acceptLanguage = lang
         this.inbox.acceptLanguage = lang
-        MobileTokenLogger.info(`accent language set to ${lang}`)
+        WMTLogger.info(`accent language set to ${lang}`)
     }
 
     /** 
@@ -85,10 +85,10 @@ export class MobileToken {
      * 
      * Note that user-agent can be overriden by request processor in each API call.
      */
-    setUserAgent(userAgent: UserAgent | string) {
+    setUserAgent(userAgent: WMTUserAgent | string) {
         this.operations.userAgent = userAgent
         this.push.userAgent = userAgent
         this.inbox.userAgent = userAgent
-        MobileTokenLogger.info(`User-Agent set to ${userAgent}`)
+        WMTLogger.info(`User-Agent set to ${userAgent}`)
     }
 }

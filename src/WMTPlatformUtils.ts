@@ -15,11 +15,11 @@
 //
 
 import DeviceInfo from "react-native-device-info"
-import { SDK_VERSION } from "./SDKVersion"
+import { WMT_SDK_VERSION } from "./WMTSDKVersion"
 import { Platform } from "react-native"
-import { MobileTokenLogger } from "./MobileTokenLogger"
+import { WMTLogger } from "./WMTLogger"
 
-export class PlatformUtils {
+export class WMTPlatformUtils {
 
     static getPlatform():  "ios" | "android" {
         return Platform.OS == "ios" ? "ios" : "android"
@@ -27,7 +27,7 @@ export class PlatformUtils {
 
     static getDefaultUserAgent(): string {
         const product = "MobileTokenJS"
-        const sdkVer = SDK_VERSION
+        const sdkVer = WMT_SDK_VERSION
         const os = this.getPlatform()
         const osVer = Platform.Version
         try {
@@ -38,7 +38,7 @@ export class PlatformUtils {
             // TOOD: to consider: add network from netinfo package?
             return `${product}/${sdkVer} ${appId}/${appVer} (${maker}; ${os}/${osVer}; ${model}`
         } catch(e) {
-            MobileTokenLogger.debug(`Failed to create user agent: ${e}`)
+            WMTLogger.debug(`Failed to create user agent: ${e}`)
             return `${product}/${sdkVer} ${os}/${osVer}`
         }
     }

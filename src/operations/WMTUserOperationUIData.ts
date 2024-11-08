@@ -14,10 +14,10 @@
 // and limitations under the License.
 //
 
-import type { UserOperationAttribute } from "./UserOperationAttribute"
+import type { WMTUserOperationAttribute } from "./WMTUserOperationAttribute"
 
 /** Additional UI data */
-export interface UserOperationUIData {
+export interface WMTUserOperationUIData {
 
     /** Confirm and Reject buttons should be flipped both in position and style */
     flipButtons?: boolean
@@ -26,7 +26,7 @@ export interface UserOperationUIData {
     blockApprovalOnCall?: boolean
 
     /** UI for pre-approval operation screen */
-    preApprovalScreen?: PreApprovalScreen
+    preApprovalScreen?: WMTPreApprovalScreen
 
     /**
      * UI for post-approval operation screen
@@ -35,7 +35,7 @@ export interface UserOperationUIData {
      * 
      * For example: (TODO!)
      */
-    postApprovalScreen?: PostApprovalScreen
+    postApprovalScreen?: WMTPostApprovalScreen
 }
 
 /**
@@ -44,7 +44,7 @@ export interface UserOperationUIData {
  * `type` define different kind of data which can be passed with operation
  *  and shall be displayed before operation is confirmed
  */
-export interface PreApprovalScreen {
+export interface WMTPreApprovalScreen {
     /**
      * Type of PreApprovalScreen (`WARNING`, `INFO`, `QR_SCAN` - might be undefined for future compatibility)
      */
@@ -71,7 +71,7 @@ export interface PreApprovalScreen {
     approvalType?: "SLIDER" | "BUTTON"
 }
 
-export interface PostApprovalScreen {
+export interface WMTPostApprovalScreen {
     /**
      * type of PostApprovalScreen is presented with different classes (Starting with `PostApprovalScreen*`).
      * 
@@ -82,33 +82,33 @@ export interface PostApprovalScreen {
 
 // --- REVIEW POST APPROVAL ---
 
-export interface PostApprovalScreenReview extends PostApprovalScreen {
+export interface WMTPostApprovalScreenReview extends WMTPostApprovalScreen {
     /** Heading of the post-approval screen */
     heading: string
     /** Message to the user */
     message: string
     /** Payload with data for the review */
-    payload: ReviewPostApprovalScreenPayload
+    payload: WMTReviewPostApprovalScreenPayload
 }
 
 /** Review payload */
-export interface ReviewPostApprovalScreenPayload {
+export interface WMTReviewPostApprovalScreenPayload {
     /** List of the operation attributes */
-    attributes: UserOperationAttribute[]
+    attributes: WMTUserOperationAttribute[]
 }
 
 // --- REDIRECT POST APPROVAL ---
 
-export interface PostApprovalScreenRedirect extends PostApprovalScreen {
+export interface WMTPostApprovalScreenRedirect extends WMTPostApprovalScreen {
     /** Heading of the post-approval screen */
     heading: string
     /** Message to the user */
     message: string
     /** Payload with data for the redirect */
-    payload: ReviewPostApprovalScreenPayload
+    payload: WMTReviewPostApprovalScreenPayload
 }
 
-export interface RedirectPostApprovalScreenPayload {
+export interface WMTRedirectPostApprovalScreenPayload {
     /** Label of the redirect URL */
     redirectText: string
     /** URL to redirect, might be a website or application */
@@ -119,7 +119,7 @@ export interface RedirectPostApprovalScreenPayload {
 
 // --- GENERIC PSOT APPROVAL ---
 
-export interface PostApprovalScreenGeneric extends PostApprovalScreen {
+export interface WMTPostApprovalScreenGeneric extends WMTPostApprovalScreen {
     /** Heading of the post-approval screen */
     heading: string
     /** Message to the user */

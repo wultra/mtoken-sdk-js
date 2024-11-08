@@ -15,7 +15,7 @@
 //
 
 import { PowerAuth, PowerAuthActivation, PowerAuthAuthentication, PowerAuthConfiguration } from "react-native-powerauth-mobile-sdk"
-import { MobileToken } from "react-native-mtoken-sdk"
+import { WultraMobileToken } from "react-native-mtoken-sdk"
 import { IntegrationCredentials } from "./IntegrationCredentials"
 
 export class IntegrationUtils {
@@ -46,7 +46,7 @@ export class IntegrationUtils {
         this.serverMasterKey = credentials.serverMasterKey
     }
 
-    async prepareActivation(pin: string, userId: string | null = null): Promise<{ powerauth: PowerAuth, mtoken: MobileToken }> {
+    async prepareActivation(pin: string, userId: string | null = null): Promise<{ powerauth: PowerAuth, mtoken: WultraMobileToken }> {
 
         // Be sure that each activation has its own user
         this.activationName = userId ?? (Math.random() + 1).toString(36)
@@ -88,7 +88,7 @@ export class IntegrationUtils {
 
         return {
             powerauth: pa,
-            mtoken: new MobileToken(pa, this.enrollmentUrl)
+            mtoken: new WultraMobileToken(pa, this.enrollmentUrl)
         }
     }
 

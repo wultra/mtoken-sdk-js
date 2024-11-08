@@ -14,12 +14,12 @@
 // and limitations under the License.
 //
 
-import { MobileTokenException } from "./MobileTokenException"
+import { WMTException } from "./WMTException"
 
 /**
  * How much should Mobile Token library log into the console.
  */
-export enum MobileTokenLoggerVerbosity {
+export enum WMTLoggerVerbosity {
     /** No logs will be printed. */
     NONE    = 0,
     /** Only errors will be printed into the console. */
@@ -37,58 +37,58 @@ export enum MobileTokenLoggerVerbosity {
 /**
  * Mobile Token logging utility
  */
-export class MobileTokenLogger {
+export class WMTLogger {
 
     /** Which level of logs (and lower) should be logged into the console. Default value is `WARN` */
-    public static verbosity: MobileTokenLoggerVerbosity = MobileTokenLoggerVerbosity.WARN
+    public static verbosity: WMTLoggerVerbosity = WMTLoggerVerbosity.WARN
     /** Include time in the logs? */
     public static includeTime: boolean = true
 
     static debug(message: string | any) {
-        this.log(message, MobileTokenLoggerVerbosity.DEBUG)
+        this.log(message, WMTLoggerVerbosity.DEBUG)
     }
 
     static info(message: string | any) {
-        this.log(message, MobileTokenLoggerVerbosity.INFO)
+        this.log(message, WMTLoggerVerbosity.INFO)
     }
 
     static warn(message: string | any) {
-        this.log(message, MobileTokenLoggerVerbosity.WARN)
+        this.log(message, WMTLoggerVerbosity.WARN)
     }
 
     static verbose(message: string | any) {
-        this.log(message, MobileTokenLoggerVerbosity.VERBOSE)
+        this.log(message, WMTLoggerVerbosity.VERBOSE)
     }
 
     static error(message: string | any) {
-        this.log(message, MobileTokenLoggerVerbosity.ERROR)
+        this.log(message, WMTLoggerVerbosity.ERROR)
     }
 
-    static errorAndException(message: string): MobileTokenException {
-        this.log(message, MobileTokenLoggerVerbosity.ERROR)
-        return new MobileTokenException(message)
+    static errorAndException(message: string): WMTException {
+        this.log(message, WMTLoggerVerbosity.ERROR)
+        return new WMTException(message)
     }
 
-    private static log(message: string | any, level: MobileTokenLoggerVerbosity) {
+    private static log(message: string | any, level: WMTLoggerVerbosity) {
 
         if (this.verbosity >= level) {
 
             let lvl: string
 
             switch (level) {
-                case MobileTokenLoggerVerbosity.DEBUG:
+                case WMTLoggerVerbosity.DEBUG:
                     lvl = "DBG"
                     break
-                case MobileTokenLoggerVerbosity.INFO:
+                case WMTLoggerVerbosity.INFO:
                     lvl = "INF"
                     break
-                case MobileTokenLoggerVerbosity.WARN:
+                case WMTLoggerVerbosity.WARN:
                     lvl = "WRN"
                     break
-                case MobileTokenLoggerVerbosity.ERROR:
+                case WMTLoggerVerbosity.ERROR:
                     lvl = "ERR"
                     break
-                case MobileTokenLoggerVerbosity.VERBOSE:
+                case WMTLoggerVerbosity.VERBOSE:
                     lvl = "VBS"
                     break
                 default:

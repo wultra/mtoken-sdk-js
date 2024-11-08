@@ -17,13 +17,13 @@
 import { PowerAuth } from 'react-native-powerauth-mobile-sdk';
 import { TestSuite } from './TestSuite';
 import { IntegrationUtils, type NewInboxMessage, } from './utils/IntegrationUtils';
-import { MobileToken, type InboxMessage } from 'react-native-mtoken-sdk';
+import { WultraMobileToken, type WMTInboxMessage } from 'react-native-mtoken-sdk';
 
 export class TestSuite_IntegrationInbox extends TestSuite {
 
     private pin = "1234"
     private powerAuth!: PowerAuth
-    private mtoken!: MobileToken
+    private mtoken!: WultraMobileToken
     private utils = new IntegrationUtils()
 
     protected async beforeAll(): Promise<void> {
@@ -101,7 +101,7 @@ export class TestSuite_IntegrationInbox extends TestSuite {
         return resp.responseObject!!.countUnread
     }
 
-    private compareMessages(expected: NewInboxMessage[], received: InboxMessage[]) {
+    private compareMessages(expected: NewInboxMessage[], received: WMTInboxMessage[]) {
         this.assertEquals(expected.length, received.length)
         expected.forEach( detail => {
             const message = received.find( it => it.id == detail.id )

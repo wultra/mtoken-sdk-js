@@ -14,14 +14,14 @@
 // and limitations under the License.
 //
 
-import { Networking, type RequestProcessor, type MobileTokenResponse } from "../networking/Networking"
-import { type UserOperation } from "./UserOperation"
-import { type OnlineOperation } from "./OnlineOperation"
+import { WMTNetworking, type WMTRequestProcessor, type WMTResponse } from "../networking/WMTNetworking"
+import { type WMTUserOperation } from "./WMTUserOperation"
+import { type WMTOnlineOperation } from "./WMTOnlineOperation"
 import { PowerAuthAuthentication } from 'react-native-powerauth-mobile-sdk'
-import type { QROperation } from './QROperation'
+import type { WMTQROperation } from './WMTQROperation'
 
 /** Operation handling.  */
-export class Operations extends Networking {
+export class WMTOperations extends WMTNetworking {
 
     private jsonDateFields = [ "operationExpires", "operationCreated", "timestampReceived" ]
 
@@ -31,8 +31,8 @@ export class Operations extends Networking {
     * @param requestProcessor You may modify the request via this processor. It's highly recommended to only modify HTTP headers.
     * @returns Server response (with list of operations).
     */
-    async pendingList(requestProcessor?: RequestProcessor): Promise<MobileTokenResponse<UserOperation[]>> {
-        return await this.postSignedWithToken<UserOperation[]>(
+    async pendingList(requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<WMTUserOperation[]>> {
+        return await this.postSignedWithToken<WMTUserOperation[]>(
             {},
             PowerAuthAuthentication.possession(),
             "/api/auth/token/app/operation/list",
@@ -50,8 +50,8 @@ export class Operations extends Networking {
      * @param requestProcessor You may modify the request via this processor. It's highly recommended to only modify HTTP headers.
      * @returns Server response (with operation detail)
      */
-    async detail(operationId: string, requestProcessor?: RequestProcessor): Promise<MobileTokenResponse<UserOperation>> {
-        return await this.postSignedWithToken<UserOperation>(
+    async detail(operationId: string, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<WMTUserOperation>> {
+        return await this.postSignedWithToken<WMTUserOperation>(
             { requestObject: { id: operationId } },
             PowerAuthAuthentication.possession(),
             "/api/auth/token/app/operation/detail",
@@ -69,8 +69,8 @@ export class Operations extends Networking {
      * @param requestProcessor You may modify the request via this processor. It's highly recommended to only modify HTTP headers.
      * @returns Server response (with list of operations).
      */
-    async history(authentication: PowerAuthAuthentication, requestProcessor?: RequestProcessor): Promise<MobileTokenResponse<UserOperation[]>> {
-        return await this.postSigned<UserOperation[]>(
+    async history(authentication: PowerAuthAuthentication, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<WMTUserOperation[]>> {
+        return await this.postSigned<WMTUserOperation[]>(
             {},
             authentication,
             "/api/auth/token/app/operation/history",
@@ -89,7 +89,7 @@ export class Operations extends Networking {
      * @param requestProcessor You may modify the request via this processor. It's highly recommended to only modify HTTP headers.
      * @returns Server response
      */
-    async authorize(operation: OnlineOperation, authentication: PowerAuthAuthentication, requestProcessor?: RequestProcessor): Promise<MobileTokenResponse<void>> {
+    async authorize(operation: WMTOnlineOperation, authentication: PowerAuthAuthentication, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<void>> {
         let proximityCopy: any = undefined
         if (operation.proximityCheck) {
             proximityCopy = { otp: operation.proximityCheck.totp, type: operation.proximityCheck.type, timestampReceived: operation.proximityCheck.timestampReceived, timestampSent: new Date() }
@@ -113,7 +113,7 @@ export class Operations extends Networking {
      * created on the server. Default value is `/operation/authorize/offline`.
      * @returns 
      */
-    async authorizeOffline(operation: QROperation, authentication: PowerAuthAuthentication, uriId: string = "/operation/authorize/offline"): Promise<string> {
+    async authorizeOffline(operation: WMTQROperation, authentication: PowerAuthAuthentication, uriId: string = "/operation/authorize/offline"): Promise<string> {
         return await this.pa.offlineSignature(authentication, uriId, operation.nonce, QROperationUtil.dataForOfflineSigning(operation))
     }
 
@@ -125,7 +125,7 @@ export class Operations extends Networking {
      * @param requestProcessor You may modify the request via this processor. It's highly recommended to only modify HTTP headers.
      * @returns Server response
      */
-    async reject(operationId: string, reason: "INCORRECT_DATA" | "UNEXPECTED_OPERATION" | "UNKNOWN" | string, requestProcessor?: RequestProcessor): Promise<MobileTokenResponse<void>> {
+    async reject(operationId: string, reason: "INCORRECT_DATA" | "UNEXPECTED_OPERATION" | "UNKNOWN" | string, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<void>> {
         return await this.postSigned<void>(
             { requestObject: { id: operationId, reason: reason } },
             PowerAuthAuthentication.possession(),
@@ -143,8 +143,8 @@ export class Operations extends Networking {
      * @param requestProcessor You may modify the request via this processor. It's highly recommended to only modify HTTP headers.
      * @returns Server response (with operation detail)
      */
-    async claim(operationId: string, requestProcessor?: RequestProcessor): Promise<MobileTokenResponse<UserOperation>> {
-        return await this.postSignedWithToken<UserOperation>(
+    async claim(operationId: string, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<WMTUserOperation>> {
+        return await this.postSignedWithToken<WMTUserOperation>(
             { requestObject: { id: operationId } },
             PowerAuthAuthentication.possession(),
             "/api/auth/token/app/operation/detail/claim",
@@ -157,7 +157,7 @@ export class Operations extends Networking {
 }
 
 class QROperationUtil {
-    static dataForOfflineSigning(operation: QROperation): string {
+    static dataForOfflineSigning(operation: WMTQROperation): string {
         if (operation.totp) {
             return `${operation.operationId}&${operation.operationData.sourceString}&${operation.totp}`
         } else {

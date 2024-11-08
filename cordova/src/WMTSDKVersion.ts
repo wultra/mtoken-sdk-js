@@ -14,16 +14,7 @@
 // and limitations under the License.
 //
 
-/** Possible logic errors during the API calls. */
-export class MobileTokenException {
+// TODO: this needs to be modified during package-prepare!
 
-    /** Description of the Exception */
-    description: string
-    /** Optional additional data that helps with the exception */
-    additionalData?: any
-    
-    constructor(description: string, additionalData?: any) {
-      this.description = description
-      this.additionalData = additionalData
-    }
-  }
+/* @internal */
+export const WMT_SDK_VERSION = "1.0.0-CDV"

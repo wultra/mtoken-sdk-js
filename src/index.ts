@@ -14,34 +14,34 @@
 // and limitations under the License.
 //
 
-export * from './MobileToken'
-export * from './MobileTokenException'
-export * from './MobileTokenLogger'
+export * from './WultraMobileToken'
+export * from './WMTException'
+export * from './WMTLogger'
 
 // OPERATIONS
-export * from './operations/Operations'
-export * from './operations/OnlineOperation'
-export * from './operations/UserOperationAttribute'
-export * from './operations/UserOperation'
-export * from './operations/UserOperationUIData'
-export * from './operations/UserOperationProximityCheck'
-export * from './operations/QROperation'
-export * from './operations/QROperationParser'
-export * from './operations/PACUtils'
+export * from './operations/WMTOperations'
+export * from './operations/WMTOnlineOperation'
+export * from './operations/WMTUserOperationAttribute'
+export * from './operations/WMTUserOperation'
+export * from './operations/WMTUserOperationUIData'
+export * from './operations/WMTUserOperationProximityCheck'
+export * from './operations/WMTQROperation'
+export * from './operations/WMTQROperationParser'
+export * from './operations/WMTPACUtils'
 
 // PUSH
-export * from './push/Push'
+export * from './push/WMTPush'
 
 // INBOX
-export * from './inbox/Inbox'
-export * from './inbox/InboxCount'
-export * from './inbox/InboxMessage'
-export * from './inbox/InboxMessageDetail'
+export * from './inbox/WMTInbox'
+export * from './inbox/WMTInboxCount'
+export * from './inbox/WMTInboxMessage'
+export * from './inbox/WMTInboxMessageDetail'
 
 // NETWORKING
-export * from './networking/KnownRestApiError'
-export * from './networking/Networking'
+export * from './networking/WMTKnownRestApiError'
+export * from './networking/WMTNetworking'
 
 // INTERNAL
-export * from './PlatformUtils'
-export * from './SDKVersion'
+export * from './WMTPlatformUtils'
+export * from './WMTSDKVersion'

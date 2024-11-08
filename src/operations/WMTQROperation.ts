@@ -15,7 +15,7 @@
 //
 
 /** The `QROperationData` contains data operation data parsed from QR code. */
-export interface QROperation {
+export interface WMTQROperation {
     
     /** Operation's identifier */
     operationId: string
@@ -27,13 +27,13 @@ export interface QROperation {
     message: string
     
     /** Significant data fields associated with the operation */
-    operationData: QROperationData
+    operationData: WMTQROperationData
     
     /** Nonce for offline signature calculation, in Base64 format */
     nonce: string
     
     /** Flags associated with the operation */
-    flags: QROperationFlags
+    flags: WMTQROperationFlags
     
     /** Additional Time-based one time password for proximity check */
     totp?: string
@@ -42,7 +42,7 @@ export interface QROperation {
     signedData: Buffer
     
     /** ECDSA signature calculated from `signedData`. String is in Base64 format */
-    signature: QROperationSignature
+    signature: WMTQROperationSignature
     
     /**
      * QR code uses a string in newer format that this class implements.
@@ -51,7 +51,7 @@ export interface QROperation {
     isNewerFormat: boolean
 }
 
-export interface QROperationFlags {
+export interface WMTQROperationFlags {
     /** If true, then 2FA signature with biometric factor can be used for operation confirmation.*/
     biometricsAllowed: boolean
 
@@ -65,38 +65,38 @@ export interface QROperationFlags {
     blockWhenOnCall: boolean
 }
 
-export interface QROperationData {
+export interface WMTQROperationData {
 
     /** Version of form data */
-    version: QROperationDataVersion
+    version: WMTQROperationDataVersion
 
     /** Template identifier (0 .. 99 in v1) */
     templateId: Number
 
     /** Array with form fields. Version v1 supports up to 5 fields. */
-    fields: QROperationDataField[]
+    fields: WMTQROperationDataField[]
 
     /** A whole line from which was this structure constructed. */
     sourceString: string
 }
 
-export enum QROperationDataVersion {
+export enum WMTQROperationDataVersion {
     /** First version of operation data */
     V1,
     /** Type representing all newer versions of operation data (for forward compatibility) */
     VX
 }
 
-export class QROperationDataVersionUtil {
-    static parse(value: string): QROperationDataVersion {
+export class WMTQROperationDataVersionUtil {
+    static parse(value: string): WMTQROperationDataVersion {
         if (value == 'A') {
-            return QROperationDataVersion.V1
+            return WMTQROperationDataVersion.V1
         }
-        return QROperationDataVersion.VX
+        return WMTQROperationDataVersion.VX
     }
 }
 
-export enum QROperationDataFieldType {
+export enum WMTQROperationDataFieldType {
     /** Empty field for optional and not used fields */
     EMPTY,
     /** Field is of type `AmountField` */
@@ -117,13 +117,13 @@ export enum QROperationDataFieldType {
     FALLBACK
 }
 
-export interface QROperationDataField {
-    type: QROperationDataFieldType
+export interface WMTQROperationDataField {
+    type: WMTQROperationDataFieldType
 }
 
 /** Amount with currency */
-export class AmountField implements QROperationDataField {
-    type = QROperationDataFieldType.AMOUNT
+export class WMTAmountField implements WMTQROperationDataField {
+    type = WMTQROperationDataFieldType.AMOUNT
     amount: Number
     currency: string
 
@@ -134,8 +134,8 @@ export class AmountField implements QROperationDataField {
 }
 
 /** Account in IBAN format, with optional BIC */
-export class AccountField implements QROperationDataField { 
-    type = QROperationDataFieldType.ACCOUNT
+export class WMTAccountField implements WMTQROperationDataField { 
+    type = WMTQROperationDataFieldType.ACCOUNT
     iban: string
     bic?: string
 
@@ -146,8 +146,8 @@ export class AccountField implements QROperationDataField {
 }
 
 /** Account in arbitrary textual format */
-export class AnyAccountField implements QROperationDataField {
-    type = QROperationDataFieldType.ANY_ACCOUNT
+export class WMTAnyAccountField implements WMTQROperationDataField {
+    type = WMTQROperationDataFieldType.ANY_ACCOUNT
     account: string
 
     constructor(account: string) {
@@ -156,8 +156,8 @@ export class AnyAccountField implements QROperationDataField {
 }
 
 /** Date field */
-export class DateField implements QROperationDataField {
-    type = QROperationDataFieldType.DATE
+export class WMTDateField implements WMTQROperationDataField {
+    type = WMTQROperationDataFieldType.DATE
     date: Date
 
     constructor(date: Date) {
@@ -166,8 +166,8 @@ export class DateField implements QROperationDataField {
 }
 
 /** Reference field */
-export class ReferenceField implements QROperationDataField {
-    type = QROperationDataFieldType.REFERENCE
+export class WMTReferenceField implements WMTQROperationDataField {
+    type = WMTQROperationDataFieldType.REFERENCE
     text: string
 
     constructor(text: string) {
@@ -176,8 +176,8 @@ export class ReferenceField implements QROperationDataField {
 }
 
 /** Note Field */
-export class NoteField implements QROperationDataField {
-    type = QROperationDataFieldType.NOTE
+export class WMTNoteField implements WMTQROperationDataField {
+    type = WMTQROperationDataFieldType.NOTE
     text: string
 
     constructor(text: string) {
@@ -186,8 +186,8 @@ export class NoteField implements QROperationDataField {
 }
 
 /** Text Field */
-export class TextField implements QROperationDataField {
-    type = QROperationDataFieldType.TEXT
+export class WMTTextField implements WMTQROperationDataField {
+    type = WMTQROperationDataFieldType.TEXT
     text: String
 
     constructor(text: string) {
@@ -199,8 +199,8 @@ export class TextField implements QROperationDataField {
  * Fallback for forward compatibility. If newer version of operation data
  * contains new field type, then this case can be used for it's representation.
  */
-export class FallbackField implements QROperationDataField {
-    type = QROperationDataFieldType.FALLBACK
+export class WMTFallbackField implements WMTQROperationDataField {
+    type = WMTQROperationDataFieldType.FALLBACK
     text: string
     rawType: string
 
@@ -211,10 +211,10 @@ export class FallbackField implements QROperationDataField {
 }
 
 /** Model class for offline QR operation signature. */
-export interface QROperationSignature {
+export interface WMTQROperationSignature {
 
     /** Defines which key has been used for ECDSA signature calculation. */
-    signingKey: SigningKey
+    signingKey: WMTSigningKey
 
     /** Raw signature data */
     signature: Buffer
@@ -224,7 +224,7 @@ export interface QROperationSignature {
 }
 
 /** Defines which key was used for ECDSA signature calculation */
-export enum SigningKey {
+export enum WMTSigningKey {
     /** Master server key was used for ECDSA signature calculation */
     MASTER,
 
@@ -232,15 +232,16 @@ export enum SigningKey {
     PERSONALIZED
 }
 
-export class SigningKeyUtil {
-    public static typeValue(signingKey: SigningKey): string {
-        return signingKey == SigningKey.MASTER ? "0" : "1"
+export class WMTSigningKeyUtil {
+    
+    public static typeValue(signingKey: WMTSigningKey): string {
+        return signingKey == WMTSigningKey.MASTER ? "0" : "1"
     }
 
-    public static fromTypeValue(typeValue: string): SigningKey | undefined {
+    public static fromTypeValue(typeValue: string): WMTSigningKey | undefined {
         switch (typeValue) {
-            case "0": return SigningKey.MASTER
-            case "1": return SigningKey.PERSONALIZED
+            case "0": return WMTSigningKey.MASTER
+            case "1": return WMTSigningKey.PERSONALIZED
             default: return undefined
         }
     }

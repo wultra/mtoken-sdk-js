@@ -68,7 +68,7 @@ const tmpDir = ".build"
     const CDV_tempDir = `${tmpDir}/cdv`
     const CDV_libDir = "lib"
     const CDV_outFileDir = `${CDV_buildDir}/${CDV_libDir}`
-    const CDV_pluginName = "WultraMobileTokenSDK"
+    const CDV_pluginName = "WultraMobileTokenPlugin"
     const CDV_outFile = `${CDV_outFileDir}/${CDV_pluginName}.js`
 
     const clearCDVall = () => rimraf([ CDV_buildDir, CDV_tempDir ])
@@ -83,9 +83,8 @@ const tmpDir = ".build"
 
     const copyCDVPatchSourceFiles = () =>
         gulp
-            .src([`${CDV_patchSourcesDir}/src/**/**.ts`], { base: CDV_patchSourcesDir })
+            .src([`${CDV_patchSourcesDir}/src/**.ts`], { base: CDV_patchSourcesDir })
             .pipe(gulp.dest(CDV_tempDir))
-            
 
     const compileCDVTask = () => 
         build({
@@ -106,7 +105,7 @@ const tmpDir = ".build"
 
     const createCDVDtsTask = () =>
         gulp
-            .src([`${CDV_tempDir}/src/MobileToken*.ts`, `${CDV_tempDir}/src/SDKVersion.ts`, `${CDV_tempDir}/src/PlatformUtils.ts`, `${CDV_tempDir}/src/*/**.ts`])
+            .src([`${CDV_tempDir}/src/WultraMobileToken.ts`, `${CDV_tempDir}/src/WMT*.ts`, `${CDV_tempDir}/src/*/**.ts`])
             .pipe(ts({ declaration: true, emitDeclarationOnly: true }))
             .pipe(concat(`typings.d.ts`))
             .pipe(stripImportExport())
@@ -115,22 +114,22 @@ const tmpDir = ".build"
 
     // TODO: extract from the code
     const objectsToExport = [
-        "MobileToken",
-        "MobileTokenLogger",
-        "MobileTokenLoggerVerbosity",
-        "MobileTokenException",
-        "Inbox",
-        "KnownRestApiError",
-        "UserAgent",
-        "Operations",
-        "PACUtils",
-        "QROperationParser",
-        "SigningKey",
-        "QROperationDataVersion",
-        "SignatureFactor",
-        "QROperationDataFieldType",
-        "AttributeType",
-        "Push"
+        "WultraMobileToken",
+        "WMTLogger",
+        "WMTLoggerVerbosity",
+        "WMTException",
+        "WMTInbox",
+        "WMTKnownRestApiError",
+        "WMTUserAgent",
+        "WMTOperations",
+        "WMTPACUtils",
+        "WMTQROperationParser",
+        "WMTSigningKey",
+        "WMTQROperationDataVersion",
+        "WMTSignatureFactor",
+        "WMTQROperationDataFieldType",
+        "WMTAttributeType",
+        "WMTPush"
     ]
 
     const exportModules = () => {

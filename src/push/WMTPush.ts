@@ -14,12 +14,12 @@
 // and limitations under the License.
 //
 
-import { Networking, type RequestProcessor, type MobileTokenResponse } from "../networking/Networking"
+import { WMTNetworking, type WMTRequestProcessor, type WMTResponse } from "../networking/WMTNetworking"
 import { PowerAuthAuthentication } from 'react-native-powerauth-mobile-sdk'
-import { PlatformUtils } from "../PlatformUtils"
+import { WMTPlatformUtils } from "../WMTPlatformUtils"
 
 /** Push handling */
-export class Push extends Networking {
+export class WMTPush extends WMTNetworking {
 
   /** 
    * Registers the given powerauth activation for push notifications.
@@ -29,9 +29,9 @@ export class Push extends Networking {
    * @param requestProcessor You may modify the request via this processor. It's highly recommended to only modify HTTP headers.
    * @returns Server response
    */
-  async register(token: string, platform?: "ios" | "android" | "huawei", requestProcessor?: RequestProcessor): Promise<MobileTokenResponse<void>> {
+  async register(token: string, platform?: "ios" | "android" | "huawei", requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<void>> {
 
-    platform = platform || PlatformUtils.getPlatform()
+    platform = platform || WMTPlatformUtils.getPlatform()
 
     return await this.postSignedWithToken<void>(
       { requestObject: { token: token, platform: platform } },

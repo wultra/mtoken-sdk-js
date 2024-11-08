@@ -14,7 +14,26 @@
 // and limitations under the License.
 //
 
-// TODO: this needs to be modified during package-prepare!
+import type { WMTUserOperationProximityCheck } from './WMTUserOperationProximityCheck'
 
-/* @internal */
-export const SDK_VERSION = "1.0.0-CDV"
+/**
+ * An interface that defines minimum data needed for calculating the operation signature
+ * and sending it to confirmation endpoint.
+ */
+export interface WMTOnlineOperation {
+
+    /** Unique operation identifier. */
+    id: string
+
+    /**
+     * Actual data that will be signed.
+     * 
+     * This shouldn't be visible to the user.
+     */
+    data: string
+
+    /** 
+     * Additional information with proximity check data 
+     */
+    proximityCheck?: WMTUserOperationProximityCheck
+}

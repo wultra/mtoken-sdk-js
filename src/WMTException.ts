@@ -14,13 +14,16 @@
 // and limitations under the License.
 //
 
-export interface UserOperationProximityCheck {
-    /** The actual Time-based one time password */
-    totp: string
+/** Possible logic errors during the API calls. */
+export class WMTException {
 
-    /** Type of the Proximity check */
-    type: "QR_CODE" | "DEEPLINK"
-
-    /** Timestamp when the operation was scanned (qrCode) or delivered to the device (deeplink) */
-    timestampReceived: Date
-}
+    /** Description of the Exception */
+    description: string
+    /** Optional additional data that helps with the exception */
+    additionalData?: any
+    
+    constructor(description: string, additionalData?: any) {
+      this.description = description
+      this.additionalData = additionalData
+    }
+  }

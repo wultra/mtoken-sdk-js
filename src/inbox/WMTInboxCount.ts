@@ -15,7 +15,7 @@
 //
 
 /** Structure contains information about unread messages in inbox. */
-export interface InboxCount {
+export interface WMTInboxCount {
     /** Number of unread messages in inbox. */
     countUnread: number
 }

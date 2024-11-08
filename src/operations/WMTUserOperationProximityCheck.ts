@@ -14,7 +14,13 @@
 // and limitations under the License.
 //
 
-// TODO: this needs to be modified during package-prepare!
+export interface WMTUserOperationProximityCheck {
+    /** The actual Time-based one time password */
+    totp: string
 
-/* @internal */
-export const SDK_VERSION = "1.0.0"
+    /** Type of the Proximity check */
+    type: "QR_CODE" | "DEEPLINK"
+
+    /** Timestamp when the operation was scanned (qrCode) or delivered to the device (deeplink) */
+    timestampReceived: Date
+}

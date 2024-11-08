@@ -20,7 +20,7 @@
  * `MobileTokenOperationAttribute` is considered to be "abstract".
  * Every type of the attribute has it's own "strongly typed" implementation.
  */
-export interface UserOperationAttribute {
+export interface WMTUserOperationAttribute {
 
     /** 
      * ID (type) of the label. This is highly depended on the backend
@@ -35,14 +35,14 @@ export interface UserOperationAttribute {
      * 
      * The possible string value is a fallback for unknown attribute types.
      */
-    type: AttributeType | string
+    type: WMTAttributeType | string
     
     /** Label value */ 
     label: string
 }
 
 /** Attribute type. Based on this type, proper class should be chosen for "deserialization". */
-export enum AttributeType {
+export enum WMTAttributeType {
     /** Amount, like "100.00 CZK" */
     AMOUNT            = "AMOUNT", 
     /** Currency conversion, for example when changing money from USD to EUR */
@@ -58,7 +58,7 @@ export enum AttributeType {
 }
 
 /** Amount attribute is 1 row in operation, that represents "Payment Amount" */
-export interface OperationAttributeAmount extends UserOperationAttribute {
+export interface WMTOperationAttributeAmount extends WMTUserOperationAttribute {
     
     /**
      * Formatted amount for presentation.
@@ -94,24 +94,24 @@ export interface OperationAttributeAmount extends UserOperationAttribute {
 }
 
 /** Attribute that describes generic key-value row to display. */
-export interface OperationAttributeKeyValue extends UserOperationAttribute {
+export interface WMTOperationAttributeKeyValue extends WMTUserOperationAttribute {
     /**Value of the attribute  */ 
     value: string
 }
 
 /** Attribute that describes note, that should be handled as "long text message". */
-export interface OperationAttributeNote extends UserOperationAttribute {
+export interface WMTOperationAttributeNote extends WMTUserOperationAttribute {
     /** Note  */ 
     note: string
 }
 
 /** Heading. This attribute has no value. It only acts as a "section separator". */
-export interface OperationAttributeHeading extends UserOperationAttribute {
+export interface WMTOperationAttributeHeading extends WMTUserOperationAttribute {
     
 }
 
 /** Image that might be "open" on tap/click. */
-export interface OperationAttributeImage extends UserOperationAttribute {
+export interface WMTOperationAttributeImage extends WMTUserOperationAttribute {
 
     /** Image thumbnail url to the public internet. */
     thumbnailUrl: string
@@ -124,7 +124,7 @@ export interface OperationAttributeImage extends UserOperationAttribute {
 }
 
 /** Conversion attribute is 1 row in operation, that represents "Money Conversion" */
-export interface OperationAttributeAmountConversion extends UserOperationAttribute {
+export interface WMTOperationAttributeAmountConversion extends WMTUserOperationAttribute {
     
     /**
      * If the conversion is dynamic and the application should refresh it periodically

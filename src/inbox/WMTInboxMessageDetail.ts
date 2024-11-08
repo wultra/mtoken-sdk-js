@@ -14,26 +14,23 @@
 // and limitations under the License.
 //
 
-import type { UserOperationProximityCheck } from './UserOperationProximityCheck'
-
-/**
- * An interface that defines minimum data needed for calculating the operation signature
- * and sending it to confirmation endpoint.
- */
-export interface OnlineOperation {
-
-    /** Unique operation identifier. */
+/** Structure with message detail. */
+export interface WMTInboxMessageDetail {
+    /** Message's identifier. */
     id: string
-
-    /**
-     * Actual data that will be signed.
-     * 
-     * This shouldn't be visible to the user.
-     */
-    data: string
-
+    /** Message's subject. */
+    subject: string
     /** 
-     * Additional information with proximity check data 
+     * Message's summary. It typically contains a reduced
+     * information from message's body, with no additional formatting.
      */
-    proximityCheck?: UserOperationProximityCheck
+    summary: string
+    /** Message's body. */
+    body: string
+    /** Message body's content type. */
+    type: "text" | "html"
+    /** If `true`, then user already read the message. */
+    read: boolean
+    /** Date and time when the message was created. */
+    timestampCreated: Date
 }
