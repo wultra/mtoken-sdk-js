@@ -28,6 +28,8 @@
         "cordova-android": "^13.0.0",
         "cordova-ios": "^7.1.1",
         "cordova-mtoken-sdk": "file:../build/cdv",
+        "cordova-plugin-buildinfo": "^4.0.0",
+        "cordova-plugin-device": "^3.0.0",
         "cordova-powerauth-mobile-sdk": "https://github.com/wultra/react-native-powerauth-mobile-sdk/releases/download/cordova-0.2.0/cordova-powerauth-mobile-sdk-0.2.0.tgz",
         "dotenv": "^16.4.5",
         "esbuild": "^0.23.1",

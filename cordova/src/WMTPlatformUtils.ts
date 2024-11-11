@@ -17,6 +17,10 @@
 import { WMTLogger } from "./WMTLogger"
 import { WMT_SDK_VERSION } from "./WMTSDKVersion"
 
+// to get rid of compilation errors
+declare var device: any;
+declare var BuildInfo: any;
+
 export class WMTPlatformUtils {
 
     static getPlatform():  "ios" | "android" {
@@ -31,14 +35,13 @@ export class WMTPlatformUtils {
         const product = "MobileTokenJS"
         const sdkVer = WMT_SDK_VERSION
         const os = this.getPlatform()
-        // TODO: !!!
-        const osVer = "1.0" // Platform.Version
+        const osVer = device.version
         try {
-            const appVer = "1.0" // DeviceInfo.getVersion()
-            const appId = "fake.id" // DeviceInfo.getBundleId()
-            const maker = "Wultra" // DeviceInfo.getManufacturerSync()
-            const model = "Talisman" // DeviceInfo.getModel()
-            return `${product}/${sdkVer} ${appId}/${appVer} (${maker}; ${os}/${osVer}; ${model}`
+            const appVer = BuildInfo.version
+            const appId = BuildInfo.packageName
+            const maker = device.manufacturer
+            const model = device.model
+            return `${product}/${sdkVer} ${appId}/${appVer} (${maker}; ${os}/${osVer}; ${model})`
         } catch(e) {
             WMTLogger.debug(`Failed to create user agent: ${e}`)
             return `${product}/${sdkVer} ${os}/${osVer}`
