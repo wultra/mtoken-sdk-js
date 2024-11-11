@@ -1,0 +1,30 @@
+{
+  "name": "cordova-mtoken-sdk",
+  "version": "%%SDK_VERSION%%",
+  "description": "PowerAuth based Mobile Token SDK for Cordova (iOS and Android)",
+  "types": "typings.d.ts",
+  "files": [
+    "README.md",
+    "LICENSE",
+    "lib/*",
+    "typings.d.ts",
+    "plugin.xml"
+  ],
+  "dependencies": {
+    "cordova-powerauth-mobile-sdk": "https://github.com/wultra/react-native-powerauth-mobile-sdk/releases/download/cordova-0.2.0/cordova-powerauth-mobile-sdk-0.2.0.tgz"
+  },
+  "keywords": [
+    "cordova",
+    "ios",
+    "android"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wultra/mtoken-sdk-js.git"
+  },
+  "author": "Wultra <support@wultra.com> (https://wultra.com)",
+  "homepage": "https://www.wultra.com/mobile-security-suite",
+  "license": "Apache 2.0",
+  "licenseFilename": "LICENSE",
+  "readmeFilename": "README.md" 
+}
