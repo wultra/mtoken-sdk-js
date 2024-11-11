@@ -14,7 +14,5 @@
 // and limitations under the License.
 //
 
-// TODO: this needs to be modified during package-prepare!
-
 /* @internal */
-export const WMT_SDK_VERSION = "1.0.0"
+export const WMT_SDK_VERSION = "%%SDK_VERSION%%"

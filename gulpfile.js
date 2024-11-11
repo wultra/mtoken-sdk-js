@@ -26,8 +26,11 @@ const fs = require('fs')
 const exec = require('child_process').exec
 
 // Out files
-const buildDir = "build"
-const tmpDir = ".build"
+const buildDir = "build" // folder with the final products
+const tmpDir = ".build" // temp folder for manipulation and build
+
+// extract version from package.json. this version will be replaced in code and places like cordovas plugin.xml
+const sdkVersion = require('./package.json').version
 
 /***********************
 * REACT-NATIVE SECTION *
@@ -36,25 +39,45 @@ const tmpDir = ".build"
     const RN_packageJson = "package.json"
     const RN_tsConfig = "tsconfig.json"
     const RN_buildDir = `${buildDir}/react-native`
-    const RN_sources = "src/**/**.ts"
+    const RN_tempDir = `${tmpDir}/rn`
+    const RN_sources = `${RN_tempDir}/src/**/**.ts`
     const RN_libDir = "lib"
 
-    const clearRN = () => rimraf([ RN_buildDir ])
+    const clearRNall = () => rimraf([ RN_buildDir, RN_tempDir ])
+    const clearRNtemp = () => rimraf([ RN_tempDir ])
 
+    // copy source files to the rn build folder
+    const copyRNSourceFiles = () =>
+        gulp
+            .src("src/**/**.ts", { base: ".", allowEmpty: true })
+            .pipe(replace("%%SDK_VERSION%%", sdkVersion)) // replace version where needed
+            .pipe(gulp.dest(RN_tempDir))
+
+    // compile the typescript with the TSC and given tsconfig.
     const compileRNTask = () =>
         gulp
             .src(RN_sources)
             .pipe(ts(RN_tsConfig))
             .pipe(gulp.dest(`${RN_buildDir}/${RN_libDir}`))
 
+    // copy package.json to the build folder
     const copyRNPackageJson = () => 
         gulp
             .src(RN_packageJson)
             .pipe(gulp.dest(RN_buildDir))
 
+    // create final tar package
     const packRNPackage = () => exec(`pushd ${RN_buildDir} && npm pack`)
 
-    var RN_buildTask = gulp.series(clearRN, compileRNTask, copyRNPackageJson, packRNPackage)
+    // umbrella task
+    var RN_buildTask = gulp.series(
+        clearRNall,
+        copyRNSourceFiles,
+        compileRNTask,
+        copyRNPackageJson,
+        packRNPackage,
+        clearRNtemp
+    )
 }
 
 /***********************
@@ -74,18 +97,22 @@ const tmpDir = ".build"
     const clearCDVall = () => rimraf([ CDV_buildDir, CDV_tempDir ])
     const clearCDVtemp = () => rimraf([ CDV_tempDir ])
 
+    // copy source files to the cordova build folder
     const copyCDVSourceFiles = () =>
         gulp
             .src("src/**/**.ts", { base: ".", allowEmpty: true })
-            // .pipe(replace(/.+ @cordova-remove *[^\n]*/g, "")) // remove lines with @cordova-remove
-            .pipe(replace(/.*import.+react-native-powerauth-mobile-sdk *[^\n]*/g, "import 'cordova-powerauth-mobile-sdk'\n"))
+            .pipe(replace(/.+ @cordova-remove *[^\n]*/g, "")) // remove lines with @cordova-remove
+            .pipe(replace(/.*import.+react-native-powerauth-mobile-sdk *[^\n]*/g, "import 'cordova-powerauth-mobile-sdk'\n")) // replace react imports with cordova impoers
+            .pipe(replace("%%SDK_VERSION%%", sdkVersion)) // replace version where needed
             .pipe(gulp.dest(CDV_tempDir))
 
+    // patch cordova specific code
     const copyCDVPatchSourceFiles = () =>
         gulp
             .src([`${CDV_patchSourcesDir}/src/**.ts`], { base: CDV_patchSourcesDir })
             .pipe(gulp.dest(CDV_tempDir))
 
+    // compile TS to single JS file with esbuild
     const compileCDVTask = () => 
         build({
             entryPoints: [`${CDV_tempDir}/src/index.ts`],
@@ -97,24 +124,27 @@ const tmpDir = ".build"
             //minify: true
         })
 
+    // pach compiled files to remove require
     const patchCDVCompiledTask = () =>
         gulp
             .src(CDV_outFile)
             .pipe(replace(/.*require\("cordova-powerauth-mobile-sdk"\)*./g, ""))
             .pipe(gulp.dest(CDV_outFileDir))
 
+    // create typings file
     const createCDVDtsTask = () =>
         gulp
             .src([`${CDV_tempDir}/src/WultraMobileToken.ts`, `${CDV_tempDir}/src/WMT*.ts`, `${CDV_tempDir}/src/*/**.ts`])
             .pipe(ts({ declaration: true, emitDeclarationOnly: true }))
             .pipe(concat(`typings.d.ts`))
-            .pipe(stripImportExport())
+            .pipe(stripImportExport()) // strim app all import/export
             .pipe(replace(/.*import.+cordova-powerauth-mobile-sdk *[^\n]*/g, ""))
             .pipe(gulp.dest(CDV_buildDir))
 
-    // TODO: extract from the code
+    // Objects that will be visible to developers without prefix (without it, developers would need to do things like "WultraMobileTokenPlugin.WMTInbox" instead of just "WMTInbox")
+    // TODO: extract from the code?
     const objectsToExport = [
-        "WultraMobileToken",
+        "WultraMobileToken", // main class
         "WMTLogger",
         "WMTLoggerVerbosity",
         "WMTException",
@@ -132,12 +162,13 @@ const tmpDir = ".build"
         "WMTPush"
     ]
 
+    // export all objects as modules to cordova.
+    // this will create js file for each exported object that will act as a module in cordova.
     const exportModules = () => {
         return new Promise(function(resolve) {
             objectsToExport.forEach( v => {
                 fs.writeFileSync(
                     `${CDV_outFileDir}/${v}.js`, 
-                    // TODO: extract
                     `require("cordova-mtoken-sdk.${CDV_pluginName}");\nmodule.exports = ${CDV_pluginName}.${v};`
                 );
             })
@@ -145,9 +176,12 @@ const tmpDir = ".build"
         });
     }
 
+    // copy static files - package.json and plugin.xml
+    // + patch plugin.xml with generated js modules from previous step
     const copyCDVStaticFiles = () => 
         gulp
             .src([CDV_packageJson, CDV_pluginXml])
+            .pipe(replace("%%SDK_VERSION%%", sdkVersion))
             .pipe(
                 replace(
                     "<!-- PLACEHOLDER_MODULES -->",
@@ -158,9 +192,10 @@ const tmpDir = ".build"
             )
             .pipe(gulp.dest(CDV_buildDir))
         
+    // create final tar package
     const packCDVPackage = () => exec(`pushd ${CDV_buildDir} && npm pack`)
 
-    // join cordova compile and modify for export task
+    // umbrella task
     var CDV_buildTask = gulp.series(
         clearCDVall,
         copyCDVSourceFiles,

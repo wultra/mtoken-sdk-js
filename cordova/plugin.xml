@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" id="cordova-mtoken-sdk" version="0.1.0">
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" id="cordova-mtoken-sdk" version="%%SDK_VERSION%%">
     <name>Wultra Mobile Token SDK</name>
     <description>PowerAuth based Mobile Token SDK for Cordova (iOS and Android)</description>
     <license>Apache 2.0</license>
