@@ -33,7 +33,7 @@ export interface WMTUserOperationUIData {
      *
      * Type of PostApprovalScreen is presented with different classes based on its type (Starting with `PostApprovalScreen*`).
      * 
-     * For example: (TODO!)
+     * For example: WMTPostApprovalScreenRedirect that provides data after URL redirect.
      */
     postApprovalScreen?: WMTPostApprovalScreen
 }

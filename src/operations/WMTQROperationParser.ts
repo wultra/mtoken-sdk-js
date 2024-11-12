@@ -80,7 +80,7 @@ export class WMTQROperationParser {
         const formData = this.parseOperationData(dataString)
 
         // Rebuild signed data, without pure signature string
-        const signedData = Buffer.from(string.substring(0, string.length - signature.signatureString.length), 'utf8')
+        const signedData = string.substring(0, string.length - signature.signatureString.length)
 
         // Parse flags
         const flags = this.parseOperationFlags(flagsString)
@@ -94,7 +94,7 @@ export class WMTQROperationParser {
             nonce: nonce, 
             flags: flags, 
             totp: totp, 
-            signedData: signedData, 
+            signedData: signedData,
             signature: signature, 
             isNewerFormat: isNewerFormat
         }

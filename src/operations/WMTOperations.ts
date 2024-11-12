@@ -105,19 +105,6 @@ export class WMTOperations extends WMTNetworking {
     }
 
     /**
-     * Sign offline QR operation with provided authentication.
-     * 
-     * @param operation Operation to approve
-     * @param authentication Authentication object
-     * @param uriId Custom signature URI ID of the operation. Use URI ID under which the operation was
-     * created on the server. Default value is `/operation/authorize/offline`.
-     * @returns 
-     */
-    async authorizeOffline(operation: WMTQROperation, authentication: PowerAuthAuthentication, uriId: string = "/operation/authorize/offline"): Promise<string> {
-        return await this.pa.offlineSignature(authentication, uriId, operation.nonce, QROperationUtil.dataForOfflineSigning(operation))
-    }
-
-    /**
      * Reject operation with a reason.
      * 
      * @param operationId ID of the operation.
@@ -134,6 +121,19 @@ export class WMTOperations extends WMTNetworking {
             false,
             requestProcessor
         )
+    }
+
+    /**
+     * Sign offline QR operation with provided authentication.
+     * 
+     * @param operation Operation to approve
+     * @param authentication Authentication object
+     * @param uriId Custom signature URI ID of the operation. Use URI ID under which the operation was
+     * created on the server. Default value is `/operation/authorize/offline`.
+     * @returns 
+     */
+    async authorizeOffline(operation: WMTQROperation, authentication: PowerAuthAuthentication, uriId: string = "/operation/authorize/offline"): Promise<string> {
+        return await this.pa.offlineSignature(authentication, uriId, operation.nonce, QROperationUtil.dataForOfflineSigning(operation))
     }
 
     /**

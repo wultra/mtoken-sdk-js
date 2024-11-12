@@ -39,7 +39,7 @@ export interface WMTQROperation {
     totp?: string
     
     /** Data for signature validation */
-    signedData: Buffer
+    signedData: string
     
     /** ECDSA signature calculated from `signedData`. String is in Base64 format */
     signature: WMTQROperationSignature
@@ -188,7 +188,7 @@ export class WMTNoteField implements WMTQROperationDataField {
 /** Text Field */
 export class WMTTextField implements WMTQROperationDataField {
     type = WMTQROperationDataFieldType.TEXT
-    text: String
+    text: string
 
     constructor(text: string) {
         this.text = text
@@ -220,7 +220,7 @@ export interface WMTQROperationSignature {
     signature: Buffer
 
     /** Signature in Base64 format */
-    signatureString: String
+    signatureString: string
 }
 
 /** Defines which key was used for ECDSA signature calculation */
@@ -233,7 +233,7 @@ export enum WMTSigningKey {
 }
 
 export class WMTSigningKeyUtil {
-    
+
     public static typeValue(signingKey: WMTSigningKey): string {
         return signingKey == WMTSigningKey.MASTER ? "0" : "1"
     }

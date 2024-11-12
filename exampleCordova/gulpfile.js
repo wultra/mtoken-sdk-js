@@ -90,5 +90,5 @@ gulp.task("default", gulp.series(
     compile,
     cleanTemp,
     prepareIOS,
-    patchNativeFiles
+    // patchNativeFiles
 ));

@@ -17,7 +17,7 @@
 import { PowerAuth, PowerAuthAuthentication } from 'react-native-powerauth-mobile-sdk';
 import { TestSuite } from './TestSuite';
 import { IntegrationUtils } from './utils/IntegrationUtils';
-import { WultraMobileToken, WMTQROperationParser, WMTUserAgent } from 'react-native-mtoken-sdk';
+import { WultraMobileToken, WMTQROperationParser, WMTUserAgent, WMTSigningKey } from 'react-native-mtoken-sdk';
 
 export class TestSuite_Integration extends TestSuite {
 
@@ -100,6 +100,11 @@ export class TestSuite_Integration extends TestSuite {
 
         // parse the data
         const qrOperation = WMTQROperationParser.parse(qrData.operationQrCodeData)
+
+        // verify the data
+        const verified = await this.powerAuth.verifyServerSignedData(qrOperation.signedData, qrOperation.signature.signatureString, qrOperation.signature.signingKey == WMTSigningKey.MASTER)
+
+        this.assertTrue(verified, "QR operation did not verify")
 
         // get the OTP with the "offline" signing
         const auth = PowerAuthAuthentication.password(this.pin)
