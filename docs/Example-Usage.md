@@ -1,11 +1,10 @@
-# Sample Usage
+# Example Usage
 
 This is a sample usage of the most common use case of this SDK - fetching operations and approving them.
 
 ## SDK Integration
 
 For SDK installation follow the [SDK Integration](./SDK-Integration.md) tutorial.
-
 
 ## Sample Code
 

@@ -27,11 +27,11 @@ Remarks:
 **Tutorials**
 
 - [SDK Integration](./SDK-Integration.md)
+- [Example Usage](./Example-Usage.md)
 - [Using Operations](./Using-Operations.md)
 - [Using Push](./Using-Push.md)
 - [Using Inbox](./Using-Inbox.md)
-- [Error Handling](./Error-Handling.md)
-- [Language Configuration](./Language-Configuration.md)
+- [Language and User-Agent Configuration](./Language-UserAgent-Configuration.md)
 
 **Other**
 

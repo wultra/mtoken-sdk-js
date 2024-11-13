@@ -563,3 +563,7 @@ export interface WMTPACData {
 
 - Accepted formats:
   - notice that the totp key in JWT and in query shall be `potp`!
+
+## Read Next
+
+- [Using Push](./Using-Push.md)

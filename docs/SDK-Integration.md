@@ -76,4 +76,4 @@ const mtoken = new WultraMobileToken(powerAuth, "https://my-instance.mycompany.c
 
 ## Read Next
 
-- [Sample Usage](./Sample-Usage.md)
+- [Example Usage](./Example-Usage.md)

@@ -19,44 +19,44 @@ export enum WMTKnownRestApiError {
     
     // COMMON ERRORS
     
-    /// When unexpected error happened. */
+    /** When unexpected error happened. */
     GenericError                     = "ERROR_GENERIC",
     
     /** General authentication failure (wrong password, wrong activation state, etc...) */
     AuthenticationFailure            = "POWERAUTH_AUTH_FAIL",
-    /// Invalid request sent - missing request object in request */
+    /** Invalid request sent - missing request object in request */
     InvalidRequest                   = "INVALID_REQUEST",
-    /// Activation is not valid (it is different from configured activation) */
+    /** Activation is not valid (it is different from configured activation) */
     InvalidActivation                = "INVALID_ACTIVATION",
-    /// Invalid application identifier is attempted for operation manipulation */
+    /** Invalid application identifier is attempted for operation manipulation */
     InvalidApplication               = "INVALID_APPLICATION",
-    /// Invalid operation identifier is attempted for operation manipulation */
+    /** Invalid operation identifier is attempted for operation manipulation */
     InvalidOperation                 = "INVALID_OPERATION",
-    /// Error during activation */
+    /** Error during activation */
     ActivationError                  = "ERR_ACTIVATION",
-    /// Error in case that PowerAuth authentication fails */
+    /** Error in case that PowerAuth authentication fails */
     AuthenticationError              = "ERR_AUTHENTICATION",
-    /// Error during secure vault unlocking */
+    /** Error during secure vault unlocking */
     SecureVaultError                 = "ERR_SECURE_VAULT",
-    /// Returned in case encryption or decryption fails */
+    /** Returned in case encryption or decryption fails */
     EncryptionError                  = "ERR_ENCRYPTION",
     
     // PUSH ERRORS
   
-    /// Failed to register push notifications */
+    /** Failed to register push notifications */
     PushRegistrationFailed           = "PUSH_REGISTRATION_FAILED",
   
     // OPERATIONS ERRORS
     
-    /// Operation is already finished */
+    /** Operation is already finished */
     OperationAlreadyFinished         = "OPERATION_ALREADY_FINISHED",
-    /// Operation is already failed */
+    /** Operation is already failed */
     OperationAlreadyFailed           = "OPERATION_ALREADY_FAILED",
-    /// Operation is cancelled */
+    /** Operation is cancelled */
     OperationAlreadyCancelled        = "OPERATION_ALREADY_CANCELED",
-    /// Operation is expired */
+    /** Operation is expired */
     OperationExpired                 = "OPERATION_EXPIRED",
-    /// Operation authorization failed */
+    /** Operation authorization failed */
     OperationFailed                  = "OPERATION_FAILED",
   
     // Following errors in the current mtoken implementatation should not happen, so we're commenting them out to keep it simple
@@ -100,4 +100,3 @@ export enum WMTKnownRestApiError {
     // /// Communication with remote system failed
     // RemoteCommunicationError         = "REMOTE_COMMUNICATION_ERROR"
   }
-  

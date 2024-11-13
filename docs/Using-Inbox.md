@@ -1,0 +1,123 @@
+# Using Inbox
+
+<!-- begin remove -->
+- [Introduction](#introduction)
+- [Getting an Instance](#getting-an-instance)
+- [Inbox Usage](#inbox-usage)
+  - [Get Number of Unread Messages](#get-number-of-unread-messages)
+  - [Get List of Messages](#get-list-of-messages)
+  - [Get Message Detail](#get-message-detail)
+  - [Set Message as Read](#set-message-as-read)
+- [Error handling](#error-handling)
+
+## Introduction
+<!-- end -->
+
+WMTInbox is responsible for managing messages in the Inbox. The inbox is a simple one way delivery system that allows you to deliver messages to the user.
+
+<!-- begin box warning -->
+Note: Before using WMTInbox, you need to have a `PowerAuth` object available and initialized with a valid activation. Without a valid PowerAuth activation, the service will return an error.
+<!-- end -->
+
+WMTInbox communicates with the [Mobile Token API](https://developers.wultra.com/components/enrollment-server/develop/documentation/Mobile-Token-API).
+
+## Getting an Instance
+
+Instance of the `WMTInbox` can be accessed after creating the main object of the SDK:
+
+```typescript
+const mtoken = new WultraMobileToken(powerAuthInstance, "https://my-instance.mycompany.com/enrollment-server")
+const inbox = mtoken.inbox
+```
+
+## Inbox Usage
+
+### Get Number of Unread Messages
+
+To get the number of unread messages, use the following code:
+
+```typescript
+try {
+    const resp = await this.mtoken.inbox.unreadCount()
+    if (resp.responseObject) {
+        console.log(`There are ${resp.responseObject.countUnread} unread messages.`)
+    } else {
+        // error    
+    }
+} catch (e) {
+    // failure
+}
+```
+
+### Get a List of Messages
+
+Get a paged list of messages:
+
+```typescript
+try {
+    // get page 0 of size 50, not not exclude unread messages
+    const resp = await this.mtoken.inbox.list(0, 50, false)
+    if (resp.responseObject) {
+        // process the message list
+    } else {
+        // error    
+    }
+} catch (e) {
+    // failure
+}
+```
+
+### Get Message Detail
+
+Each message has its unique identifier. To get the body of the message, use the following code:
+
+```typescript
+try {
+    let messageId = messagesList[0].id
+    const resp = await this.mtoken.detail(messageId)
+    if (resp.responseObject) {
+        // process the message
+    } else {
+        // error    
+    }
+} catch (e) {
+    // failure
+}
+```
+
+### Set Message as Read
+
+To mark the message as read by the user, use the following code:
+
+```typescript
+try {
+    let messageId = messagesList[0].id
+    const resp = await this.mtoken.markRead(messageId)
+    if (resp.status == "OK") {
+        // the message was marked as read
+    } else {
+        // error    
+    }
+} catch (e) {
+    // failure
+}
+```
+
+Alternatively, you can mark all messages as read:
+
+```typescript
+try {
+    const resp = await this.mtoken.markAllRead()
+    if (resp.status == "OK") {
+        // all messages was marked as read
+    } else {
+        // error    
+    }
+} catch (e) {
+    // failure
+}
+```
+
+## Read Next
+  
+- [Server Error Handling](./Server-Error-Handling.md)
