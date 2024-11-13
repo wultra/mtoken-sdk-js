@@ -12,7 +12,7 @@ To understand the Wultra Mobile Token SDK purpose on a business level better, yo
 
 WMT SDK library does precisely this:
 
-- Retrieves the list of operations that are pending for approval for a given user.
+- Retrieves the list of operations that are pending approval for a given user.
 - Approves or rejects operations with PowerAuth transaction signing.
 - Registers an existing PowerAuth activation to receive push notifications.
 
@@ -20,6 +20,10 @@ Remarks:
 
 - This library does not contain any UI.
 - We also provide an [Android](https://github.com/wultra/mtoken-sdk-android) and [iOS](https://github.com/wultra/mtoken-sdk-ios) version of this library. 
+
+## Open Source Code
+
+The code of the library is open source and you can freely browse it in our GitHub at [https://github.com/wultra/mtoken-sdk-js](https://github.com/wultra/mtoken-sdk-js/#docucheck-keep-link)
 
 <!-- begin remove -->
 ## Integration Tutorials

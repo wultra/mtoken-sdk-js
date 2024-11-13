@@ -1,21 +1,21 @@
 # Example Usage
 
-This is a sample usage of the most common use case of this SDK - fetching operations and approving them.
+This is an example of the most common use case of this SDK - fetching operations and approving them.
 
 ## SDK Integration
 
-For SDK installation follow the [SDK Integration](./SDK-Integration.md) tutorial.
+Follow the [SDK Integration](./SDK-Integration.md) tutorial for SDK installation.
 
-## Sample Code
+## Example Code
 
 Example Typescript usage:
 
 ```typescript
 
-// PowerAuth instance needs to be configured and user-activated instance.
+// PowerAuth instance needs to be configured and a user-activated instance.
 // More about PowerAuth SDK can be found here: https://github.com/wultra/react-native-powerauth-mobile-sdk
 
-async function sampleUsage(powerAuth: PowerAuth) {
+async function exampleUsage(powerAuth: PowerAuth) {
     const mtoken = new WultraMobileToken(powerAuth, "https://my-instance.mycompany.com/enrollment-server") // create the WultraMobileToken instance
     mtoken.setAcceptLanguage("de") // set "requested content" to german language (default is english - "en")
     try {

@@ -1,6 +1,6 @@
 # Server Error Handling
 
-When the request fails on the server, it can return an known error for you to interpret to the user and use it to log it
+When the request fails on the server, it can return a known error for you to interpret to the user and use to log it
 for better error reporting.
 
 ## Example error handling
@@ -28,7 +28,7 @@ async function approve(operation: WMTOnlineOperation, password: string) {
 
 ## Known API Error codes
 
-When the API call response has `responseError`, the `code` property can contain following errors:
+When the API call response has `responseError`, the `code` property can contain the following errors:
 
 | Error Code                   | Description                                                                     |
 |------------------------------|---------------------------------------------------------------------------------|

@@ -17,7 +17,7 @@ To understand the Wultra Mobile Token SDK purpose on a business level better, yo
 
 WMT SDK library does precisely this:
 
-- Retrieves the list of operations that are pending for approval for a given user.
+- Retrieves the list of operations that are pending approval for a given user.
 - Approves or rejects operations with PowerAuth transaction signing.
 - Registers an existing PowerAuth activation to receive push notifications.
 

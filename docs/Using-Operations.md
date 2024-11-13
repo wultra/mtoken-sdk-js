@@ -29,7 +29,7 @@ Note: Before using `WMTOperations`, you need to have a `PowerAuth` object availa
 
 ## Getting an Instance
 
-Instance of the `WMTOperations` can be accessed after creating the main object of the SDK:
+The instance of the `WMTOperations` can be accessed after creating the main object of the SDK:
 
 ```typescript
 const mtoken = new WultraMobileToken(powerAuthInstance, "https://my-instance.mycompany.com/enrollment-server")
@@ -88,9 +88,9 @@ To approve operations with biometrics, your PowerAuth instance [needs to be conf
 // Approve operation with biometrics
 async function approveWithBiometrics(operation: WMTUserOperation) {
 
-    // UserOperation contains information if biometrics can be used
+    // UserOperation contains information on biometrics that can be used
     if (!operation.allowedSignatureType.variants.find(variant => variant === "possession_biometry")) {
-        // biometrics usage is not allowed on this operation
+        //Biometrics usage is not allowed on this operation
         return
     }
 
@@ -114,7 +114,7 @@ async function approveWithBiometrics(operation: WMTUserOperation) {
 
 ## Reject an Operation
 
-To reject an operation use `reject`. Operation rejection is confirmed by the possession factor so there is no need for creating the `PowerAuthAuthentication` object. You can simply use it like in the following example.
+To reject an operation use `reject`. Operation rejection is confirmed by the possession factor so there is no need to create the `PowerAuthAuthentication` object. You can simply use it like in the following example.
 
 ```typescript
 // Reject operation with some reason
@@ -132,7 +132,7 @@ async function reject(operation: WMTOnlineOperation, reason: "INCORRECT_DATA" | 
 }
 ```
 
-## Operation detail
+## Operation Detail
 
 To get a detail of the operation based on operation ID use `detail`. Operation detail is confirmed by the possession factor so there is no need for creating a `PowerAuthAuthentication` object. The returned result is the operation and its current status.
 
@@ -295,7 +295,7 @@ async function approveQROperationWithBiometrics(operation: WMTQROperation) {
 
 All available methods and attributes of `WMTOperations` API are:
 
-> Each call have `requestProcessor` parameter - an option to modify the request.
+> Each call has a `requestProcessor` parameter - an option to modify the request.
 
 - `async pendingList(requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<WMTUserOperation[]>>` - Retrieves pending operations from the server.
 - `async detail(operationId: string, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<WMTUserOperation>>` - Retrieves operation detail based on operation ID.
@@ -310,7 +310,7 @@ All available methods and attributes of `WMTOperations` API are:
   - `operationId` - An operation to reject.
   - `reason` - Rejection reason.
 - `async authorizeOffline(operation: WMTQROperation, authentication: PowerAuthAuthentication, uriId: string = "/operation/authorize/offline"): Promise<string>` - Sign offline (QR) operation.
-  - `operation` - Offline operation retrieved via `QROperationParser.parse` method (or otherwise).
+  - `operation` - Offline operation retrieved via the `QROperationParser.parse` method (or otherwise).
   - `authentication` - PowerAuth authentication object for operation signing.
   - `uriId` - Custom signature URI ID of the operation. Use the URI ID under which the operation was created on the server. The default value is `/operation/authorize/offline`.
 - `async claim(operationId: string, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<WMTUserOperation>>` - Assigns the 'non-personalized' operation to the user.
@@ -348,7 +348,7 @@ export interface WMTUserOperation extends WMTOnlineOperation {
     /**
      * Date and time when the operation will expire.
      * 
-     * You should never use this for hiding the operation (visually) from the user
+     * You should never use this to hide the operation (visually) from the user
      * as the time set for the user system can differ with the backend.
      */ 
     operationExpires: Date

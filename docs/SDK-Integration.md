@@ -21,7 +21,7 @@ npm i react-native-mtoken-sdk --save
 
 #### 2. Install pods for iOS (if needed)
 
-To make integration working with iOS, you might need to install Pods (needed for PowerAuth):
+To make integration work with iOS, you might need to install Pods (needed for PowerAuth):
 
 ```sh
 cd ios
@@ -36,7 +36,7 @@ import { PowerAuth } from 'react-native-powerauth-mobile-sdk';
 
 function createMtokenInstance() {
     const powerAuth = new PowerAuth("my-instance")
-    // note that activated PowerAuth instance is required. How to activate PowerAuth instance, follow https://github.com/wultra/react-native-powerauth-mobile-sdk documentation.
+    // note that an activated PowerAuth instance is required. How to activate the PowerAuth instance, follow https://github.com/wultra/react-native-powerauth-mobile-sdk documentation.
     const mtoken = new WultraMobileToken(powerAuth, "https://my-instance.mycompany.com/enrollment-server")
 }
 ```
@@ -52,14 +52,14 @@ The library is available for the following __Apache Cordova (>=12.0.0)__ platfor
 
 ### How To Install
 
-#### 1. Install the plugin via the cordova plugin installer
+#### 1. Install the plugin via the Cordova plugin installer
 ```sh
 cordova plugin add cordova-mtoken-sdk
 ```
 
 #### 2. Install pods for iOS (if needed)
 
-To make integration working with iOS, you might need to install Pods (needed for PowerAuth):
+To make integration work with iOS, you might need to install Pods (needed for PowerAuth):
 
 ```sh
 cd platforms/ios
@@ -70,7 +70,7 @@ pod install
 
 ```typescript
 const powerAuth = new PowerAuth("my-instance")
-// note that activated PowerAuth instance is required. How to activate PowerAuth instance, follow https://github.com/wultra/react-native-powerauth-mobile-sdk documentation.
+// note that an activated PowerAuth instance is required. How to activate the PowerAuth instance, follow https://github.com/wultra/react-native-powerauth-mobile-sdk documentation.
 const mtoken = new WultraMobileToken(powerAuth, "https://my-instance.mycompany.com/enrollment-server")
 ```
 

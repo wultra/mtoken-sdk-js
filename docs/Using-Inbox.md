@@ -13,17 +13,17 @@
 ## Introduction
 <!-- end -->
 
-WMTInbox is responsible for managing messages in the Inbox. The inbox is a simple one way delivery system that allows you to deliver messages to the user.
+`WMTInbox` is responsible for managing messages in the Inbox. The inbox is a simple one-way delivery system that allows you to deliver messages to the user.
 
 <!-- begin box warning -->
-Note: Before using WMTInbox, you need to have a `PowerAuth` object available and initialized with a valid activation. Without a valid PowerAuth activation, the service will return an error.
+Note: Before using `WMTInbox`, you need to have a `PowerAuth` object available and initialized with a valid activation. Without a valid `PowerAuth` activation, the service will return an error.
 <!-- end -->
 
-WMTInbox communicates with the [Mobile Token API](https://developers.wultra.com/components/enrollment-server/develop/documentation/Mobile-Token-API).
+`WMTInbox` communicates with the [Mobile Token API](https://developers.wultra.com/components/enrollment-server/develop/documentation/Mobile-Token-API).
 
 ## Getting an Instance
 
-Instance of the `WMTInbox` can be accessed after creating the main object of the SDK:
+The instance of the `WMTInbox` can be accessed after creating the main object of the SDK:
 
 ```typescript
 const mtoken = new WultraMobileToken(powerAuthInstance, "https://my-instance.mycompany.com/enrollment-server")
@@ -55,7 +55,7 @@ Get a paged list of messages:
 
 ```typescript
 try {
-    // get page 0 of size 50, not not exclude unread messages
+    //Get page 0 of size 50, not not exclude unread messages
     const resp = await this.mtoken.inbox.list(0, 50, false)
     if (resp.responseObject) {
         // process the message list
