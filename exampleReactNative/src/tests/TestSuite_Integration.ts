@@ -17,7 +17,7 @@
 import { PowerAuth, PowerAuthAuthentication } from 'react-native-powerauth-mobile-sdk';
 import { TestSuite } from './TestSuite';
 import { IntegrationUtils } from './utils/IntegrationUtils';
-import { WultraMobileToken, WMTQROperationParser, WMTUserAgent } from 'react-native-mtoken-sdk';
+import { WultraMobileToken, WMTQROperationParser, WMTUserAgent, WMTSigningKey, WMTKnownRestApiError } from 'react-native-mtoken-sdk';
 
 export class TestSuite_Integration extends TestSuite {
 
@@ -69,6 +69,23 @@ export class TestSuite_Integration extends TestSuite {
         this.assertNull(resp.responseError, "Response error should be null after successful auth")
     }
 
+    async testRepeatedApprovePayment() {
+        const op = await this.utils.createOperation()
+        
+        const operation = (await this.mtoken.operations.detail(op.operationId)).responseObject!!
+
+        // authorize the operation
+        const auth = PowerAuthAuthentication.password(this.pin)
+        const resp = await this.mtoken.operations.authorize(operation, auth)
+        this.assertEquals(resp.status, "OK", "Missing response object after successful auth")
+        this.assertNull(resp.responseError, "Response error should be null after successful auth")
+
+        // repeated authorization should result in error
+        const respRepeated = await this.mtoken.operations.authorize(operation, auth)
+        this.assertEquals(respRepeated.responseError?.code, WMTKnownRestApiError.OperationAlreadyFinished, "Missing response object after successful auth")
+        this.assertEquals(respRepeated.status, "ERROR", "Status should be ERROR after error")
+    }
+
     async testRejectPayment() {
         const op = await this.utils.createOperation()
         const operations = await this.mtoken.operations.pendingList()
@@ -89,6 +106,7 @@ export class TestSuite_Integration extends TestSuite {
         const opRecord = history.responseObject!!.find( it => it.id == op.operationId )
         this.assertNotNull(opRecord)
         this.assertEquals(opRecord?.status, "PENDING")
+        this.assertEquals(opRecord?.id, op.operationId, "Different operationId than the one retrieved from the server")
     }
 
     async testQROperation() {
@@ -100,6 +118,11 @@ export class TestSuite_Integration extends TestSuite {
 
         // parse the data
         const qrOperation = WMTQROperationParser.parse(qrData.operationQrCodeData)
+
+        // verify the data
+        const verified = await this.powerAuth.verifyServerSignedData(qrOperation.signedData, qrOperation.signature.signatureString, qrOperation.signature.signingKey == WMTSigningKey.MASTER)
+
+        this.assertTrue(verified, "QR operation did not verify")
 
         // get the OTP with the "offline" signing
         const auth = PowerAuthAuthentication.password(this.pin)

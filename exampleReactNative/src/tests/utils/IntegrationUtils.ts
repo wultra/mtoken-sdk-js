@@ -146,7 +146,7 @@ export class IntegrationUtils {
         return await this.makeCall(undefined, `${this.cloudServerUrl}/v2/operations/${operationId}/offline/qr?registrationId=${this.registrationId}`, "GET")
     }
 
-    async verifyQROperation(operation: OperationObject, qrData: QRData, otp: String): Promise<QROperationVerify> {
+    async verifyQROperation(operation: OperationObject, qrData: QRData, otp: string): Promise<QROperationVerify> {
         const body = `
             {
               "otp": "${otp}",

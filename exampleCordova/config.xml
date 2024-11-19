@@ -16,6 +16,9 @@
         </edit-config>
     </platform>
 
+    <preference name="scheme" value="app" />
+    <preference name="hostname" value="localhost" />
+
     <!-- turn off CORS for the tests where localhost test server accesses azure.com -->
     <preference name="AndroidInsecureFileModeEnabled" value="true" />
 

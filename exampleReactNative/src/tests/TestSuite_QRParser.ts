@@ -36,8 +36,6 @@ export class TestSuite_QRParser extends TestSuite {
             "AD8bOO0Df73kNaIGb3Vmpg==\n" +
             "0";
 
-        const expectedSignedData = Buffer.from(expectedSignedDataString, 'utf-8')
-
         const operation = WMTQROperationParser.parse(code)
         this.assertEquals("5ff1b1ed-a3cc-45a3-8ab0-ed60950312b6", operation.operationId)
         this.assertEquals("5ff1b1ed-a3cc-45a3-8ab0-ed60950312b6", operation.operationId)
@@ -50,7 +48,7 @@ export class TestSuite_QRParser extends TestSuite {
         this.assertEquals("AD8bOO0Df73kNaIGb3Vmpg==", operation.nonce)
         this.assertEquals("MEYCIQDby1Uq+MaxiAAGzKmE/McHzNOUrvAP2qqGBvSgcdtyjgIhAMo1sgqNa1pPZTFBhhKvCKFLGDuHuTTYexdmHFjUUIJW", operation.signature.signatureString)
         this.assertEquals(WMTSigningKey.MASTER, operation.signature.signingKey)
-        this.assertTrue(operation.signedData.equals(expectedSignedData as any), "Signed data does not equals")
+        this.assertEquals(operation.signedData, expectedSignedDataString, "Signed data does not equals")
 
         // Operation data
         this.assertEquals(WMTQROperationDataVersion.V1, operation.operationData.version)
@@ -94,13 +92,11 @@ export class TestSuite_QRParser extends TestSuite {
             "Some Additional Information\n" +
             "AD8bOO0Df73kNaIGb3Vmpg==\n" +
             "0"
-        
-        const expectedSignedData = Buffer.from(expectedSignedDataString, 'utf-8')
 
         const operation = WMTQROperationParser.parse(qrcode.makeData())
 
         this.assertTrue(operation.isNewerFormat)
-        this.assertTrue(operation.signedData.equals(expectedSignedData as any), "Signed data does not equals")
+        this.assertEquals(operation.signedData, expectedSignedDataString, "Signed data does not equals")
         this.assertEquals(WMTQROperationDataVersion.VX, operation.operationData.version)
         this.assertEquals(1, operation.operationData.fields.length)
         const f = operation.operationData.fields[0] as WMTFallbackField

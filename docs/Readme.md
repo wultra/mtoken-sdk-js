@@ -1,162 +1,65 @@
-# How to Use the SDK
+# Wultra Mobile Token JS SDK
 
-> [!WARNING]
-> The SDK is still in development and not available in the npm. Full documentation will be available later.
+__Wultra Mobile Token JS SDK__ is a high-level SDK for operation approval.
 
-## Integration
+<!-- begin box info -->
+We currently support __REACT NATIVE__ and __APACHE CORDOVA__ development platforms.
+<!-- end -->
+ 
+With Wultra Mobile Token (WMT) SDK, you can integrate an out-of-band operation approval into an existing mobile app, instead of using a standalone mobile token application. WMT is built on top of [PowerAuth Mobile JS SDK](https://github.com/wultra/react-native-powerauth-mobile-sdk). Individual endpoints are described in the [Mobile Token API](https://developers.wultra.com/components/enrollment-server/develop/documentation/Mobile-Token-API).
 
-Add the SDK to your `package.json`:
+To understand the Wultra Mobile Token SDK purpose on a business level better, you can visit our own [Mobile Token application](https://www.wultra.com/mobile-token). We use (native) Wultra Mobile Token SDK in our mobile token application as well.
 
-```json
-"dependencies": {
-    "react-native-powerauth-mobile-sdk": "^2.5.1",
-    "react-native-mtoken-sdk" : "git://github.com/wultra/react-native-mtoken-sdk.git#develop"
-}
-```
+WMT SDK library does precisely this:
 
-> [!NOTE]
-> This adds a development version of the SDK MobileToken to your project. A stable version will be released soon.
+- Retrieves the list of operations that are pending approval for a given user.
+- Approves or rejects operations with PowerAuth transaction signing.
+- Registers an existing PowerAuth activation to receive push notifications.
 
-## Usage
+Remarks:
 
-### Prerequisites
+- This library does not contain any UI.
+- We also provide an [Android](https://github.com/wultra/mtoken-sdk-android) and [iOS](https://github.com/wultra/mtoken-sdk-ios) version of this library. 
 
-To use the `MobileToken` object, you need a `PowerAuth` instance. 
+## Open Source Code
 
-When calling any of the `MobileToken` methods, be sure that the `PowerAuth` instance is active, otherwise, you'll get a PowerAuth error.
+The code of the library is open source and you can freely browse it in our GitHub at [https://github.com/wultra/mtoken-sdk-js](https://github.com/wultra/mtoken-sdk-js/#docucheck-keep-link)
 
-### Sample code
+<!-- begin remove -->
+## Integration Tutorials
 
-```ts
-import { PowerAuth } from 'react-native-powerauth-mobile-sdk';
-import { MobileToken } from 'react-native-mtoken-sdk';
+**Tutorials**
 
-let powerAuth = new PowerAuth("my-instance");
-let mtoken = new MobileToken(powerAuth);
+- [SDK Integration](./SDK-Integration.md)
+- [Example Usage](./Example-Usage.md)
+- [Using Operations](./Using-Operations.md)
+- [Using Push](./Using-Push.md)
+- [Using Inbox](./Using-Inbox.md)
+- [Language and User-Agent Configuration](./Language-UserAgent-Configuration.md)
 
-// fetches operation list. PowerAuth instance needs to be activated.
-let list = await mtoken.operationList();
-```
+**Other**
 
-## Language configuration
+- [Changelog](./Changelog.md)
+<!-- end -->
 
-The `MobileToken` class contains the `acceptLanguage` property that "informs the server" in which languages should be operations returned.
+## Support and compatibility
 
-For example, when the value is set to `en`, the title of the message could return "System Login" and when `de`, it might be "Systemanmeldung".
+| Version | React-Native<sup>1</sup> | Cordova   | PowerAuth JS SDK | Support Status  |
+|---------|--------------------------|-----------|------------------|-----------------|
+| `1.0.x` | `0.73+`                  | `12.0.0+` | `3.0.x`          | Fully supported |
 
-> [!NOTE]
-> Availability of the language depends on the configuration of the backend and the operation.
+<!-- begin box info -->
+> Note 1: The library may also work with other React-Native versions but we don't guarantee compatibility. The specified version is the version that we use for the development and for the tests.
+<!-- end -->
 
-## Available Features
+## License
 
-### Operation List
+All sources are licensed using the Apache 2.0 license. You can use them with no restrictions. If you are using this library, please let us know. We will be happy to share and promote your project.
 
-Fetches list of operations waiting for approval from the server.
+## Contact
 
-#### Example
+If you need any assistance, do not hesitate to drop us a line at [hello@wultra.com](mailto:hello@wultra.com) or our official [wultra.com/discord](wultra.com/discord) channel.
 
-```ts
-let list = await mtoken.operationList();
-if (list.responseObject) { // success
-    // do something with the list
-} else if (list.responseError) { // API error
-    // process the error
-}
-```
+### Security Disclosure
 
-### Operation Detail
-
-Fetches a single operation that is waiting for approval.
-
-#### Example
-
-```ts
-let operationId = "id-of-the-operation" // operation ID
-
-let list = await mtoken.operationDetail(operationId);
-if (list.responseObject) { // success
-    // do something with the operation
-} else if (list.responseError) { // API error
-    // process the error
-}
-```
-
-### Operation Authorization
-
-Authorizes an operation that is waiting for approval.
-
-#### Example
-
-```ts
-// operation to approve from the server
-let operation = await mtoken.operationDetail("my-operation-to-approve");
-// or you can create your own. Both of these values need to be fetched from your own API endpoint/server.
-let ownOperation = {
-    id: "my-operation-to-approve",
-    data: "DataToSign"
-};
-
-// Password that the user set up when activating the PowerAuth instance. 
-// This should be entered by the user.
-let pin = "1111"; 
-// Authentication object that will sign the operation
-// Or use PowerAuthAuthentication.biometry when operation allows it.
-let auth = PowerAuthAuthentication.password(pin);
-let response = await mtoken.authorize(operation, auth);
-if (response.status == "OK") {
-    // operation authorized
-} else {
-    // error - see response.responseError for more
-}
-```
-
-### Operation Reject
-
-Rejects an operation that is waiting for approval.
-
-#### Example
-
-```ts
-let operationId = "your-operation-id";
-let response = await mtoken.reject(operationId, "INCORRECT_DATA");
-if (response.status == "OK") {
-    // operation rejected
-} else {
-    // error - see response.responseError for more info
-}
-```
-
-### Register for push notifications
-
-Registering the device for the push notifications about operations tied to the current PowerAuth activation.
-
-> [!TIP]
-> It's recommended to call this method at each app's start as the token might expire without any prior warning.
-
-#### Example
-
-```ts
-// this example uses expo-notifications package
-import * as Notifications from 'expo-notifications';
-
-const { status: existingStatus } = await Notifications.getPermissionsAsync();
-let finalStatus = existingStatus;
-
-if (existingStatus !== 'granted') {
-    const { status } = await Notifications.requestPermissionsAsync();
-    finalStatus = status;
-}
-if (finalStatus !== 'granted') {
-    alert('Failed to get push token for push notification!');
-    return;
-}
-let token = (await Notifications.getDevicePushTokenAsync()).data;
-
-let response = await mtoken.registerForPush(token);
-
-if (response.status == "OK") {
-    // push registered
-} else {
-    // error - see response.responseError for more info
-}
-```
+If you believe you have identified a security vulnerability with Wultra Mobile Token SDK, you should report it as soon as possible via email to [support@wultra.com](mailto:support@wultra.com). Please do not post it to a public issue tracker.

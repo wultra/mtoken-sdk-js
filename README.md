@@ -1,12 +1,9 @@
-# Wultra Mobile Token SDK for React Native
+# Wultra Mobile Token JS SDK
 
-> [!WARNING]
-> The SDK is still in development!
+__Wultra Mobile Token JS SDK__ is a high-level SDK for operation approval.
 
-<!-- begin remove -->
-<p align="center"><img src="docs/images/intro.png" alt="Wultra Mobile Token SDK for React-Native" width="60%" /></p>
-
-__Wultra Mobile Token SDK__ is a high-level SDK for operation approval.
+> [!NOTE]
+> We currently support __REACT NATIVE__ and __APACHE CORDOVA__ development platforms.
 
 ## Introduction
  
@@ -14,13 +11,13 @@ __Wultra Mobile Token SDK__ is a high-level SDK for operation approval.
 <img align="right" src="docs/images/il-mobile-token.svg" width="40%" />
 <!-- end -->
  
-With Wultra Mobile Token (WMT) SDK, you can integrate an out-of-band operation approval into an existing mobile app, instead of using a standalone mobile token application. WMT is built on top of [PowerAuth Mobile SDK](https://github.com/wultra/react-native-powerauth-mobile-sdk). Individual endpoints are described in the [Mobile Token API](https://developers.wultra.com/components/enrollment-server/develop/documentation/Mobile-Token-API).
+With Wultra Mobile Token (WMT) SDK, you can integrate an out-of-band operation approval into an existing mobile app, instead of using a standalone mobile token application. WMT is built on top of [PowerAuth Mobile JS SDK](https://github.com/wultra/react-native-powerauth-mobile-sdk). Individual endpoints are described in the [Mobile Token API](https://developers.wultra.com/components/enrollment-server/develop/documentation/Mobile-Token-API).
 
-To understand the Wultra Mobile Token SDK purpose on a business level better, you can visit our own [Mobile Token application](https://www.wultra.com/mobile-token). We use Wultra Mobile Token SDK in our mobile token application as well.
+To understand the Wultra Mobile Token SDK purpose on a business level better, you can visit our own [Mobile Token application](https://www.wultra.com/mobile-token). We use (native) Wultra Mobile Token SDK in our mobile token application as well.
 
 WMT SDK library does precisely this:
 
-- Retrieves the list of operations that are pending for approval for a given user.
+- Retrieves the list of operations that are pending approval for a given user.
 - Approves or rejects operations with PowerAuth transaction signing.
 - Registers an existing PowerAuth activation to receive push notifications.
 
@@ -29,9 +26,19 @@ Remarks:
 - This library does not contain any UI.
 - We also provide an [Android](https://github.com/wultra/mtoken-sdk-android) and [iOS](https://github.com/wultra/mtoken-sdk-ios) version of this library. 
 
+## Support and compatibility
+
+| Version | React-Native<sup>1</sup> | Cordova   | PowerAuth JS SDK | Support Status  |
+|---------|--------------------------|-----------|------------------|-----------------|
+| `1.0.x` | `0.73+`                  | `12.0.0+` | `3.0.x`          | Fully supported |
+
+<!-- begin box info -->
+> Note 1: The library may also work with other React-Native versions but we don't guarantee compatibility. The specified version is the version that we use for the development and for the tests.
+<!-- end -->
+
 ## Documentation
 
-Brief [documentation is available here](docs) until until the initial development is finished.
+The documentation is available at the [Wultra Developer Portal](https://developers.wultra.com/components/mtoken-sdk-js/) or inside the [docs](docs) folder.
 
 ## License
 
