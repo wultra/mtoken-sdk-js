@@ -16,7 +16,7 @@
     "react-native": "0.76.1",
     "react-native-device-info": "^14.0.0",
     "react-native-mtoken-sdk": "file:../build/react-native/react-native-mtoken-sdk-0.1.0.tgz",
-    "react-native-powerauth-mobile-sdk": "^2.5.1"
+    "react-native-powerauth-mobile-sdk": "^3.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
