@@ -17,36 +17,36 @@
 /** The `QROperationData` contains data operation data parsed from QR code. */
 export interface WMTQROperation {
     
-    /** Operation's identifier */
+    /** Operation's identifier. */
     operationId: string
     
     /** Title associated with the operation. */
     title: string
     
-    /** Message associated with the operation */
+    /** Message associated with the operation. */
     message: string
     
-    /** Significant data fields associated with the operation */
+    /** Significant data fields associated with the operation. */
     operationData: WMTQROperationData
     
-    /** Nonce for offline signature calculation, in Base64 format */
+    /** Nonce for offline signature calculation, in Base64 format. */
     nonce: string
     
-    /** Flags associated with the operation */
+    /** Flags associated with the operation. */
     flags: WMTQROperationFlags
     
-    /** Additional Time-based one time password for proximity check */
+    /** Additional Time-based one time password for proximity check. */
     totp?: string
     
-    /** Data for signature validation */
+    /** Data for signature validation. */
     signedData: string
     
-    /** ECDSA signature calculated from `signedData`. String is in Base64 format */
+    /** ECDSA signature calculated from `signedData`. String is in Base64 format. */
     signature: WMTQROperationSignature
     
     /**
      * QR code uses a string in newer format that this class implements.
-     * This flag may be used as warning, presented in UI
+     * This flag may be used as warning, presented in UI.
      */
     isNewerFormat: boolean
 }
@@ -67,10 +67,10 @@ export interface WMTQROperationFlags {
 
 export interface WMTQROperationData {
 
-    /** Version of form data */
+    /** Version of form data. */
     version: WMTQROperationDataVersion
 
-    /** Template identifier (0 .. 99 in v1) */
+    /** Template identifier (0 .. 99 in v1). */
     templateId: Number
 
     /** Array with form fields. Version v1 supports up to 5 fields. */
@@ -81,9 +81,9 @@ export interface WMTQROperationData {
 }
 
 export enum WMTQROperationDataVersion {
-    /** First version of operation data */
+    /** First version of operation data. */
     V1,
-    /** Type representing all newer versions of operation data (for forward compatibility) */
+    /** Type representing all newer versions of operation data (for forward compatibility). */
     VX
 }
 
@@ -97,23 +97,23 @@ export class WMTQROperationDataVersionUtil {
 }
 
 export enum WMTQROperationDataFieldType {
-    /** Empty field for optional and not used fields */
+    /** Empty field for optional and not used fields. */
     EMPTY,
-    /** Field is of type `AmountField` */
+    /** Field is of type `AmountField`. */
     AMOUNT,
-    /** Field is of type `AccountField` */
+    /** Field is of type `AccountField`. */
     ACCOUNT,
-    /** Field is of type `AnyAccountField` */
+    /** Field is of type `AnyAccountField`. */
     ANY_ACCOUNT,
-    /** Field is of type `DateField` */
+    /** Field is of type `DateField`. */
     DATE,
-    /** Field is of type `ReferenceField` */
+    /** Field is of type `ReferenceField`. */
     REFERENCE,
-    /** Field is of type `NoteField` */
+    /** Field is of type `NoteField`. */
     NOTE,
-    /** Field is of type TextField`` */
+    /** Field is of type `TextField`. */
     TEXT,
-    /** Field is of type `FallbackField` */
+    /** Field is of type `FallbackField`. */
     FALLBACK
 }
 
@@ -121,7 +121,7 @@ export interface WMTQROperationDataField {
     type: WMTQROperationDataFieldType
 }
 
-/** Amount with currency */
+/** Amount with currency. */
 export class WMTAmountField implements WMTQROperationDataField {
     type = WMTQROperationDataFieldType.AMOUNT
     amount: Number
@@ -133,7 +133,7 @@ export class WMTAmountField implements WMTQROperationDataField {
     }
 }
 
-/** Account in IBAN format, with optional BIC */
+/** Account in IBAN format, with optional BIC. */
 export class WMTAccountField implements WMTQROperationDataField { 
     type = WMTQROperationDataFieldType.ACCOUNT
     iban: string
@@ -145,7 +145,7 @@ export class WMTAccountField implements WMTQROperationDataField {
     }
 }
 
-/** Account in arbitrary textual format */
+/** Account in arbitrary textual format. */
 export class WMTAnyAccountField implements WMTQROperationDataField {
     type = WMTQROperationDataFieldType.ANY_ACCOUNT
     account: string
@@ -155,7 +155,7 @@ export class WMTAnyAccountField implements WMTQROperationDataField {
     }
 }
 
-/** Date field */
+/** Date field. */
 export class WMTDateField implements WMTQROperationDataField {
     type = WMTQROperationDataFieldType.DATE
     date: Date
@@ -165,7 +165,7 @@ export class WMTDateField implements WMTQROperationDataField {
     }
 }
 
-/** Reference field */
+/** Reference field. */
 export class WMTReferenceField implements WMTQROperationDataField {
     type = WMTQROperationDataFieldType.REFERENCE
     text: string
@@ -175,7 +175,7 @@ export class WMTReferenceField implements WMTQROperationDataField {
     }
 }
 
-/** Note Field */
+/** Note field. */
 export class WMTNoteField implements WMTQROperationDataField {
     type = WMTQROperationDataFieldType.NOTE
     text: string
@@ -185,7 +185,7 @@ export class WMTNoteField implements WMTQROperationDataField {
     }
 }
 
-/** Text Field */
+/** Text field. */
 export class WMTTextField implements WMTQROperationDataField {
     type = WMTQROperationDataFieldType.TEXT
     text: string
@@ -216,19 +216,19 @@ export interface WMTQROperationSignature {
     /** Defines which key has been used for ECDSA signature calculation. */
     signingKey: WMTSigningKey
 
-    /** Raw signature data */
+    /** Raw signature data. */
     signature: Buffer
 
-    /** Signature in Base64 format */
+    /** Signature in Base64 format. */
     signatureString: string
 }
 
-/** Defines which key was used for ECDSA signature calculation */
+/** Defines which key was used for ECDSA signature calculation. */
 export enum WMTSigningKey {
-    /** Master server key was used for ECDSA signature calculation */
+    /** Master server key was used for ECDSA signature calculation. */
     MASTER,
 
-    /** Personalized server's private key was used for ECDSA signature calculation */
+    /** Personalized server's private key was used for ECDSA signature calculation. */
     PERSONALIZED
 }
 

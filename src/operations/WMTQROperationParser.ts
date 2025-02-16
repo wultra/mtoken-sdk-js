@@ -20,14 +20,14 @@ import { Buffer } from "buffer"
 import { WMTLogger } from "../WMTLogger"
 
 /**
- * Parser for QR operation
+ * Parser for QR operation.
  */
 export class WMTQROperationParser {
 
-    // Minimum lines in input string supported by this parser
+    // Minimum lines in input string supported by this parser.
     private static readonly minimumAttributeFields = 7
 
-    // Current number of lines in input string, supported by this parser
+    // Current number of lines in input string, supported by this parser.
     private static readonly currentAttributeFields = 8
 
     // Maximum number of operation data fields supported in this version.
@@ -38,7 +38,7 @@ export class WMTQROperationParser {
     /**
      * Process loaded payload from a scanned offline QR.
      *
-     * @param string String parsed from QR code
+     * @param string String parsed from QR code.
      *
      * @throws MobileTokenException When there is no operation in provided string.
      * @return Parsed operation.
@@ -205,7 +205,8 @@ export class WMTQROperationParser {
     }
 
     /**
-     * Parses input string into array of Field enumerations. Returns nil if some field has
+     * Parses input string into array of Field enumerations.
+     * Throws a `WMTException` error if the resulting operation parses out with too many fields.
      */
     private static parseDataFields(fields: string[]): WMTQROperationDataField[] {
 

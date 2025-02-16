@@ -17,9 +17,9 @@
 /** Possible logic errors during the API calls. */
 export class WMTException {
 
-    /** Description of the Exception */
+    /** Description of the Exception. */
     description: string
-    /** Optional additional data that helps with the exception */
+    /** Optional additional data that helps with the exception. */
     additionalData?: any
     
     constructor(description: string, additionalData?: any) {

@@ -19,6 +19,7 @@ import { WMT_SDK_VERSION } from "./WMTSDKVersion"
 import { Platform } from "react-native"
 import { WMTLogger } from "./WMTLogger"
 
+/* @internal */
 export class WMTPlatformUtils {
 
     static getPlatform():  "ios" | "android" {

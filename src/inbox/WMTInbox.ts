@@ -20,7 +20,7 @@ import { type WMTInboxMessage } from "./WMTInboxMessage"
 import { type WMTInboxMessageDetail } from "./WMTInboxMessageDetail"
 import { PowerAuthAuthentication } from 'react-native-powerauth-mobile-sdk'
 
-/** Inbox handling. */
+/** Service that communicates with Inbox API that is managing user's inbox. */
 export class WMTInbox extends WMTNetworking {
 
     // name of the parsed fields that are expected to be the Date type.
@@ -32,7 +32,7 @@ export class WMTInbox extends WMTNetworking {
      * @param requestProcessor You may modify the request via this processor. It's highly recommended to only modify HTTP headers.
      * @returns Server response (with the unread count)
      */
-    async unreadCount(requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<WMTInboxCount>> {
+    async getUnreadCount(requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<WMTInboxCount>> {
         return await this.postSignedWithToken<WMTInboxCount>(
             { },
             PowerAuthAuthentication.possession(),
@@ -52,7 +52,7 @@ export class WMTInbox extends WMTNetworking {
      * @param requestProcessor You may modify the request via this processor. It's highly recommended to only modify HTTP headers.
      * @returns Server response (with the list of messages)
      */
-    async list(pageNumber: Number, pageSize: Number, onlyUnread: boolean, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<WMTInboxMessage[]>> {
+    async getMessageList(pageNumber: Number, pageSize: Number, onlyUnread: boolean, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<WMTInboxMessage[]>> {
         return await this.postSignedWithToken<WMTInboxMessage[]>(
             { requestObject: { page: pageNumber, size: pageSize, onlyUnread: onlyUnread } },
             PowerAuthAuthentication.possession(),
@@ -71,7 +71,7 @@ export class WMTInbox extends WMTNetworking {
      * @param requestProcessor You may modify the request via this processor. It's highly recommended to only modify HTTP headers.
      * @returns Server response (with the message detail)
      */
-    async detail(messageId: string, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<WMTInboxMessageDetail>> {
+    async getMessageDetail(messageId: string, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<WMTInboxMessageDetail>> {
         return await this.postSignedWithToken<WMTInboxMessageDetail>(
             { requestObject: { id: messageId } },
             PowerAuthAuthentication.possession(),

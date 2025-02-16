@@ -25,8 +25,31 @@ export type WMTRequestProcessor = (request: RequestInit) => RequestInit
 /** @internal */
 export class WMTNetworking {
 
-    /** @internal */
-    acceptLanguage = "en"
+    private _acceptLanguage = "en"
+
+    /**
+     * Returns accept language for the outgoing requests headers for `operations`, `push` and `inbox` objects.
+     *
+     */
+    get acceptLanguage() {
+        return this._acceptLanguage
+    }
+
+    /**
+     * Sets accept language for the outgoing requests headers for `operations`, `push` and `inbox` objects.
+     *
+     * Default value is "en".
+     *
+     *
+     * Standard RFC "Accept-Language" https://tools.ietf.org/html/rfc7231#section-5.3.5
+     * Response texts are based on this setting. For example when "de" is set, server
+     * will return operation texts in german (if available).
+     */
+    set acceptLanguage(lang: string) {
+        this._acceptLanguage = lang
+        WMTLogger.info(`Accept language set to ${lang}.`)
+    }
+
     /** @internal */
     userAgent: WMTUserAgent | string = WMTUserAgent.LIBRARY_DEFAULT
 
@@ -167,7 +190,8 @@ export enum WMTUserAgent {
     /** 
      * Default value provided by the libary. 
      * 
-     * Example value: `TODO`
+     * Example value (on an Apple device):
+     * `MobileTokenJS/1.0.0 com.yourcompany.yourappid/1.0.0 (Apple; iOS/18.2; iPhone16)`.
      */
     LIBRARY_DEFAULT = "LIBRARY_DEFAULT",
 
@@ -189,7 +213,7 @@ export interface WMTResponse<T> {
     responseObject?: T
 } 
   
-  /** Error object when error on the server happens. */
+/** Error object when error on the server happens. */
 export interface WMTResponseError {
     code: WMTKnownRestApiError | string
     message: string
