@@ -85,7 +85,7 @@ export class WMTOperations extends WMTNetworking {
      * Authorize operation with given PowerAuth authentication object.
      * 
      * @param operation Operation to authorize.
-     * @param authentication Authentication object.
+     * @param authentication A multi-factor authentication object for signing. 2FA should be used (password or biometrics).
      * @param requestProcessor You may modify the request via this processor. It's highly recommended to only modify HTTP headers.
      * @returns Server response
      */
@@ -130,7 +130,7 @@ export class WMTOperations extends WMTNetworking {
      * not valid as it cannot be verified on the server.
      *
      * @param operation Operation to approve
-     * @param authentication Authentication object
+     * @param authentication A multi-factor authentication object for signing. 2FA should be used (password or biometrics).
      * @param uriId Custom signature URI ID of the operation. Use URI ID under which the operation was
      * created on the server. Default value is `/operation/authorize/offline`.
      * @returns 

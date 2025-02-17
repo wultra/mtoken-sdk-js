@@ -26,7 +26,7 @@ Note: Before using `WMTInbox`, you need to have a `PowerAuth` object available a
 The instance of the `WMTInbox` can be accessed after creating the main object of the SDK:
 
 ```typescript
-const mtoken = new WultraMobileToken(powerAuthInstance, "https://my-instance.mycompany.com/enrollment-server")
+const mtoken = powerAuthInstance.createWultraMobileToken()
 const inbox = mtoken.inbox
 ```
 
@@ -38,7 +38,7 @@ To get the number of unread messages, use the following code:
 
 ```typescript
 try {
-    const resp = await this.mtoken.inbox.unreadCount()
+    const resp = await this.mtoken.inbox.getUnreadCount()
     if (resp.responseObject) {
         console.log(`There are ${resp.responseObject.countUnread} unread messages.`)
     } else {
@@ -56,7 +56,7 @@ Get a paged list of messages:
 ```typescript
 try {
     //Get page 0 of size 50, not not exclude unread messages
-    const resp = await this.mtoken.inbox.list(0, 50, false)
+    const resp = await this.mtoken.inbox.getMessageList(0, 50, false)
     if (resp.responseObject) {
         // process the message list
     } else {
@@ -74,7 +74,7 @@ Each message has its unique identifier. To get the body of the message, use the 
 ```typescript
 try {
     let messageId = messagesList[0].id
-    const resp = await this.mtoken.detail(messageId)
+    const resp = await this.mtoken.getMessageDetail(messageId)
     if (resp.responseObject) {
         // process the message
     } else {

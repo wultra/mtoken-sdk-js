@@ -16,7 +16,7 @@ Example Typescript usage:
 // More about PowerAuth SDK can be found here: https://github.com/wultra/react-native-powerauth-mobile-sdk
 
 async function exampleUsage(powerAuth: PowerAuth) {
-    const mtoken = new WultraMobileToken(powerAuth, "https://my-instance.mycompany.com/enrollment-server") // create the WultraMobileToken instance
+    const mtoken = powerAuth.createWultraMobileToken() // create the WultraMobileToken instance
     mtoken.setAcceptLanguage("de") // set "requested content" to german language (default is english - "en")
     try {
         const listResponse = await this.mtoken.operations.pendingList() // get operation list
