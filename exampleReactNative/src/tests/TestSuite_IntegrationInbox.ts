@@ -61,13 +61,13 @@ export class TestSuite_IntegrationInbox extends TestSuite {
         this.assertEquals(messagesToTest, await this.fetchUnreadMessagesCount())
 
         // Read first page
-        const messagesList = (await this.mtoken.inbox.list(0, 50, false)).responseObject
+        const messagesList = (await this.mtoken.inbox.getMessageList(0, 50, false)).responseObject
         this.assertNotNull(messagesList)
         this.compareMessages(messages, messagesList!!)
 
         // Now read first message's detail
         const firstMessage = messages[0]
-        const detail = (await this.mtoken.inbox.detail(firstMessage.id)).responseObject!!
+        const detail = (await this.mtoken.inbox.getMessageDetail(firstMessage.id)).responseObject!!
 
         this.assertEquals(firstMessage.id, detail.id)
         this.assertEquals(firstMessage.subject, detail.subject)
@@ -81,7 +81,7 @@ export class TestSuite_IntegrationInbox extends TestSuite {
     async testMarkMessageRead() {
         const count = 4
         const messages = await this.utils.createInboxMessages(count)
-        const receivedMessages = (await this.mtoken.inbox.list(0, 50, false)).responseObject!!
+        const receivedMessages = (await this.mtoken.inbox.getMessageList(0, 50, false)).responseObject!!
 
         this.compareMessages(messages, receivedMessages)
 
@@ -91,13 +91,13 @@ export class TestSuite_IntegrationInbox extends TestSuite {
         this.assertEquals(markRead.status, "OK")
 
         // Now get message detail
-        const messageDetail = await this.mtoken.inbox.detail(messageId)
+        const messageDetail = await this.mtoken.inbox.getMessageDetail(messageId)
         this.assertNotNull(messageDetail.responseObject)
         this.assertTrue(messageDetail.responseObject!!.read)
     }
 
     private async fetchUnreadMessagesCount(): Promise<number> {
-        let resp = await this.mtoken.inbox.unreadCount()
+        let resp = await this.mtoken.inbox.getUnreadCount()
         return resp.responseObject!!.countUnread
     }
 

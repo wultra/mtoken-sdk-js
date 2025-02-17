@@ -22,7 +22,6 @@ import { WMTPlatformUtils } from "../WMTPlatformUtils"
 
 export type WMTRequestProcessor = (request: RequestInit) => RequestInit
 
-/** @internal */
 export class WMTNetworking {
 
     private _acceptLanguage = "en"
@@ -39,7 +38,6 @@ export class WMTNetworking {
      * Sets accept language for the outgoing requests headers for `operations`, `push` and `inbox` objects.
      *
      * Default value is "en".
-     *
      *
      * Standard RFC "Accept-Language" https://tools.ietf.org/html/rfc7231#section-5.3.5
      * Response texts are based on this setting. For example when "de" is set, server

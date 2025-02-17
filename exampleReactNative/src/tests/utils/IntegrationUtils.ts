@@ -88,7 +88,7 @@ export class IntegrationUtils {
 
         return {
             powerauth: pa,
-            mtoken: new WultraMobileToken(pa, this.enrollmentUrl)
+            mtoken: pa.createWultraMobileToken()
         }
     }
 
