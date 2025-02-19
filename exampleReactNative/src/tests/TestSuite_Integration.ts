@@ -48,13 +48,13 @@ export class TestSuite_Integration extends TestSuite {
     }
 
     async testList() {
-        await this.mtoken.operations.pendingList()
+        await this.mtoken.operations.getOperations()
     }
 
     async testApprovePayment() {
         await this.utils.createOperation()
         
-        const operations = (await this.mtoken.operations.pendingList()).responseObject!!
+        const operations = (await this.mtoken.operations.getOperations()).responseObject!!
 
         this.assertEquals(operations.length, 1, "Missing operation")
 
@@ -88,7 +88,7 @@ export class TestSuite_Integration extends TestSuite {
 
     async testRejectPayment() {
         const op = await this.utils.createOperation()
-        const operations = await this.mtoken.operations.pendingList()
+        const operations = await this.mtoken.operations.getOperations()
         const opFromList = operations.responseObject!!.find( it => it.id == op.operationId )
         if (opFromList == undefined) {
             this.fail("Operation was not in the list")
@@ -189,7 +189,7 @@ export class TestSuite_Integration extends TestSuite {
 
         tempMtoken = this.powerAuth.createWultraMobileToken(undefined, expectedDefaultUserAgentProductName)
 
-        await tempMtoken.operations.pendingList( request => {
+        await tempMtoken.operations.getOperations( request => {
             const headers = request.headers as Headers
             this.assertTrue(headers.get("user-agent")!!.startsWith(expectedDefaultUserAgentProductName), `user-agent should start with ${expectedDefaultUserAgentProductName}`)
             return request
@@ -209,7 +209,7 @@ export class TestSuite_Integration extends TestSuite {
 
         tempMtoken = this.powerAuth.createWultraMobileToken(undefined, WMTUserAgent.SYSTEM_DEFAULT)
 
-        await tempMtoken.operations.pendingList( request => {
+        await tempMtoken.operations.getOperations( request => {
             const headers = request.headers as Headers
             this.assertEquals(headers.get("user-agent"), undefined)
             return request
@@ -222,15 +222,15 @@ export class TestSuite_Integration extends TestSuite {
         const cs = "cs"
 
         // set eng lang
-        this.mtoken.operations.acceptLanguage = en
-        await this.mtoken.operations.pendingList( request => {
+        this.mtoken.setAcceptLanguage(en)
+        await this.mtoken.operations.getOperations( request => {
             const headers = request.headers as Headers
             this.assertEquals(headers.get("accept-language")!!, en)
             return request
         })
 
         // set czech lang
-        this.mtoken.inbox.acceptLanguage = cs
+        this.mtoken.setAcceptLanguage(cs)
         await this.mtoken.inbox.getUnreadCount( request => {
             const headers = request.headers as Headers
             this.assertEquals(headers.get("accept-language"), cs)

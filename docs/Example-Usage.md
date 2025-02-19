@@ -19,7 +19,7 @@ async function exampleUsage(powerAuth: PowerAuth) {
     const mtoken = powerAuth.createWultraMobileToken() // create the WultraMobileToken instance
     mtoken.setAcceptLanguage("de") // set "requested content" to german language (default is english - "en")
     try {
-        const listResponse = await this.mtoken.operations.pendingList() // get operation list
+        const listResponse = await this.mtoken.operations.getOperations() // get operation list
 
         if (listResponse.responseObject && listResponse.responseObject.length > 0) { // make sure that we retrieved some operations
             

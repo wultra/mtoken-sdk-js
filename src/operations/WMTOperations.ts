@@ -26,12 +26,12 @@ export class WMTOperations extends WMTNetworking {
     private jsonDateFields = [ "operationExpires", "operationCreated", "timestampReceived" ]
 
     /**
-    * Retrieves user operations that are pending approval.
+    * Retrieves user operations.
     * 
     * @param requestProcessor You may modify the request via this processor. It's highly recommended to only modify HTTP headers.
     * @returns Server response (with list of operations).
     */
-    async pendingList(requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<WMTUserOperation[]>> {
+    async getOperations(requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<WMTUserOperation[]>> {
         return await this.postSignedWithToken<WMTUserOperation[]>(
             {},
             PowerAuthAuthentication.possession(),
