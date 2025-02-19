@@ -134,7 +134,7 @@ const sdkVersion = require('./package.json').version
     // create typings file
     const createCDVDtsTask = () =>
         gulp
-            .src([`${CDV_tempDir}/src/WultraMobileToken.ts`, `${CDV_tempDir}/src/WMT*.ts`, `${CDV_tempDir}/src/*/**.ts`])
+            .src([`${CDV_tempDir}/src/PWAExtension.ts`, `${CDV_tempDir}/src/WultraMobileToken.ts`, `${CDV_tempDir}/src/WMT*.ts`, `${CDV_tempDir}/src/*/**.ts`])
             .pipe(ts({ declaration: true, emitDeclarationOnly: true }))
             .pipe(concat(`typings.d.ts`))
             .pipe(stripImportExport()) // strim app all import/export

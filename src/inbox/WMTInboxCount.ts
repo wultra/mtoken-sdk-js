@@ -14,7 +14,7 @@
 // and limitations under the License.
 //
 
-/** Structure contains information about unread messages in inbox. */
+/** Model containing the information about unread messages in inbox. */
 export interface WMTInboxCount {
     /** Number of unread messages in inbox. */
     countUnread: number

@@ -14,13 +14,17 @@
 // and limitations under the License.
 //
 
+/**
+ * Object that is used to hold data about a proximity check.
+ * Data shall be assigned to the operation when obtained.
+ */
 export interface WMTUserOperationProximityCheck {
-    /** The actual Time-based one time password */
+    /** The actual Time-based one time password. */
     totp: string
 
-    /** Type of the Proximity check */
+    /** Type of the Proximity check. */
     type: "QR_CODE" | "DEEPLINK"
 
-    /** Timestamp when the operation was scanned (qrCode) or delivered to the device (deeplink) */
+    /** Timestamp when the operation was scanned (qrCode) or delivered to the device (deeplink). */
     timestampReceived: Date
 }

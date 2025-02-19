@@ -32,7 +32,7 @@ Note: Before using `WMTOperations`, you need to have a `PowerAuth` object availa
 The instance of the `WMTOperations` can be accessed after creating the main object of the SDK:
 
 ```typescript
-const mtoken = new WultraMobileToken(powerAuthInstance, "https://my-instance.mycompany.com/enrollment-server")
+const mtoken = powerAuthInstance.createWultraMobileToken()
 const operations = mtoken.operations
 ```
 
@@ -43,7 +43,7 @@ To fetch the list with pending operations, you can call:
 ```typescript
 async function fetch() {
     try {
-        const response = await this.operations.pendingList()
+        const response = await this.operations.getOperations()
         if (response.responseObject) {
             // process list
         } else {
@@ -120,7 +120,7 @@ To reject an operation use `reject`. Operation rejection is confirmed by the pos
 // Reject operation with some reason
 async function reject(operation: WMTOnlineOperation, reason: "INCORRECT_DATA" | "UNEXPECTED_OPERATION" | "UNKNOWN" | string) {
     try {
-        const response = await this.operations.reject(operation, reason)
+        const response = await this.operations.reject(operation.id, reason)
         if (response.status == "OK") {
             // operation rejected
         } else {
@@ -140,7 +140,7 @@ To get a detail of the operation based on operation ID use `detail`. Operation d
 // Retrieve operation details based on the operation ID.
 async function getDetail(operationId: string) {
     try {
-        const response = await this.mtoken.operations.detail(operationId)
+        const response = await this.mtoken.operations.getDetail(operationId)
         if (response.responseObject) {
             // operation retrieved
         } else {
@@ -187,7 +187,7 @@ async function history(password: string) {
     const auth = PowerAuthAuthentication.password(password)
 
     try {
-        const response = await this.mtoken.operations.history(auth)
+        const response = await this.mtoken.operations.getHistory(auth)
         if (response.responseObject) {
             // history retrieved
         } else {
@@ -297,15 +297,14 @@ All available methods and attributes of `WMTOperations` API are:
 
 > Each call has a `requestProcessor` parameter - an option to modify the request.
 
-- `async pendingList(requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<WMTUserOperation[]>>` - Retrieves pending operations from the server.
-- `async detail(operationId: string, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<WMTUserOperation>>` - Retrieves operation detail based on operation ID.
+- `async getOperations(requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<WMTUserOperation[]>>` - Retrieves pending operations from the server.
+- `async getDetail(operationId: string, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<WMTUserOperation>>` - Retrieves operation detail based on operation ID.
   - `operationId` - ID of the operation to retrieve.
-- `async history(authentication: PowerAuthAuthentication, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<WMTUserOperation[]>>` - Retrieves operation history.
+- `async getHistory(authentication: PowerAuthAuthentication, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<WMTUserOperation[]>>` - Retrieves operation history.
   - `authentication` - PowerAuth authentication object for signing.
 - `async authorize(operation: WMTOnlineOperation, authentication: PowerAuthAuthentication, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<void>>` - Authorize provided operation.
   - `operation` - An operation to approve, retrieved from `getOperations` call or [created locally](#creating-a-custom-operation).
   - `authentication` - PowerAuth authentication object for operation signing.
-  - `callback` - Called when authorization request finishes.
 - `async reject(operationId: string, reason: "INCORRECT_DATA" | "UNEXPECTED_OPERATION" | "UNKNOWN" | string, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<void>>` - Reject provided operation.
   - `operationId` - An operation to reject.
   - `reason` - Rejection reason.
@@ -318,7 +317,7 @@ All available methods and attributes of `WMTOperations` API are:
 
 ## WMTUserOperation
 
-Operations objects retrieved through the `pendingList` or `detail` methods are called "user operations".
+Operations objects retrieved through the `getOperations` or `getDetail` methods are called "user operations".
 
 Under this abstract name, you can imagine for example "Login operation", which is a request for signing in to the online account in a web browser on another device. **In general, it can be any operation that can be either approved or rejected by the user.**
 
@@ -496,7 +495,7 @@ export interface WMTUserOperationProximityCheck {
 
 ## Creating a Custom Operation
 
-In some specific scenarios, you might need to approve or reject an operation that you received through a different channel than `pendingList`. In such cases, you can implement the `WMTOnlineOperation` interface in your custom class and then feed created objects to both `authorize` and `reject` methods.
+In some specific scenarios, you might need to approve or reject an operation that you received through a different channel than `getOperations`. In such cases, you can implement the `WMTOnlineOperation` interface in your custom class and then feed created objects to both `authorize` and `reject` methods.
 
 Definition of the `WMTOnlineOperation`:
 

@@ -24,7 +24,7 @@ export interface WMTUserOperationAttribute {
 
     /** 
      * ID (type) of the label. This is highly depended on the backend
-     * and can be used to change the appearance of the label
+     * and can be used to change the appearance of the label.
      */
     id: string
 
@@ -37,27 +37,27 @@ export interface WMTUserOperationAttribute {
      */
     type: WMTAttributeType | string
     
-    /** Label value */ 
+    /** Label value. */ 
     label: string
 }
 
 /** Attribute type. Based on this type, proper class should be chosen for "deserialization". */
 export enum WMTAttributeType {
-    /** Amount, like "100.00 CZK" */
+    /** Amount, like "100.00 CZK." */
     AMOUNT            = "AMOUNT", 
-    /** Currency conversion, for example when changing money from USD to EUR */
+    /** Currency conversion, for example when changing money from USD to EUR. */
     AMOUNT_CONVERSION = "AMOUNT_CONVERSION",
-    /** Any key value pair */
+    /** Any key value pair. */
     KEY_VALUE          = "KEY_VALUE",
-    /** Just like KEY_VALUE, emphasizing that the value is a note or message */
+    /** Just like KEY_VALUE, emphasizing that the value is a note or message. */
     NOTE              = "NOTE",
-    /** Single highlighted text, written in a larger font, used as a section heading */
+    /** Single highlighted text, written in a larger font, used as a section heading. */
     HEADING           = "HEADING",
-    /** For image displaying */
+    /** For image displaying. */
     IMAGE            = "IMAGE"
 }
 
-/** Amount attribute is 1 row in operation, that represents "Payment Amount" */
+/** Amount attribute is 1 row in operation, that represents "Payment Amount". */
 export interface WMTOperationAttributeAmount extends WMTUserOperationAttribute {
     
     /**
@@ -70,9 +70,9 @@ export interface WMTOperationAttributeAmount extends WMTUserOperationAttribute {
     amountFormatted?: string
     
     /**
-     * Formatted currency to the locale based on acceptLanguage
+     * Formatted currency to the locale based on acceptLanguage.
      * 
-     * For example when the currency is CZK, this property will be "Kč"
+     * For example when the currency is CZK, this property will be "Kč".
      */
     currencyFormatted?: string
     
@@ -81,14 +81,14 @@ export interface WMTOperationAttributeAmount extends WMTUserOperationAttribute {
      */
     amount?: number
     
-    /** Currency */
+    /** Currency. */
     currency?: string
 
     /**
-     * Formatted value and currency to the locale based on acceptLanguage
+     * Formatted value and currency to the locale based on acceptLanguage.
      * 
      * Both amount and currency are formatted, String will show e.g. "€" in front of the amount
-     * or "EUR" behind the amount depending on the locale
+     * or "EUR" behind the amount depending on the locale.
      */
     valueFormatted?: string
 }
@@ -110,7 +110,7 @@ export interface WMTOperationAttributeHeading extends WMTUserOperationAttribute 
     
 }
 
-/** Image that might be "open" on tap/click. */
+/** Image that might be "opened" on tap/click. */
 export interface WMTOperationAttributeImage extends WMTUserOperationAttribute {
 
     /** Image thumbnail url to the public internet. */
@@ -118,16 +118,16 @@ export interface WMTOperationAttributeImage extends WMTUserOperationAttribute {
     
     /**
      * Full-size image that should be displayed on thumbnail click (when not null).
-     * Url to the public internet
+     * Url to the public internet.
      */
     originalUrl?: string
 }
 
-/** Conversion attribute is 1 row in operation, that represents "Money Conversion" */
+/** Conversion attribute is 1 row in operation, that represents "Money Conversion". */
 export interface WMTOperationAttributeAmountConversion extends WMTUserOperationAttribute {
     
     /**
-     * If the conversion is dynamic and the application should refresh it periodically
+     * If the conversion is dynamic and the application should refresh it periodically.
      * 
      * This is just a hint for the application UI. This SDK does not offer feature to periodically
      * refresh conversion rate.
@@ -143,27 +143,27 @@ export interface WMTOperationAttributeAmountConversion extends WMTUserOperationA
      */
     sourceAmountFormatted?: string 
     /**
-     * Formatted currency to the locale based on acceptLanguage
+     * Formatted currency to the locale based on acceptLanguage.
      * 
-     * For example when the currency is CZK, this property will be "Kč"
+     * For example when the currency is CZK, this property will be "Kč".
      */
     sourceCurrencyFormatted?: string
 
     /**
-     * Payment amount
+     * Payment amount.
      * 
      * Amount might not be precise (due to floating point conversion during deserialization from json)
-     * use amountFormatted property instead when available
+     * use amountFormatted property instead when available.
      */
     sourceAmount?: number
 
     /** Currency */
     sourceCurrency?: string
     /**
-     * Formatted currency and amount to the locale based on acceptLanguage
+     * Formatted currency and amount to the locale based on acceptLanguage.
      * 
      * Both amount and currency are formatted, String will show e.g. "€" in front of the amount
-     * or "EUR" behind the amount depending on locale
+     * or "EUR" behind the amount depending on locale.
      */
     sourceValueFormatted?: string
     
@@ -177,27 +177,27 @@ export interface WMTOperationAttributeAmountConversion extends WMTUserOperationA
     targetAmountFormatted?: string
 
     /**
-     * Formatted currency to the locale based on acceptLanguage
+     * Formatted currency to the locale based on acceptLanguage.
      * 
-     * For example when the currency is CZK, this property will be "Kč"
+     * For example when the currency is CZK, this property will be "Kč".
      */
     targetCurrencyFormatted?: string
     /**
-     * Payment amount
+     * Payment amount.
      * 
      * Amount might not be precise (due to floating point conversion during deserialization from json)
-     * use amountFormatted property instead when available
+     * use amountFormatted property instead when available.
      */
     targetAmount?: number
 
-    /** Currency */
+    /** Currency. */
     targetCurrency?: string
     
     /**
-     * Formatted currency and amount to the locale based on acceptLanguage
+     * Formatted currency and amount to the locale based on acceptLanguage.
      * 
      * Both amount and currency are formatted, String will show e.g. "€" in front of the amount
-     * or "EUR" behind the amount depending on locale
+     * or "EUR" behind the amount depending on locale.
      */
     targetValueFormatted?: string
 }

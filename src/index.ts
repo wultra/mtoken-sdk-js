@@ -45,3 +45,6 @@ export * from './networking/WMTNetworking'
 // INTERNAL
 export * from './WMTPlatformUtils'
 export * from './WMTSDKVersion'
+
+// PWA MTOKEN INSTANTIATION
+export * from './PWAExtension'

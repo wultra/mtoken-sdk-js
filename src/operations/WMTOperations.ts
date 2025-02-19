@@ -26,12 +26,12 @@ export class WMTOperations extends WMTNetworking {
     private jsonDateFields = [ "operationExpires", "operationCreated", "timestampReceived" ]
 
     /**
-    * Retrieves user operations that are pending approval.
+    * Retrieves user operations.
     * 
     * @param requestProcessor You may modify the request via this processor. It's highly recommended to only modify HTTP headers.
     * @returns Server response (with list of operations).
     */
-    async pendingList(requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<WMTUserOperation[]>> {
+    async getOperations(requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<WMTUserOperation[]>> {
         return await this.postSignedWithToken<WMTUserOperation[]>(
             {},
             PowerAuthAuthentication.possession(),
@@ -44,13 +44,13 @@ export class WMTOperations extends WMTNetworking {
     }
 
     /**
-     * Retrieves operation detail based on operation ID
+     * Retrieves operation detail based on operation ID.
      * 
-     * @param operationId ID of the operation
+     * @param operationId ID of the operation.
      * @param requestProcessor You may modify the request via this processor. It's highly recommended to only modify HTTP headers.
      * @returns Server response (with operation detail)
      */
-    async detail(operationId: string, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<WMTUserOperation>> {
+    async getDetail(operationId: string, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<WMTUserOperation>> {
         return await this.postSignedWithToken<WMTUserOperation>(
             { requestObject: { id: operationId } },
             PowerAuthAuthentication.possession(),
@@ -63,13 +63,13 @@ export class WMTOperations extends WMTNetworking {
     }
 
     /**
-     * Retrieves the history of user operations.
+     * Retrieves the history of user operations with their current status.
      * 
-     * @param authentication Authentication object
+     * @param authentication A multi-factor authentication object for signing. 2FA should be used (password or biometrics).
      * @param requestProcessor You may modify the request via this processor. It's highly recommended to only modify HTTP headers.
-     * @returns Server response (with list of operations).
+     * @returns Server response (with the list of operations).
      */
-    async history(authentication: PowerAuthAuthentication, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<WMTUserOperation[]>> {
+    async getHistory(authentication: PowerAuthAuthentication, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<WMTUserOperation[]>> {
         return await this.postSigned<WMTUserOperation[]>(
             {},
             authentication,
@@ -84,8 +84,8 @@ export class WMTOperations extends WMTNetworking {
     /**
      * Authorize operation with given PowerAuth authentication object.
      * 
-     * @param operation Operation to authorize
-     * @param authentication Authentication object
+     * @param operation Operation to authorize.
+     * @param authentication A multi-factor authentication object for signing. 2FA should be used (password or biometrics).
      * @param requestProcessor You may modify the request via this processor. It's highly recommended to only modify HTTP headers.
      * @returns Server response
      */
@@ -126,8 +126,11 @@ export class WMTOperations extends WMTNetworking {
     /**
      * Sign offline QR operation with provided authentication.
      * 
+     * Note that the operation will be signed even if the authentication object is
+     * not valid as it cannot be verified on the server.
+     *
      * @param operation Operation to approve
-     * @param authentication Authentication object
+     * @param authentication A multi-factor authentication object for signing. 2FA should be used (password or biometrics).
      * @param uriId Custom signature URI ID of the operation. Use URI ID under which the operation was
      * created on the server. Default value is `/operation/authorize/offline`.
      * @returns 
@@ -137,9 +140,9 @@ export class WMTOperations extends WMTNetworking {
     }
 
     /**
-     * Assigns the 'non-personalized' operation to the user
+     * Assigns the 'non-personalized' operation to the user.
      * 
-     * @param operationId ID of the operation.
+     * @param operationId ID of the operation which will be claimed to belong to the user.
      * @param requestProcessor You may modify the request via this processor. It's highly recommended to only modify HTTP headers.
      * @returns Server response (with operation detail)
      */

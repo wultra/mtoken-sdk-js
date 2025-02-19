@@ -26,7 +26,7 @@ import type { WMTUserOperationProximityCheck } from "./WMTUserOperationProximity
  */
 export interface WMTUserOperation extends WMTOnlineOperation {
 
-    /** Processing status of the operation */
+    /** Processing status of the operation. */
     status: "APPROVED" | "REJECTED" | "PENDING" | "CANCELED" | "EXPIRED" | "FAILED"
 
     /**
@@ -72,7 +72,7 @@ export interface WMTUserOperation extends WMTOnlineOperation {
     allowedSignatureType: WMTAllowedOperationSignature
     
     /**
-     * UI data to be shown
+     * UI data to be shown.
      *
      * Accompanying information about the operation additional UI which should be presented such as
      * Pre-Approval Screen or Post-Approval Screen
@@ -104,7 +104,7 @@ export interface WMTAllowedOperationSignature {
  */
 export interface WMTOperationFormData {
     
-    /** Title of the operation */
+    /** Title of the operation. */
     title: string
     
     /** Message for the user. */

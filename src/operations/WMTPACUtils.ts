@@ -16,18 +16,18 @@
 
 import { WMTLogger } from "../WMTLogger"
 
-/** Data payload which is returned from the parser */
+/** Data payload which is returned from the parser. */
 export interface WMTPACData {
 
-    /** The ID of the operation associated with the TOTP */
+    /** The ID of the operation associated with the TOTP. */
     oid: string
 
-    /** The actual Time-based one time password (proximity OTP) */
+    /** The actual Time-based one time password (proximity OTP). */
     potp?: string
 }
 
 /**
- * Utility class used for handling Proximity Anti-fraud Checks
+ * Utility class used for handling Proximity Anti-fraud Checks.
  */
 export class WMTPACUtils {
 
@@ -72,9 +72,9 @@ export class WMTPACUtils {
     /** 
      * Method accepts scanned code as a String and returns PAC data or throws an exception.
      * 
-     * @param code Code retrieved from the QR
-     * @returns Data with parsed Proximity Antofraud Check data
-     * @throws Exception when cannot be parsed
+     * @param code Code retrieved from the QR.
+     * @returns Data with parsed Proximity Antofraud Check data.
+     * @throws Exception when cannot be parsed.
      */
     static parseQRCode(code: string): WMTPACData {
         

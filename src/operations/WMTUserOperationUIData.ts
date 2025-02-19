@@ -16,20 +16,20 @@
 
 import type { WMTUserOperationAttribute } from "./WMTUserOperationAttribute"
 
-/** Additional UI data */
+/** Operation UI model that contains data for screens for pre and/or post approved operation. */
 export interface WMTUserOperationUIData {
 
-    /** Confirm and Reject buttons should be flipped both in position and style */
+    /** Confirm and Reject buttons should be flipped both in position and style. */
     flipButtons?: boolean
 
-    /** Block approval when on call (for example when on phone or skype call) */
+    /** Block approval when on call (for example when on phone or skype call). */
     blockApprovalOnCall?: boolean
 
-    /** UI for pre-approval operation screen */
+    /** UI for pre-approval operation screen. */
     preApprovalScreen?: WMTPreApprovalScreen
 
     /**
-     * UI for post-approval operation screen
+     * UI for post-approval operation screen.
      *
      * Type of PostApprovalScreen is presented with different classes based on its type (Starting with `PostApprovalScreen*`).
      * 
@@ -39,34 +39,34 @@ export interface WMTUserOperationUIData {
 }
 
 /**
- *  PreApprovalScreen contains data to be presented before approving operation
+ *  PreApprovalScreen contains data to be presented before approving operation.
  *
  * `type` define different kind of data which can be passed with operation
- *  and shall be displayed before operation is confirmed
+ *  and shall be displayed before operation is confirmed.
  */
 export interface WMTPreApprovalScreen {
     /**
-     * Type of PreApprovalScreen (`WARNING`, `INFO`, `QR_SCAN` - might be undefined for future compatibility)
+     * Type of PreApprovalScreen (`WARNING`, `INFO`, `QR_SCAN` - might be undefined for future compatibility).
      */
     type?: "INFO" | "WARNING" | "QR_SCAN" | "UNKNOWN"
 
     /**
-     * Heading of the pre-approval screen
+     * Heading of the pre-approval screen.
      */
     heading: string
 
     /**
-     * Message to the user
+     * Message to the user.
      */
      message: string
 
     /**
-     * Array of items to be displayed as list of choices
+     * Array of items to be displayed as list of choices.
      */
     items?: string[]
 
     /**
-     * Type of the approval button
+     * Type of the approval button.
      */
     approvalType?: "SLIDER" | "BUTTON"
 }
@@ -83,15 +83,15 @@ export interface WMTPostApprovalScreen {
 // --- REVIEW POST APPROVAL ---
 
 export interface WMTPostApprovalScreenReview extends WMTPostApprovalScreen {
-    /** Heading of the post-approval screen */
+    /** Heading of the post-approval screen. */
     heading: string
-    /** Message to the user */
+    /** Message to the user. */
     message: string
-    /** Payload with data for the review */
+    /** Payload with data for the review. */
     payload: WMTReviewPostApprovalScreenPayload
 }
 
-/** Review payload */
+/** Review payload. */
 export interface WMTReviewPostApprovalScreenPayload {
     /** List of the operation attributes */
     attributes: WMTUserOperationAttribute[]
@@ -120,10 +120,10 @@ export interface WMTRedirectPostApprovalScreenPayload {
 // --- GENERIC PSOT APPROVAL ---
 
 export interface WMTPostApprovalScreenGeneric extends WMTPostApprovalScreen {
-    /** Heading of the post-approval screen */
+    /** Heading of the post-approval screen. */
     heading: string
-    /** Message to the user */
+    /** Message to the user. */
     message: string
-    /** Payload */
+    /** Payload. */
     payload: any
 }

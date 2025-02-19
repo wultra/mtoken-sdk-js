@@ -35,12 +35,13 @@ export enum WMTLoggerVerbosity {
 }
 
 /**
- * Mobile Token logging utility
+ * Mobile Token logging utility.
  */
 export class WMTLogger {
 
-    /** Which level of logs (and lower) should be logged into the console. Default value is `WARN` */
+    /** Which level of logs (and lower) should be logged into the console. Default value is `WARN`. */
     public static verbosity: WMTLoggerVerbosity = WMTLoggerVerbosity.WARN
+
     /** Include time in the logs? */
     public static includeTime: boolean = true
 

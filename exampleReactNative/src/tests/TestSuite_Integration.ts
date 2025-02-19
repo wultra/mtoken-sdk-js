@@ -48,13 +48,13 @@ export class TestSuite_Integration extends TestSuite {
     }
 
     async testList() {
-        await this.mtoken.operations.pendingList()
+        await this.mtoken.operations.getOperations()
     }
 
     async testApprovePayment() {
         await this.utils.createOperation()
         
-        const operations = (await this.mtoken.operations.pendingList()).responseObject!!
+        const operations = (await this.mtoken.operations.getOperations()).responseObject!!
 
         this.assertEquals(operations.length, 1, "Missing operation")
 
@@ -72,7 +72,7 @@ export class TestSuite_Integration extends TestSuite {
     async testRepeatedApprovePayment() {
         const op = await this.utils.createOperation()
         
-        const operation = (await this.mtoken.operations.detail(op.operationId)).responseObject!!
+        const operation = (await this.mtoken.operations.getDetail(op.operationId)).responseObject!!
 
         // authorize the operation
         const auth = PowerAuthAuthentication.password(this.pin)
@@ -88,7 +88,7 @@ export class TestSuite_Integration extends TestSuite {
 
     async testRejectPayment() {
         const op = await this.utils.createOperation()
-        const operations = await this.mtoken.operations.pendingList()
+        const operations = await this.mtoken.operations.getOperations()
         const opFromList = operations.responseObject!!.find( it => it.id == op.operationId )
         if (opFromList == undefined) {
             this.fail("Operation was not in the list")
@@ -101,7 +101,7 @@ export class TestSuite_Integration extends TestSuite {
         // lets create 1 operation and leave it in the state of "pending"
         const op = await this.utils.createOperation()
         const auth = PowerAuthAuthentication.password(this.pin)
-        const history = await this.mtoken.operations.history(auth)
+        const history = await this.mtoken.operations.getHistory(auth)
         this.assertNotNull(history.responseObject)
         const opRecord = history.responseObject!!.find( it => it.id == op.operationId )
         this.assertNotNull(opRecord)
@@ -136,7 +136,7 @@ export class TestSuite_Integration extends TestSuite {
 
     async testDetail() {
         const op = await this.utils.createNonPersonalizedPACOperation()
-        const operation = await this.mtoken.operations.detail(op.operationId)
+        const operation = await this.mtoken.operations.getDetail(op.operationId)
         this.assertNotNull(operation, "Failed to create & get the operation")
         this.assertEquals(op.operationId, operation.responseObject!!.id, "Operations ids are not equal")
     }
@@ -172,7 +172,7 @@ export class TestSuite_Integration extends TestSuite {
         // cancel the operation
         await this.utils.cancelOperation(op.operationId, cancelReason)
 
-        const operations = (await this.mtoken.operations.history(PowerAuthAuthentication.password(this.pin))).responseObject
+        const operations = (await this.mtoken.operations.getHistory(PowerAuthAuthentication.password(this.pin))).responseObject
         this.assertNotNull(operations, "Operations not retrieved")
         const opRecord = operations!!.find( it => it.id == op.operationId)
         this.assertNotNull(opRecord)
@@ -181,29 +181,35 @@ export class TestSuite_Integration extends TestSuite {
 
     async testTestUserAgents() {
 
+        let tempMtoken: WultraMobileToken
         const expectedDefaultUserAgentProductName = "MobileTokenJS"
         const testUserAgent = "test-agent"
 
-        // test default behavior (libraryDefault)
-        this.mtoken.setUserAgent(WMTUserAgent.LIBRARY_DEFAULT)
-        await this.mtoken.operations.pendingList( request => {
+        // Test default behavior (libraryDefault)
+
+        tempMtoken = this.powerAuth.createWultraMobileToken(undefined, expectedDefaultUserAgentProductName)
+
+        await tempMtoken.operations.getOperations( request => {
             const headers = request.headers as Headers
             this.assertTrue(headers.get("user-agent")!!.startsWith(expectedDefaultUserAgentProductName), `user-agent should start with ${expectedDefaultUserAgentProductName}`)
             return request
         })
 
-        // test custom user agent
-        this.mtoken.setUserAgent(testUserAgent)
-        await this.mtoken.inbox.unreadCount( request => {
+        // Test custom user agent
+
+        tempMtoken = this.powerAuth.createWultraMobileToken(undefined, testUserAgent)
+
+        await tempMtoken.inbox.getUnreadCount( request => {
             const headers = request.headers as Headers
             this.assertEquals(headers.get("user-agent"), testUserAgent)
             return request
         })
 
+        // Test system default (should be undefined in the request)
 
-        // test system default (should be undefined in the request)
-        this.mtoken.setUserAgent(WMTUserAgent.SYSTEM_DEFAULT)
-        await this.mtoken.operations.pendingList( request => {
+        tempMtoken = this.powerAuth.createWultraMobileToken(undefined, WMTUserAgent.SYSTEM_DEFAULT)
+
+        await tempMtoken.operations.getOperations( request => {
             const headers = request.headers as Headers
             this.assertEquals(headers.get("user-agent"), undefined)
             return request
@@ -217,7 +223,7 @@ export class TestSuite_Integration extends TestSuite {
 
         // set eng lang
         this.mtoken.setAcceptLanguage(en)
-        await this.mtoken.operations.pendingList( request => {
+        await this.mtoken.operations.getOperations( request => {
             const headers = request.headers as Headers
             this.assertEquals(headers.get("accept-language")!!, en)
             return request
@@ -225,7 +231,7 @@ export class TestSuite_Integration extends TestSuite {
 
         // set czech lang
         this.mtoken.setAcceptLanguage(cs)
-        await this.mtoken.inbox.unreadCount( request => {
+        await this.mtoken.inbox.getUnreadCount( request => {
             const headers = request.headers as Headers
             this.assertEquals(headers.get("accept-language"), cs)
             return request

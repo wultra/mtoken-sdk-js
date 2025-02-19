@@ -14,7 +14,7 @@
 // and limitations under the License.
 //
 
-/** Structure contains information about message in inbox. */
+/** Model containing the information about a message in inbox. */
 export interface WMTInboxMessage {
     /** Message's identifier. */
     id: string

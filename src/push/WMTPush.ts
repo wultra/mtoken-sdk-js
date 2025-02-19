@@ -24,7 +24,7 @@ export class WMTPush extends WMTNetworking {
   /** 
    * Registers the given powerauth activation for push notifications.
    * 
-   * @param token Push token
+   * @param token Push token.
    * @param platform ios, android or huawei. When not specified, `Platform.OS` is used to determine if ios or android will be used. There is currently no automatic huawei platform detection.
    * @param requestProcessor You may modify the request via this processor. It's highly recommended to only modify HTTP headers.
    * @returns Server response

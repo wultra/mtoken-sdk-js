@@ -37,7 +37,9 @@ import { PowerAuth } from 'react-native-powerauth-mobile-sdk';
 function createMtokenInstance() {
     const powerAuth = new PowerAuth("my-instance")
     // note that an activated PowerAuth instance is required. How to activate the PowerAuth instance, follow https://github.com/wultra/react-native-powerauth-mobile-sdk documentation.
-    const mtoken = new WultraMobileToken(powerAuth, "https://my-instance.mycompany.com/enrollment-server")
+    
+    // Then, use PowerAuth's helper function to create the mtoken instance:
+    const mtoken = powerAuth.createWultraMobileToken()
 }
 ```
 
@@ -71,7 +73,9 @@ pod install
 ```typescript
 const powerAuth = new PowerAuth("my-instance")
 // note that an activated PowerAuth instance is required. How to activate the PowerAuth instance, follow https://github.com/wultra/react-native-powerauth-mobile-sdk documentation.
-const mtoken = new WultraMobileToken(powerAuth, "https://my-instance.mycompany.com/enrollment-server")
+
+// Then, use PowerAuth's helper function to create the mtoken instance:
+const mtoken = powerAuth.createWultraMobileToken()
 ```
 
 ## Read Next

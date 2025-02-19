@@ -18,57 +18,78 @@ import { WMTOperations } from './operations/WMTOperations'
 import { PowerAuth } from 'react-native-powerauth-mobile-sdk'
 import { WMTPush } from './push/WMTPush'
 import { WMTInbox } from './inbox/WMTInbox'
-import type { WMTUserAgent } from './networking/WMTNetworking'
+import { WMTUserAgent } from './networking/WMTNetworking'
 import { WMTLogger } from './WMTLogger'
 
 /**
- * MobileToken class exposes API that enables to fetch, authorize or reject basic
- * operations created in the PowerAuth stack.
+ * MobileToken class exposes APIs that enable:
+ *  Fetching, authorizing or rejecting basic
+ *  operations created in the PowerAuth stack.
+ *  Push notifications enrollment.
+ *  Inbox message management.
  */
 export class WultraMobileToken {
 
     /** Operations manager. Use for fetching pending list, approving the operations etc. */
     operations: WMTOperations
+
     /** Push manager for registering the device to recieve PowerAuth push notification for given PowerAuth activation. */
     push: WMTPush
+
     /** Inbox manager - recieve message to communicate with the user. */
     inbox: WMTInbox
 
     /**
      * 
      * @param powerAuth PowerAuth instance. Needs to be activated when calling any method of this class - othewise error will be thrown.
-     * @param baseURL BaseURL of the server. If not provided, same URL as for PowerAuth it used.
-     * @param pushBaseURL In case that the push server is on different URL.
-     *                    This is a rare scenario which doesn't happen in regular setup.
-     *                    When not set, baseURL is used.
-     * @param inboxBaseURL In case that the inbox server is on different URL.
-     *                     This is a rare scenario which doesn't happen in regular setup.
-     *                     When not set, baseURL is used.
+     * @param acceptLanguage Optionally sets the accept language for the outgoing requests headers for `operations`, `push` and `inbox` objects.
+     *                       The default value is "en".
+     *                       The value can be further modified in the each service object individualy.
+     *                       Standard RFC "Accept-Language" https://tools.ietf.org/html/rfc7231#section-5.3.5
+     *                       Response texts are based on this setting. For example when "de" is set, server
+     *                       will return operation texts in german (if available).
+     * @param userAgent Optionally sets the User agent that will be used in a HTTP hader. 
+     *                  Note that user-agent can be overriden by request processor in each API call.
+     * @throws Can throw when a null or invalid `baseEndpointUrl` is set in the `PowerAuth` instance.
      */
-    constructor(powerAuth: PowerAuth, baseURL?: string, pushBaseURL?: string, inboxBaseURL?: string) {
+    constructor(powerAuth: PowerAuth, acceptLanguage?: string, userAgent?: WMTUserAgent | string) {
 
-        let enrollmentURL = baseURL ?? powerAuth.configuration?.baseEndpointUrl ?? ""
-        let pushURL = pushBaseURL ?? enrollmentURL
-        let inboxURL = inboxBaseURL ?? enrollmentURL
+        // Retrieve the base URL and instantiate mtoken services.
+        let baseURL = powerAuth.configuration?.baseEndpointUrl
 
-        this.operations = new WMTOperations(powerAuth, enrollmentURL)
-        this.push = new WMTPush(powerAuth, pushURL)
-        this.inbox = new WMTInbox(powerAuth, inboxURL)
+        if (baseURL == null) {
+            throw new Error("Null base URL recieved from the PowerAuth instance.")
+        }
+
+        this.operations = new WMTOperations(powerAuth, baseURL)
+        this.push = new WMTPush(powerAuth, baseURL)
+        this.inbox = new WMTInbox(powerAuth, baseURL)
+
+        // Set the accept language properties.
+        let lang = acceptLanguage ?? "en"
+        this.operations.acceptLanguage = lang
+        this.push.acceptLanguage = lang
+        this.inbox.acceptLanguage = lang
+
+        // Set the user agent properties.
+        let agent = userAgent ?? WMTUserAgent.LIBRARY_DEFAULT
+        this.operations.userAgent = agent
+        this.push.userAgent = agent
+        this.inbox.userAgent = agent
 
         WMTLogger.debug("Mobile Token object created with:")
-        WMTLogger.debug(" - baseURL: " + enrollmentURL)
-        WMTLogger.debug(" - pushURL: " + pushURL)
-        WMTLogger.debug(" - inboxURL: " + inboxURL)
+        WMTLogger.debug(" - baseURL: " + baseURL)
+        WMTLogger.debug(" - acceptLanguage:" + lang)
+        WMTLogger.debug(" - userAgent: " + agent)
     }
 
     /**
      * Sets accept language for the outgoing requests headers for `operations`, `push` and `inbox` objects.
-     * 
+     *
      * The value can be further modified in the each object individualy.
-     * 
+     *
      * Default value is "en".
-     * 
-     * 
+     *
      * Standard RFC "Accept-Language" https://tools.ietf.org/html/rfc7231#section-5.3.5
      * Response texts are based on this setting. For example when "de" is set, server
      * will return operation texts in german (if available).
@@ -78,17 +99,5 @@ export class WultraMobileToken {
         this.push.acceptLanguage = lang
         this.inbox.acceptLanguage = lang
         WMTLogger.info(`accent language set to ${lang}`)
-    }
-
-    /** 
-     * User agent that will be used in a HTTP hader. 
-     * 
-     * Note that user-agent can be overriden by request processor in each API call.
-     */
-    setUserAgent(userAgent: WMTUserAgent | string) {
-        this.operations.userAgent = userAgent
-        this.push.userAgent = userAgent
-        this.inbox.userAgent = userAgent
-        WMTLogger.info(`User-Agent set to ${userAgent}`)
     }
 }
