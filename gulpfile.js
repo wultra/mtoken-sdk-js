@@ -126,7 +126,8 @@ const sdkVersion = require('./package.json').version
             bundle: true,
             format: "cjs",
             target: "ios13",
-            minify: true
+            // TODO: minification is still broken and does not expose the cjs module and props correctly.
+            // minify: true
         });
 
     // pach compiled files to remove require
