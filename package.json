@@ -1,13 +1,14 @@
 {
   "name": "react-native-mtoken-sdk",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "PowerAuth based Mobile Token SDK for React Native",
   "source": "src/index.ts",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "files": [
-    "src",
-    "lib"
+    "README.md",
+    "LICENSE",
+    "lib/*"
   ],
   "scripts": {
     "build": "gulp"
@@ -26,6 +27,7 @@
   "homepage": "https://www.wultra.com/mobile-security-suite",
   "devDependencies": {
     "@types/react": "^18.2.44",
+    "cordova-powerauth-mobile-sdk": "^3.0.0",
     "esbuild": "^0.24.0",
     "gulp": "^5.0.0",
     "gulp-concat": "^2.6.1",
@@ -47,6 +49,5 @@
   "dependencies": {
     "react-native-device-info": "^14.0.0",
     "react-native-powerauth-mobile-sdk": "^3.0.0"
-  },
-  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
+  }
 }

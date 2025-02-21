@@ -1,9 +1,9 @@
 # SDK Integration
 
-- [Installation for React-Native](#react-native-installation)
+- [Installation for React Native](#react-native-installation)
 - [Installation for Cordova](#cordova-installation)
 
-## React-Native Installation
+## React Native Installation
 
 ### Supported Platforms
 
@@ -31,7 +31,6 @@ pod install
 #### 3. Import in your js/ts files
 
 ```typescript
-import { WultraMobileToken } from 'react-native-mtoken-sdk'
 import { PowerAuth } from 'react-native-powerauth-mobile-sdk';
 
 function createMtokenInstance() {

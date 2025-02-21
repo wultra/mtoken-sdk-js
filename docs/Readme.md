@@ -40,6 +40,7 @@ The code of the library is open source and you can freely browse it in our GitHu
 **Other**
 
 - [Changelog](./Changelog.md)
+- [Migration Guide](./Migration-Instructions.md)
 <!-- end -->
 
 ## Support and compatibility
