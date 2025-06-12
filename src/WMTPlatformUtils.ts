@@ -14,34 +14,54 @@
 // and limitations under the License.
 //
 
-import DeviceInfo from "react-native-device-info"
 import { WMT_SDK_VERSION } from "./WMTSDKVersion"
 import { Platform } from "react-native"
 import { WMTLogger } from "./WMTLogger"
+import { PowerAuthEnvironmentInfo, PowerAuthUtils } from "react-native-powerauth-mobile-sdk"
 
 /* @internal */
 export class WMTPlatformUtils {
+
+    private static cachedEnvironmentInfo?: PowerAuthEnvironmentInfo
 
     static getPlatform():  "ios" | "android" {
         return Platform.OS == "ios" ? "ios" : "android"
     }
 
-    static getDefaultUserAgent(): string {
+    static async getDefaultUserAgent(): Promise<string> {
         const product = "MobileTokenJS"
         const sdkVer = WMT_SDK_VERSION
-        const os = this.getPlatform()
-        const osVer = Platform.Version
-        try {
-            const appVer = DeviceInfo.getVersion()
-            const appId = DeviceInfo.getBundleId()
-            const maker = DeviceInfo.getManufacturerSync()
-            const model = DeviceInfo.getModel()
-            // TOOD: to consider: add network from netinfo package?
-            return `${product}/${sdkVer} ${appId}/${appVer} (${maker}; ${os}/${osVer}; ${model}`
-        } catch(e) {
-            WMTLogger.debug(`Failed to create user agent: ${e}`)
-            return `${product}/${sdkVer} ${os}/${osVer}`
-        }
+        const envInfo = await this.getEnvironmentInfo()
+        const appVer = envInfo.applicationVersion || "0.0"
+        const appId = envInfo.applicationIdentifier || "unknown"
+        const maker = envInfo.deviceManufacturer
+        const model = envInfo.deviceId
+        const os = envInfo.systemName
+        const osVer = envInfo.systemVersion
+        const userAgent = `${product}/${sdkVer} ${appId}/${appVer} (${maker}; ${os}/${osVer}; ${model}`
+        return userAgent
     }
 
+    private static async getEnvironmentInfo(): Promise<PowerAuthEnvironmentInfo> {
+        try {
+            // If we have cached environment info, return it to avoid unnecessary calls.
+            // This expects that the environment info does not change during the app lifetime.
+            if (!this.cachedEnvironmentInfo) {
+                this.cachedEnvironmentInfo = await PowerAuthUtils.getEnvironmentInfo();
+            }
+            return this.cachedEnvironmentInfo
+        } catch (e) {
+            WMTLogger.error(`Failed to get environment info: ${e}`)
+            // In case of error, we return a default object with "unknown" values.
+            return {
+                systemName: "unknown",
+                systemVersion: "0.0",
+                applicationVersion: "0.0",
+                applicationIdentifier: "unknown",
+                deviceManufacturer: "unknown",
+                deviceId: "unknown",
+                sdkVersion: "0.0"
+            }
+        }
+    }
 }

@@ -47,7 +47,6 @@
     "react-native": "*"
   },
   "dependencies": {
-    "react-native-device-info": "^14.0.0",
-    "react-native-powerauth-mobile-sdk": "^3.0.0"
+    "react-native-powerauth-mobile-sdk": "file:/Users/kober/dev/wultra/repos/react-native-powerauth-mobile-sdk/build/react-native/react-native-powerauth-mobile-sdk-0.0.1-dev.tgz"
   }
 }
