@@ -74,7 +74,7 @@ export class TestSuite {
         try {
             await this.runAmbigiousMethod("beforeAll")
         } catch(e) {
-            console.log(`beforeAll ${this.suiteName} failed: ${e}. Stopping all test in this suite`)
+            console.log(`beforeAll ${this.suiteName} failed: ${JSON.stringify(e)}. Stopping all test in this suite`)
             return 0
         }
 
@@ -87,7 +87,7 @@ export class TestSuite {
             try {
                 await this.runAmbigiousMethod("beforeEach", test)
             } catch(e) {
-                console.log(`- beforeEach ${test} failed: ${e}`)
+                console.log(`- beforeEach ${test} failed: ${JSON.stringify(e)}`)
                 continue
             }
             let success: boolean
@@ -97,13 +97,13 @@ export class TestSuite {
                 successCount++
                 success = true
             } catch(e) {
-                console.error(`- FAIL: Test ${test}: ${e}`)
+                console.error(`- FAIL: Test ${test}: ${JSON.stringify(e)}`)
                 success = false
             }
             try {
                 await this.runAmbigiousMethod("afterEach", test, success)
             } catch(e) {
-                console.log(`- afterEach ${test} failed: ${e}`)
+                console.log(`- afterEach ${test} failed: ${JSON.stringify(e)}`)
             }
         }
 

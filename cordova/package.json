@@ -10,8 +10,8 @@
     "typings.d.ts",
     "plugin.xml"
   ],
-  "dependencies": {
-    "cordova-powerauth-mobile-sdk": "^3.0.0"
+  "peerDependencies": {
+    "cordova-powerauth-mobile-sdk": "^4.1.0"
   },
   "keywords": [
     "cordova",

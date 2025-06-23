@@ -7,7 +7,7 @@
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",
-    "reinstall": "pushd .. && gulp && popd && npm r react-native-mtoken-sdk && npm i ../build/react-native/react-native-mtoken-sdk-1.0.0.tgz",
+    "reinstall": "pushd .. && gulp && popd && npm r react-native-mtoken-sdk && npm i ../build/react-native/react-native-mtoken-sdk-0.0.1-dev.tgz",
     "reinstallAndStart": "npm run reinstall && react-native start",
     "test": "jest"
   },
@@ -15,8 +15,8 @@
     "react": "18.3.1",
     "react-native": "0.76.1",
     "react-native-device-info": "^14.0.0",
-    "react-native-mtoken-sdk": "file:../build/react-native/react-native-mtoken-sdk-1.0.0.tgz",
-    "react-native-powerauth-mobile-sdk": "file:../../react-native-powerauth-mobile-sdk/build/react-native/react-native-powerauth-mobile-sdk-0.0.1-dev.tgz"
+    "react-native-mtoken-sdk": "file:../build/react-native/react-native-mtoken-sdk-0.0.1-dev.tgz",
+    "react-native-powerauth-mobile-sdk": "^4.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

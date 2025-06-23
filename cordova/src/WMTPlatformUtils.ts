@@ -14,38 +14,17 @@
 // and limitations under the License.
 //
 
-import { WMTLogger } from "./WMTLogger"
-import { WMT_SDK_VERSION } from "./WMTSDKVersion"
-
-// to get rid of compilation errors
-declare var device: any;
-declare var BuildInfo: any;
+import { WMTDefaultUserAgent } from "./utils/WMTDefaultUserAgent"
 
 export class WMTPlatformUtils {
 
     static getPlatform():  "ios" | "android" {
-        if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
-            return "ios";
-        }
-    
-        return "android"; // we consider everything else android
+        // @ts-expect-error
+        return cordova.platformId === "ios" ? "ios" : "android";
     }
 
-    static getDefaultUserAgent(): string {
-        const product = "MobileTokenJS"
-        const sdkVer = WMT_SDK_VERSION
-        const os = this.getPlatform()
-        const osVer = device.version
-        try {
-            const appVer = BuildInfo.version
-            const appId = BuildInfo.packageName
-            const maker = device.manufacturer
-            const model = device.model
-            return `${product}/${sdkVer} ${appId}/${appVer} (${maker}; ${os}/${osVer}; ${model})`
-        } catch(e) {
-            WMTLogger.debug(`Failed to create user agent: ${e}`)
-            return `${product}/${sdkVer} ${os}/${osVer}`
-        }
+    static async getDefaultUserAgent(): Promise<string> {
+        return WMTDefaultUserAgent.get()
     }
 
 }
