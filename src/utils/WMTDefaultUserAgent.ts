@@ -32,7 +32,7 @@ export class WMTDefaultUserAgent {
         const model = envInfo.deviceId
         const os = envInfo.systemName
         const osVer = envInfo.systemVersion
-        const userAgent = `${product}/${sdkVer} ${appId}/${appVer} (${maker}; ${os}/${osVer}; ${model}`
+        const userAgent = `${product}/${sdkVer} ${appId}/${appVer} (${maker}; ${os}/${osVer}; ${model})`
         return userAgent
     }
 
