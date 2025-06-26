@@ -47,7 +47,9 @@ The code of the library is open source and you can freely browse it in our GitHu
 
 | Version | React Native<sup>1</sup> | Cordova   | PowerAuth JS SDK | Support Status  |
 |---------|--------------------------|-----------|------------------|-----------------|
-| `1.0.x` | `0.73+`                  | `12.0.0+` | `3.0.x`          | Fully supported |
+| `2.0.x` | `0.73+`                  | `12.0.0+` | `^4.1.0`         | Fully supported |
+| `1.1.x` | `0.73+`                  | `12.0.0+` | `^3.2.0`         | Bugfixes        |
+| `1.0.x` | `0.73+`                  | `12.0.0+` | `^3.0.0`         | Not supported   |
 
 <!-- begin box info -->
 > Note 1: The library may also work with other React Native versions but we don't guarantee compatibility. The specified version is the version that we use for the development and for the tests.

@@ -4,7 +4,5 @@ export interface CredentialsObject {
     cloudServerPassword: string
     cloudApplicationId: string
     enrollmentUrl: string
-    appKey: string
-    appSecret: string
-    serverMasterKey: string
+    sdkConfig: string
 }

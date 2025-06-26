@@ -27,9 +27,7 @@ export class IntegrationUtils {
     private cloudServerPassword = ""
     private cloudApplicationId = ""
     private enrollmentUrl = ""
-    private appKey = ""
-    private appSecret = ""
-    private serverMasterKey = ""
+    private sdkConfig = ""
     private activationName = "" // will be filled when activation is created
     private registrationId = "" // will be filled when activation is created
 
@@ -41,9 +39,7 @@ export class IntegrationUtils {
         this.cloudServerPassword = credentials.cloudServerPassword
         this.cloudApplicationId = credentials.cloudApplicationId
         this.enrollmentUrl = credentials.enrollmentUrl
-        this.appKey = credentials.appKey
-        this.appSecret = credentials.appSecret
-        this.serverMasterKey = credentials.serverMasterKey
+        this.sdkConfig = credentials.sdkConfig
     }
 
     async prepareActivation(pin: string, userId: string | null = null): Promise<{ powerauth: PowerAuth, mtoken: WultraMobileToken }> {
@@ -53,7 +49,7 @@ export class IntegrationUtils {
 
         // CREATE PA INSTANCE
 
-        const cfg = new PowerAuthConfiguration(this.appKey, this.appSecret, this.serverMasterKey, this.enrollmentUrl)
+        const cfg = new PowerAuthConfiguration(this.sdkConfig, this.enrollmentUrl)
         const pa = new PowerAuth(this.activationName)
         await pa.configure(cfg)
 
@@ -80,7 +76,7 @@ export class IntegrationUtils {
 
         // COMMIT ACTIVATION LOCALLY
 
-        let result = await pa.commitActivation(PowerAuthAuthentication.commitWithPassword(pin))
+        let result = await pa.persistActivation(PowerAuthAuthentication.persistWithPassword(pin))
 
         // COMMIT ACTIVATION ON THE SERVER
 

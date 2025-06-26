@@ -118,7 +118,7 @@ export class WMTNetworking {
         headers.set("Accept-Language", this.acceptLanguage)
 
         if (this.userAgent == WMTUserAgent.LIBRARY_DEFAULT) {
-            headers.set("User-Agent", WMTPlatformUtils.getDefaultUserAgent())
+            headers.set("User-Agent", await WMTPlatformUtils.getDefaultUserAgent())
         } else if (this.userAgent == WMTUserAgent.SYSTEM_DEFAULT) {
             // leave empty to default to system value
         } else {

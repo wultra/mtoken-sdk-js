@@ -14,7 +14,7 @@
 // and limitations under the License.
 //
 
-import { PowerAuth, PowerAuthAuthentication } from 'react-native-powerauth-mobile-sdk';
+import { PowerAuth, PowerAuthAuthentication, PowerAuthUtils } from 'react-native-powerauth-mobile-sdk';
 import { TestSuite } from './TestSuite';
 import { IntegrationUtils } from './utils/IntegrationUtils';
 import { WultraMobileToken, WMTQROperationParser, WMTUserAgent, WMTSigningKey, WMTKnownRestApiError } from 'react-native-mtoken-sdk';
@@ -184,14 +184,22 @@ export class TestSuite_Integration extends TestSuite {
         let tempMtoken: WultraMobileToken
         const expectedDefaultUserAgentProductName = "MobileTokenJS"
         const testUserAgent = "test-agent"
+        const envInfo = await PowerAuthUtils.getEnvironmentInfo();
 
         // Test default behavior (libraryDefault)
 
-        tempMtoken = this.powerAuth.createWultraMobileToken(undefined, expectedDefaultUserAgentProductName)
+        tempMtoken = this.powerAuth.createWultraMobileToken()
 
         await tempMtoken.operations.getOperations( request => {
             const headers = request.headers as Headers
-            this.assertTrue(headers.get("user-agent")!!.startsWith(expectedDefaultUserAgentProductName), `user-agent should start with ${expectedDefaultUserAgentProductName}`)
+            const userAgent = headers.get("user-agent")!!
+            this.assertTrue(userAgent.startsWith(expectedDefaultUserAgentProductName), `user-agent should start with ${expectedDefaultUserAgentProductName}`)
+            this.assertTrue(userAgent.includes(envInfo.systemVersion), `user-agent should contain systemVersion ${envInfo.systemVersion}`)
+            this.assertTrue(userAgent.includes(envInfo.systemName), `user-agent should contain systemName ${envInfo.systemName}`)
+            this.assertTrue(userAgent.includes(envInfo.deviceId), `user-agent should contain deviceId ${envInfo.deviceId}`)
+            this.assertTrue(userAgent.includes(envInfo.deviceManufacturer), `user-agent should contain deviceManufacturer ${envInfo.deviceManufacturer}`)
+            this.assertTrue(userAgent.includes(envInfo.applicationIdentifier || "MISSING"), `user-agent should contain applicationIdentifier ${envInfo.applicationIdentifier}`)
+            this.assertTrue(userAgent.includes(envInfo.applicationVersion || "MISSING"), `user-agent should contain applicationVersion ${envInfo.applicationVersion}`)
             return request
         })
 

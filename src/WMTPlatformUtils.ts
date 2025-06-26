@@ -14,10 +14,8 @@
 // and limitations under the License.
 //
 
-import DeviceInfo from "react-native-device-info"
-import { WMT_SDK_VERSION } from "./WMTSDKVersion"
 import { Platform } from "react-native"
-import { WMTLogger } from "./WMTLogger"
+import { WMTDefaultUserAgent } from "./utils/WMTDefaultUserAgent"
 
 /* @internal */
 export class WMTPlatformUtils {
@@ -26,22 +24,7 @@ export class WMTPlatformUtils {
         return Platform.OS == "ios" ? "ios" : "android"
     }
 
-    static getDefaultUserAgent(): string {
-        const product = "MobileTokenJS"
-        const sdkVer = WMT_SDK_VERSION
-        const os = this.getPlatform()
-        const osVer = Platform.Version
-        try {
-            const appVer = DeviceInfo.getVersion()
-            const appId = DeviceInfo.getBundleId()
-            const maker = DeviceInfo.getManufacturerSync()
-            const model = DeviceInfo.getModel()
-            // TOOD: to consider: add network from netinfo package?
-            return `${product}/${sdkVer} ${appId}/${appVer} (${maker}; ${os}/${osVer}; ${model}`
-        } catch(e) {
-            WMTLogger.debug(`Failed to create user agent: ${e}`)
-            return `${product}/${sdkVer} ${os}/${osVer}`
-        }
+    static async getDefaultUserAgent(): Promise<string> {
+        return WMTDefaultUserAgent.get()
     }
-
 }

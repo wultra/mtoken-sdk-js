@@ -1,7 +1,25 @@
 # SDK Integration
 
+- [PowerAuth JS SDK Dependency](#powerauth-js-sdk-dependency)
 - [Installation for React Native](#react-native-installation)
 - [Installation for Cordova](#cordova-installation)
+
+## PowerAuth JS SDK Dependency
+
+The PowerAuth JS SDK is a required peer dependency for the mToken SDK. You must install it in a compatible version. 
+
+Defining it as a peer dependency ensures that only a single instance of the PowerAuth SDK is used in your project, preventing issues with multiple npm clones.
+
+- For **React Native**, install both `react-native-powerauth-mobile-sdk` and `react-native-mtoken-sdk` using `npm` or `yarn`.
+- For **Cordova**, add both `cordova-powerauth-mobile-sdk` and `cordova-mtoken-sdk` using the `cordova plugin add` command.
+
+### Compatible PowerAuth Mobile JS SDK Versions
+
+| mToken Version | PowerAuth JS SDK |
+|----------------|------------------|
+| `2.0.x`        | `^4.1.0`         |
+| `1.1.x`        | `^3.2.0`         |
+| `1.0.x`        | `^3.0.0`         |
 
 ## React Native Installation
 
@@ -14,8 +32,10 @@ The library is available for the following __React Native (0.73+)__ platforms:
 
 ### How To Install
 
-#### 1. Install the package via npm
+#### 1. Install packages via npm
 ```sh
+# if now added yet, add powerauth mobile sdk first (compatible versions are on the top of this document)
+npm i react-native-powerauth-mobile-sdk --save
 npm i react-native-mtoken-sdk --save
 ```
 
@@ -53,8 +73,10 @@ The library is available for the following __Apache Cordova (>=12.0.0)__ platfor
 
 ### How To Install
 
-#### 1. Install the plugin via the Cordova plugin installer
+#### 1. Install plugins via the Cordova plugin installer
 ```sh
+# if now added yet, add powerauth mobile sdk first (compatible versions are on the top of this document)
+cordova plugin add cordova-powerauth-mobile-sdk
 cordova plugin add cordova-mtoken-sdk
 ```
 
