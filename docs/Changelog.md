@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.0.0 (TBA)
+## 2.0.0 (6/2025)
 
 - Removed `react-native-device-info` dependency for react-native
 - Removed `cordova-plugin-device` and `cordova-plugin-buildinfo` dependencies for Cordova
@@ -8,7 +8,7 @@
 - Minimal required version for `PowerAuth Mobile JS SDK` raised to `4.1.0`
 - `PowerAuth Mobile JS SDK` is now a peer dependency, and you need to add it manually alongside the `mtoken-sdk-js`
 
-## 1.1.0 (TBA)
+## 1.1.0 (6/2025)
 
 - Removed `react-native-device-info` dependency for react-native
 - Removed `cordova-plugin-device` and `cordova-plugin-buildinfo` dependencies for Cordova
