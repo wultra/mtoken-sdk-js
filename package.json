@@ -1,6 +1,6 @@
 {
   "name": "react-native-mtoken-sdk",
-  "version": "0.0.1-dev",
+  "version": "1.1.0",
   "description": "PowerAuth based Mobile Token SDK for React Native",
   "source": "src/index.ts",
   "main": "lib/index.js",
