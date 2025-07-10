@@ -71,7 +71,7 @@ export class TestSuite_Integration extends TestSuite {
 
     async testMobileTokenData() {
         
-        // create operaiton on the server
+        // create operation on the server
         const serverOp = await this.utils.createOperation()
         
         // get operation detail
