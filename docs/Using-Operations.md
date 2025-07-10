@@ -112,9 +112,35 @@ async function approveWithBiometrics(operation: WMTUserOperation) {
 }
 ```
 
+### Passing Additional Mobile Token Data
+
+With PowerAuth server 1.10+, you can pass additional customer-specific data during operation authorization using the `mobileTokenData` property. This can be useful for fraud detection systems (FDS) or other custom business logic.
+
+```typescript
+async function approveWithAdditionalData(operation: WMTOnlineOperation, password: string) {
+
+    const fdsData = {
+        deviceFingerprint: "abc123def456",
+        riskScore: 0.8,
+        location: {
+            latitude: 50.0755,
+            longitude: 14.4378
+        }
+    }
+
+    operation.mobileTokenData = fdsData
+
+    const auth = PowerAuthAuthentication.password(password)
+    const response = await this.operations.authorize(operation, auth)
+    // continue with the flow ....
+}
+```
+
+The `mobileTokenData` is completely optional, and the structure is customer-specific. If you don't need this functionality, you can continue using operations without providing this property.
+
 ## Reject an Operation
 
-To reject an operation use `reject`. Operation rejection is confirmed by the possession factor so there is no need to create the `PowerAuthAuthentication` object. You can simply use it like in the following example.
+To reject an operation use `reject`. Operation rejection is confirmed by the possession factor, so there is no need to create the `PowerAuthAuthentication` object. You can simply use it like in the following example.
 
 ```typescript
 // Reject operation with some reason

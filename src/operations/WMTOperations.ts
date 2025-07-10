@@ -95,7 +95,7 @@ export class WMTOperations extends WMTNetworking {
             proximityCopy = { otp: operation.proximityCheck.totp, type: operation.proximityCheck.type, timestampReceived: operation.proximityCheck.timestampReceived, timestampSent: new Date() }
         }
         return await this.postSigned<void>(
-            { requestObject: { id: operation.id, data: operation.data, proximityCheck: proximityCopy } },
+            { requestObject: { id: operation.id, data: operation.data, proximityCheck: proximityCopy, mobileTokenData: operation.mobileTokenData } },
             authentication,
             "/api/auth/token/app/operation/authorize",
             "/operation/authorize",
