@@ -208,6 +208,7 @@ interface OperationObject {
     timestampCreated: number
     timestampExpires: number
     proximityOtp: string | undefined
+    additionalData?: any
 }
 
 interface QRData {

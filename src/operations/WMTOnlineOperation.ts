@@ -15,6 +15,7 @@
 //
 
 import type { WMTUserOperationProximityCheck } from './WMTUserOperationProximityCheck'
+import type { WMTAnyObject } from '../utils/WMTAnyObject'
 
 /**
  * An interface that defines minimum data needed for calculating the operation signature
@@ -22,7 +23,9 @@ import type { WMTUserOperationProximityCheck } from './WMTUserOperationProximity
  */
 export interface WMTOnlineOperation {
 
-    /** Unique operation identifier. */
+    /** 
+     * Unique operation identifier. 
+     */
     id: string
 
     /**
@@ -36,4 +39,9 @@ export interface WMTOnlineOperation {
      * Additional information with proximity check data 
      */
     proximityCheck?: WMTUserOperationProximityCheck
+
+    /** 
+     * Additional mobile token data for authorization (available with PowerAuth server 1.10+) 
+     */
+    mobileTokenData?: WMTAnyObject
 }

@@ -18,6 +18,7 @@ import type { WMTUserOperationUIData } from "./WMTUserOperationUIData"
 import type { WMTOnlineOperation } from "./WMTOnlineOperation"
 import type { WMTUserOperationAttribute } from "./WMTUserOperationAttribute"
 import type { WMTUserOperationProximityCheck } from "./WMTUserOperationProximityCheck"
+import type { WMTAnyObject } from "../utils/WMTAnyObject"
 
 /**
  * `UserOperation` is object returned from the backend that can be either approved or rejected.
@@ -81,8 +82,17 @@ export interface WMTUserOperation extends WMTOnlineOperation {
 
     /** 
      * Proximity Check Data to be passed when OTP is handed to the app.
+     * 
+     * This data is not retrieved from the server but is set by the application.
      */
     proximityCheck?: WMTUserOperationProximityCheck
+
+    /**
+     * Additional mobile token data for authorization (available with PowerAuth server 1.10+)
+     * 
+     * This data is not retrieved from the server but is set by the application.
+     */
+    mobileTokenData?: WMTAnyObject
 }
 
 export type WMTSignatureFactor = "possession" | "possession_knowledge" | "possession_biometry"

@@ -69,6 +69,39 @@ export class TestSuite_Integration extends TestSuite {
         this.assertNull(resp.responseError, "Response error should be null after successful auth")
     }
 
+    async testMobileTokenData() {
+        
+        // create operaiton on the server
+        const serverOp = await this.utils.createOperation()
+        
+        // get operation detail
+        const detail = (await this.mtoken.operations.getDetail(serverOp.operationId)).responseObject!!
+
+        // create mobile token data object with test values
+        const mobileTokenData = {
+            test1: 1,
+            test2: 2.3,
+            test3: "string",
+            test4: {
+                nested: true
+            }
+        }
+
+        // set mobile token data to the operation detail
+        detail.mobileTokenData = mobileTokenData
+
+        // authorize the operation with mobile token data
+        await this.mtoken.operations.authorize(detail, PowerAuthAuthentication.password(this.pin))
+
+        // get the operation again to verify the mobile token data
+        const authorizedOp = await this.utils.getOperation(serverOp.operationId)
+
+        this.assertEquals(authorizedOp.additionalData?.mobileTokenData?.test1, 1, "Mobile token data test1 should be 1")
+        this.assertEquals(authorizedOp.additionalData?.mobileTokenData?.test2, 2.3, "Mobile token data test2 should be 2.3")
+        this.assertEquals(authorizedOp.additionalData?.mobileTokenData?.test3, "string", "Mobile token data test3 should be 'string'")
+        this.assertTrue(authorizedOp.additionalData?.mobileTokenData?.test4?.nested, "Mobile token data test4 should be an object with nested set to true")
+    }
+
     async testRepeatedApprovePayment() {
         const op = await this.utils.createOperation()
         
