@@ -14,12 +14,22 @@
 // and limitations under the License.
 //
 
-import type { WMTResponse, WMTUserOperation, WMTOperationAttributeAmount, WMTOperationAttributeKeyValue, WMTOperationAttributeNote, WMTOperationAttributeAmountConversion, WMTOperationAttributeImage, WMTOperationAttributeHeading } from 'react-native-mtoken-sdk';
+import {
+    WMTResponse,
+    WMTUserOperation,
+    WMTOperationAttributeAmount,
+    WMTOperationAttributeKeyValue,
+    WMTOperationAttributeNote,
+    WMTOperationAttributeAmountConversion,
+    WMTOperationAttributeImage,
+    WMTOperationAttributeAlert,
+    WMTAttributeAlertType,
+} from 'react-native-mtoken-sdk';
 import { WMTAttributeType } from 'react-native-mtoken-sdk';
 import { TestSuite } from './TestSuite';
 
 export class TestSuite_Deserialization extends TestSuite {
-    
+
     testEmptyList() {
         const json = "{\"status\":\"OK\",\"responseObject\":[]}"
         const object = JSON.parse(json) as WMTResponse<WMTUserOperation[]>
@@ -189,5 +199,104 @@ export class TestSuite_Deserialization extends TestSuite {
         this.assertEquals(resultTexts2?.success, "Payment of was confirmed")
         this.assertEquals(resultTexts2?.reject, "Payment was rejected")
         this.assertEquals(resultTexts2?.failure, "Payment approval failed")
+    }
+
+    testAlertAttributes() {
+        const json = `{
+            "status": "OK",
+            "responseObject": [
+                {
+                    "id": "8eebd926-40d4-4214-8208-307f01b0b68f",
+                    "name": "authorize_payment",
+                    "data": "A1*A100CZK*Q238400856/0300**D20170629*NUtility Bill Payment - 05/2017",
+                    "operationCreated": "2018-06-21T13:41:41+0000",
+                    "operationExpires": "2018-06-21T13:46:45+0000",
+                    "allowedSignatureType": {
+                        "type": "2FA",
+                        "variants": ["possession_knowledge", "possession_biometry"]
+                    },
+                    "formData": {
+                        "title": "Confirm Payment",
+                        "message": "Hello,\\nplease confirm following payment:",
+                        "attributes": [
+                            {
+                                "id": "operation.alert",
+                                "type": "ALERT",
+                                "label": "Success Alert",
+                                "alertType": "SUCCESS",
+                                "title": "Success Title",
+                                "message": "Payment was successful"
+                            },
+                            {
+                                "id": "operation.alert",
+                                "type": "ALERT",
+                                "label": "Info Alert",
+                                "alertType": "INFO",
+                                "title": "Info Title",
+                                "message": "Make sure your payment details are correct"
+                            },
+                            {
+                                "id": "operation.alert",
+                                "type": "ALERT",
+                                "label": "Warning Alert",
+                                "alertType": "WARNING",
+                                "message": "Your funds are low, please check your balance"
+                            },
+                            {
+                                "id": "operation.alert",
+                                "type": "ALERT",
+                                "label": "Error Alert",
+                                "alertType": "ERROR",
+                                "message": "Insufficient funds"
+                            }
+                        ]
+                    }
+                }
+            ]
+        }`;
+
+        const response = JSON.parse(json) as WMTResponse<WMTUserOperation[]>;
+        this.assertNotNull(response);
+        this.assertEquals('OK', response.status);
+        this.assertEquals(1, response.responseObject!!!.length);
+
+        const operation = response.responseObject!!![0];
+        this.assertEquals(4, operation.formData.attributes.length);
+
+        // Test SUCCESS alert with both title and message
+        const successAlert = operation.formData.attributes[0] as WMTOperationAttributeAlert;
+        this.assertEquals(WMTAttributeType.ALERT, successAlert.type);
+        this.assertEquals('operation.alert', successAlert.id);
+        this.assertEquals('Success Alert', successAlert.label);
+        this.assertEquals(WMTAttributeAlertType.success, successAlert.alertType);
+        this.assertEquals('Success Title', successAlert.title);
+        this.assertEquals('Payment was successful', successAlert.message);
+
+        // Test INFO alert with both title and message
+        const infoAlert = operation.formData.attributes[1] as WMTOperationAttributeAlert;
+        this.assertEquals(WMTAttributeType.ALERT, infoAlert.type);
+        this.assertEquals('operation.alert', infoAlert.id);
+        this.assertEquals('Info Alert', infoAlert.label);
+        this.assertEquals(WMTAttributeAlertType.info, infoAlert.alertType);
+        this.assertEquals('Info Title', infoAlert.title);
+        this.assertEquals('Make sure your payment details are correct', infoAlert.message);
+
+        // Test WARNING alert with only a message (no title)
+        const warningAlert = operation.formData.attributes[2] as WMTOperationAttributeAlert;
+        this.assertEquals(WMTAttributeType.ALERT, warningAlert.type);
+        this.assertEquals('operation.alert', warningAlert.id);
+        this.assertEquals('Warning Alert', warningAlert.label);
+        this.assertEquals(WMTAttributeAlertType.warning, warningAlert.alertType);
+        this.assertNull(warningAlert.title);
+        this.assertEquals('Your funds are low, please check your balance', warningAlert.message);
+
+        // Test ERROR alert with a message (no title)
+        const errorAlert = operation.formData.attributes[3] as WMTOperationAttributeAlert;
+        this.assertEquals(WMTAttributeType.ALERT, errorAlert.type);
+        this.assertEquals('operation.alert', errorAlert.id);
+        this.assertEquals('Error Alert', errorAlert.label);
+        this.assertEquals(WMTAttributeAlertType.error, errorAlert.alertType);
+        this.assertNull(errorAlert.title);
+        this.assertEquals('Insufficient funds', errorAlert.message);
     }
 }

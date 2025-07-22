@@ -54,7 +54,9 @@ export enum WMTAttributeType {
     /** Single highlighted text, written in a larger font, used as a section heading. */
     HEADING           = "HEADING",
     /** For image displaying. */
-    IMAGE            = "IMAGE"
+    IMAGE            = "IMAGE",
+    /** Alert with type SUCCESS, INFO, WARNING or ERROR. Each type has an associated icon. */
+    ALERT            = "ALERT"
 }
 
 /** Amount attribute is 1 row in operation that represents "Payment Amount". */
@@ -200,4 +202,48 @@ export interface WMTOperationAttributeAmountConversion extends WMTUserOperationA
      * or "EUR" behind the amount depending on locale.
      */
     targetValueFormatted?: string
+}
+
+
+/**
+ * Allowed types for Alert type.
+ */
+export enum WMTAttributeAlertType {
+    /** Success alert type. */
+    success = "SUCCESS",
+    /** Info alert type. */
+    info = "INFO",
+    /** Warning alert type. */
+    warning = "WARNING",
+    /** Error alert type. */
+    error = "ERROR"
+}
+
+/** 
+ * Alert attribute that represents a notification or message to the user.
+ */
+export interface WMTOperationAttributeAlert extends WMTUserOperationAttribute {
+
+    /**
+     * Type of the alert.
+     *
+     * Each alert type should have an associated icon on the client side.
+     */
+    alertType: WMTAttributeAlertType
+
+    /**
+     * Title of the alert. Optional.
+     * 
+     * When specified along with a message, it should be displayed as a highlighted part of the text
+     * (i.e., bold and above the message).
+     */
+    title?: string
+
+    /**
+     * Message content of the alert.
+     * 
+     * If both message and title are specified, a message is displayed as the regular text below the title.
+     * If only a message is specified, it is displayed as a regular text.
+     */
+    message: string
 }

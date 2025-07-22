@@ -463,6 +463,7 @@ Attributes types:
 - `HEADING` Single highlighted text, written in a larger font, used as a section heading.
 - `AMOUNT_CONVERSION` Provides data about Money conversion.
 - `IMAGE` Image row.
+- `ALERT` view to display success, info, warning or error message.
 - `UNKNOWN` Fallback option when an unknown attribute type is passed. Such an attribute only contains the label.
 
 Definition of `WMTUserOperationUIData`:
