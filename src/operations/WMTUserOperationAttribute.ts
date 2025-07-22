@@ -18,7 +18,7 @@
  * Operation Attribute can be visualized as "1 row in operation screen".
  * 
  * `MobileTokenOperationAttribute` is considered to be "abstract".
- * Every type of the attribute has it's own "strongly typed" implementation.
+ * Every type of the attribute has its own "strongly typed" implementation.
  */
 export interface WMTUserOperationAttribute {
 
@@ -31,7 +31,7 @@ export interface WMTUserOperationAttribute {
     /** 
      * Type of the operation.
      * 
-     * If the type is for example `MobileTokenAttributeType.Amount`, you can retype the instance to `MobileTokenOperationAttributeAmount`.
+     * If the type is, for example, `MobileTokenAttributeType.Amount`, you can retype the instance to `MobileTokenOperationAttributeAmount`.
      * 
      * The possible string value is a fallback for unknown attribute types.
      */
@@ -41,11 +41,11 @@ export interface WMTUserOperationAttribute {
     label: string
 }
 
-/** Attribute type. Based on this type, proper class should be chosen for "deserialization". */
+/** Attribute type. Based on this type, a proper class should be chosen for "deserialization". */
 export enum WMTAttributeType {
     /** Amount, like "100.00 CZK." */
     AMOUNT            = "AMOUNT", 
-    /** Currency conversion, for example when changing money from USD to EUR. */
+    /** Currency conversion, for example, when changing money from USD to EUR. */
     AMOUNT_CONVERSION = "AMOUNT_CONVERSION",
     /** Any key value pair. */
     KEY_VALUE          = "KEY_VALUE",
@@ -57,14 +57,14 @@ export enum WMTAttributeType {
     IMAGE            = "IMAGE"
 }
 
-/** Amount attribute is 1 row in operation, that represents "Payment Amount". */
+/** Amount attribute is 1 row in operation that represents "Payment Amount". */
 export interface WMTOperationAttributeAmount extends WMTUserOperationAttribute {
     
     /**
      * Formatted amount for presentation.
      * 
      * This property will be properly formatted based on the response language.
-     * For example when amount is 100 and the acceptLanguage is "cs" for czech,
+     * For example, when the amount is 100 and the acceptLanguage is "cs" for czech,
      * the amountFormatted will be "100,00".
      */ 
     amountFormatted?: string
@@ -72,7 +72,7 @@ export interface WMTOperationAttributeAmount extends WMTUserOperationAttribute {
     /**
      * Formatted currency to the locale based on acceptLanguage.
      * 
-     * For example when the currency is CZK, this property will be "Kč".
+     * For example, when the currency is CZK, this property will be "Kč".
      */
     currencyFormatted?: string
     
@@ -123,14 +123,14 @@ export interface WMTOperationAttributeImage extends WMTUserOperationAttribute {
     originalUrl?: string
 }
 
-/** Conversion attribute is 1 row in operation, that represents "Money Conversion". */
+/** Conversion attribute is 1 row in operation that represents "Money Conversion". */
 export interface WMTOperationAttributeAmountConversion extends WMTUserOperationAttribute {
     
     /**
      * If the conversion is dynamic and the application should refresh it periodically.
      * 
-     * This is just a hint for the application UI. This SDK does not offer feature to periodically
-     * refresh conversion rate.
+     * This is just a hint for the application UI. This SDK does not offer a feature to periodically
+     * refresh the conversion rate.
      */
     dynamic: boolean 
     
@@ -138,21 +138,21 @@ export interface WMTOperationAttributeAmountConversion extends WMTUserOperationA
      * Formatted amount for presentation.
      * 
      * This property will be properly formatted based on the response language.
-     * For example when amount is 100 and the acceptLanguage is "cs" for czech,
+     * For example, when the amount is 100 and the acceptLanguage is "cs" for czech,
      * the amountFormatted will be "100,00".
      */
     sourceAmountFormatted?: string 
     /**
      * Formatted currency to the locale based on acceptLanguage.
      * 
-     * For example when the currency is CZK, this property will be "Kč".
+     * For example, when the currency is CZK, this property will be "Kč".
      */
     sourceCurrencyFormatted?: string
 
     /**
      * Payment amount.
      * 
-     * Amount might not be precise (due to floating point conversion during deserialization from json)
+     * Amount might not be precise (due to floating point conversion during deserialization from JSON)
      * use amountFormatted property instead when available.
      */
     sourceAmount?: number
@@ -171,7 +171,7 @@ export interface WMTOperationAttributeAmountConversion extends WMTUserOperationA
      * Formatted amount for presentation.
      * 
      * This property will be properly formatted based on the response language.
-     * For example when amount is 100 and the acceptLanguage is "cs" for czech,
+     * For example, when the amount is 100 and the acceptLanguage is "cs" for czech,
      * the amountFormatted will be "100,00".
      */
     targetAmountFormatted?: string
@@ -179,13 +179,13 @@ export interface WMTOperationAttributeAmountConversion extends WMTUserOperationA
     /**
      * Formatted currency to the locale based on acceptLanguage.
      * 
-     * For example when the currency is CZK, this property will be "Kč".
+     * For example, when the currency is CZK, this property will be "Kč".
      */
     targetCurrencyFormatted?: string
     /**
      * Payment amount.
      * 
-     * Amount might not be precise (due to floating point conversion during deserialization from json)
+     * Amount might not be precise (due to floating point conversion during deserialization from JSON)
      * use amountFormatted property instead when available.
      */
     targetAmount?: number
