@@ -242,7 +242,7 @@ export interface WMTOperationAttributeAlert extends WMTUserOperationAttribute {
     /**
      * Message content of the alert.
      * 
-     * If both message and title are specified, a message is displayed as the regular text below the title.
+     * If both message and title are specified, the message is displayed as the regular text below the title.
      * If only a message is specified, it is displayed as a regular text.
      */
     message: string
