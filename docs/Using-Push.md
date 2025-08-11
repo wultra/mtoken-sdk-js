@@ -33,15 +33,20 @@ const push = mtoken.push
 
 `WMTPush` has only one method:
 
-- `async register(token: string, platform?: "ios" | "android" | "huawei", requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<void>>` - Language settings, that will be sent along with each request.
-    - the value of the `token` parameter is platform dependent.
-    - when the `platform` parameter is not provided, it is automatically resolved
-
+- `async register(data: WMTPushPlatform, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<void>>` - Registers the PowerAuth activation for push notifications on the PowerAuth backend.
+    - `data`: Push platform and token retrieved from the device.
 
 ## Registering to Push Notifications Example
 
+<!-- begin box warning -->
+If you're using an older PowerAuth server version 1.9, you need to set up the platform object to support legacy push registration with:
 ```typescript
-//This example uses expo-notifications package
+const data = WMTPushPlatform.fcm(token).supportLegacyServer()
+```
+<!-- end -->
+
+```typescript
+// This example uses expo-notifications package and assumes that we're on react-native platform and android device
 import * as Notifications from 'expo-notifications'
 
 private mtoken: WultraMobileToken
@@ -62,7 +67,7 @@ async function registerForPushNotifications() {
     }
     let token = (await Notifications.getDevicePushTokenAsync()).data
 
-    let response = await this.mtoken.push.register(token)
+    let response = await this.mtoken.push.register(WMTPushPlatform.fcm(token))
 
     if (response.status == "OK") {
         // push registered
