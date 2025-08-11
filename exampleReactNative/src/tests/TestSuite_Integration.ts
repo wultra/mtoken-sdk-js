@@ -17,7 +17,7 @@
 import { PowerAuth, PowerAuthAuthentication, PowerAuthUtils } from 'react-native-powerauth-mobile-sdk';
 import { TestSuite } from './TestSuite';
 import { IntegrationUtils } from './utils/IntegrationUtils';
-import { WultraMobileToken, WMTQROperationParser, WMTUserAgent, WMTSigningKey, WMTKnownRestApiError } from 'react-native-mtoken-sdk';
+import { WultraMobileToken, WMTQROperationParser, WMTUserAgent, WMTSigningKey, WMTKnownRestApiError, WMTPushPlatform } from 'react-native-mtoken-sdk';
 
 export class TestSuite_Integration extends TestSuite {
 
@@ -222,39 +222,41 @@ export class TestSuite_Integration extends TestSuite {
         // Test default behavior (libraryDefault)
 
         tempMtoken = this.powerAuth.createWultraMobileToken()
+        let headers: Headers
 
         await tempMtoken.operations.getOperations( request => {
-            const headers = request.headers as Headers
-            const userAgent = headers.get("user-agent")!!
-            this.assertTrue(userAgent.startsWith(expectedDefaultUserAgentProductName), `user-agent should start with ${expectedDefaultUserAgentProductName}`)
-            this.assertTrue(userAgent.includes(envInfo.systemVersion), `user-agent should contain systemVersion ${envInfo.systemVersion}`)
-            this.assertTrue(userAgent.includes(envInfo.systemName), `user-agent should contain systemName ${envInfo.systemName}`)
-            this.assertTrue(userAgent.includes(envInfo.deviceId), `user-agent should contain deviceId ${envInfo.deviceId}`)
-            this.assertTrue(userAgent.includes(envInfo.deviceManufacturer), `user-agent should contain deviceManufacturer ${envInfo.deviceManufacturer}`)
-            this.assertTrue(userAgent.includes(envInfo.applicationIdentifier || "MISSING"), `user-agent should contain applicationIdentifier ${envInfo.applicationIdentifier}`)
-            this.assertTrue(userAgent.includes(envInfo.applicationVersion || "MISSING"), `user-agent should contain applicationVersion ${envInfo.applicationVersion}`)
+            headers = request.headers as Headers
             return request
         })
+
+        const userAgent = headers!!.get("user-agent")!!
+        this.assertTrue(userAgent.startsWith(expectedDefaultUserAgentProductName), `user-agent should start with ${expectedDefaultUserAgentProductName}`)
+        this.assertTrue(userAgent.includes(envInfo.systemVersion), `user-agent should contain systemVersion ${envInfo.systemVersion}`)
+        this.assertTrue(userAgent.includes(envInfo.systemName), `user-agent should contain systemName ${envInfo.systemName}`)
+        this.assertTrue(userAgent.includes(envInfo.deviceId), `user-agent should contain deviceId ${envInfo.deviceId}`)
+        this.assertTrue(userAgent.includes(envInfo.deviceManufacturer), `user-agent should contain deviceManufacturer ${envInfo.deviceManufacturer}`)
+        this.assertTrue(userAgent.includes(envInfo.applicationIdentifier || "MISSING"), `user-agent should contain applicationIdentifier ${envInfo.applicationIdentifier}`)
+        this.assertTrue(userAgent.includes(envInfo.applicationVersion || "MISSING"), `user-agent should contain applicationVersion ${envInfo.applicationVersion}`)
 
         // Test custom user agent
 
         tempMtoken = this.powerAuth.createWultraMobileToken(undefined, testUserAgent)
 
         await tempMtoken.inbox.getUnreadCount( request => {
-            const headers = request.headers as Headers
-            this.assertEquals(headers.get("user-agent"), testUserAgent)
+            headers = request.headers as Headers
             return request
         })
+        this.assertEquals(headers!!.get("user-agent"), testUserAgent)
 
         // Test system default (should be undefined in the request)
 
         tempMtoken = this.powerAuth.createWultraMobileToken(undefined, WMTUserAgent.SYSTEM_DEFAULT)
 
         await tempMtoken.operations.getOperations( request => {
-            const headers = request.headers as Headers
-            this.assertEquals(headers.get("user-agent"), undefined)
+            headers = request.headers as Headers
             return request
         })
+        this.assertEquals(headers!!.get("user-agent"), undefined)
     }
 
     async testAcceptLanguage() {
@@ -262,20 +264,115 @@ export class TestSuite_Integration extends TestSuite {
         const en = "en"
         const cs = "cs"
 
+        let headers: Headers
+
         // set eng lang
         this.mtoken.setAcceptLanguage(en)
         await this.mtoken.operations.getOperations( request => {
-            const headers = request.headers as Headers
-            this.assertEquals(headers.get("accept-language")!!, en)
+            headers = request.headers as Headers
             return request
         })
+        this.assertEquals(headers!!.get("accept-language")!!, en)
 
         // set czech lang
         this.mtoken.setAcceptLanguage(cs)
         await this.mtoken.inbox.getUnreadCount( request => {
-            const headers = request.headers as Headers
-            this.assertEquals(headers.get("accept-language"), cs)
+            headers = request.headers as Headers
             return request
         })
+        this.assertEquals(headers!!.get("accept-language"), cs)
+    }
+
+    // -- PUSH TESTS --
+
+    async testRegisterPushLegacy() {
+
+        const token = "your_fcm_token"
+        let payload: any
+        
+        await this.mtoken.push.register(
+            WMTPushPlatform.fcm(token).supportLegacyServer(),
+            request => {
+                const body = request.body as string
+                payload = JSON.parse(body).requestObject
+                return request
+            }
+        )
+
+        this.assertEquals(payload.token, token, "Token in request body should match the provided token")
+        this.assertEquals(payload.platform, "android", "Platform in request body should be 'android'")
+        this.assertEquals(payload.environment, undefined, "Environment in request body should be undefined")
+    }
+
+    async testRegisterPushApns() {
+        const token = "your_apns_token"
+        let payload: any
+        
+        await this.mtoken.push.register(
+            WMTPushPlatform.apns(token),
+            request => {
+                const body = request.body as string
+                payload = JSON.parse(body).requestObject
+                return request
+            }
+        )
+        
+        this.assertEquals(payload.token, token, "Token in request body should match the provided token")
+        this.assertEquals(payload.platform, "apns", "Platform in request body should be 'apns'")
+        this.assertEquals(payload.environment, undefined, "Environment in request body should be undefined")
+    }
+
+    async testRegisterPushApnsProduction() {
+        const token = "your_apns_token"
+        let payload: any
+        
+        await this.mtoken.push.register(
+            WMTPushPlatform.apns(token, "production"),
+            request => {
+                const body = request.body as string
+                payload = JSON.parse(body).requestObject
+                return request
+            }
+        )
+        
+        this.assertEquals(payload.token, token, "Token in request body should match the provided token")
+        this.assertEquals(payload.platform, "apns", "Platform in request body should be 'apns'")
+        this.assertEquals(payload.environment, "production", "Environment in request body should be 'production')")
+    }
+
+    async testRegisterPushApnsDevelopment() {
+        const token = "your_apns_token"
+        let payload: any
+        
+        await this.mtoken.push.register(
+            WMTPushPlatform.apns(token, "development"),
+            request => {
+                const body = request.body as string
+                payload = JSON.parse(body).requestObject
+                return request
+            }
+        )
+        
+        this.assertEquals(payload.token, token, "Token in request body should match the provided token")
+        this.assertEquals(payload.platform, "apns", "Platform in request body should be 'apns'")
+        this.assertEquals(payload.environment, "development", "Environment in request body should be 'development')")
+    }
+
+    async testRegisterPushFcm() {
+        const token = "your_fcm_token"
+        let payload: any
+        
+        await this.mtoken.push.register(
+            WMTPushPlatform.fcm(token),
+            request => {
+                const body = request.body as string
+                payload = JSON.parse(body).requestObject
+                return request
+            }
+        )
+        
+        this.assertEquals(payload.token, token, "Token in request body should match the provided token")
+        this.assertEquals(payload.platform, "fcm", "Platform in request body should be 'fcm'")
+        this.assertEquals(payload.environment, undefined, "Environment in request body should be undefined")
     }
 }

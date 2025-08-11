@@ -79,7 +79,7 @@ export class WMTPushPlatform {
    *                    The environment can be either `development` or `production`.
    *                    If not set, then the environment is not specified and the server will use the configured environment.
    */
-  static apns(token: string, environment: WMTAPNSEnvironment | undefined): WMTPushPlatform {
+  static apns(token: string, environment?: WMTAPNSEnvironment): WMTPushPlatform {
     return new WMTPushPlatform(token, "apns", environment)
   }
 
