@@ -109,7 +109,7 @@ Alternatively, you can mark all messages as read:
 try {
     const resp = await this.mtoken.inbox.markAllRead()
     if (resp.status == "OK") {
-        // all messages was marked as read
+        // all messages were marked as read
     } else {
         // error    
     }
