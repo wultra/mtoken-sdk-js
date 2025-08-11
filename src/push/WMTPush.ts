@@ -102,6 +102,8 @@ export class WMTPushPlatform {
   /**
    * If your server is running an older version of the Wultra Mobile Token API (1.9 or earlier), 
    * you may need to use the legacy format.
+   * 
+   * Note that this modifies and returns the same instance (this).
    */
   supportLegacyServer(): WMTPushPlatform {
     if (this.platform === "apns") {

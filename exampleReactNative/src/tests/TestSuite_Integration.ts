@@ -337,7 +337,7 @@ export class TestSuite_Integration extends TestSuite {
         
         this.assertEquals(payload.token, token, "Token in request body should match the provided token")
         this.assertEquals(payload.platform, "apns", "Platform in request body should be 'apns'")
-        this.assertEquals(payload.environment, "production", "Environment in request body should be 'production')")
+        this.assertEquals(payload.environment, "production", "Environment in request body should be 'production'")
     }
 
     async testRegisterPushApnsDevelopment() {
@@ -355,7 +355,7 @@ export class TestSuite_Integration extends TestSuite {
         
         this.assertEquals(payload.token, token, "Token in request body should match the provided token")
         this.assertEquals(payload.platform, "apns", "Platform in request body should be 'apns'")
-        this.assertEquals(payload.environment, "development", "Environment in request body should be 'development')")
+        this.assertEquals(payload.environment, "development", "Environment in request body should be 'development'")
     }
 
     async testRegisterPushFcm() {
