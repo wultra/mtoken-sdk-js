@@ -180,11 +180,11 @@ async function getDetail(operationId: string) {
 
 ## Claim the Operation
 
-To claim a non-persolized operation use `claim`. 
+To claim a non-personalized operation use `claim`. 
 
 A non-personalized operation refers to an operation that is initiated without a specific userId. In this state, the operation is not tied to a particular user. 
 
-Operation claim is confirmed by the possession factor so there is no need for creating a `PowerAuthAuthentication` object. The returned result is the operation and its current status. You can simply use it with the following example.
+Operation claim is confirmed by the possession factor, so there is no need for creating a `PowerAuthAuthentication` object. The returned result is the operation and its current status. You can simply use it with the following example.
 
 ```typescript
 // Assigns the 'non-personalized' operation to the user
@@ -343,7 +343,7 @@ All available methods and attributes of `WMTOperations` API are:
 
 ## WMTUserOperation
 
-Operations objects retrieved through the `getOperations` or `getDetail` methods are called "user operations".
+Operation objects retrieved through the `getOperations` or `getDetail` methods are called "user operations".
 
 Under this abstract name, you can imagine for example "Login operation", which is a request for signing in to the online account in a web browser on another device. **In general, it can be any operation that can be either approved or rejected by the user.**
 
@@ -552,7 +552,7 @@ Two-Factor Authentication (2FA) using Time-Based One-Time Passwords (TOTP) in th
 
 **QR Code Flow:**
 
-When the `WMTUserOperation.preApprovalScreen` has a `type` == `QR_SCAN`, the app should open the camera to scan the QR code before confirming the operation. Use the camera to scan the QR code containing the necessary data payload for the operation.
+When the `WMTUserOperation.ui.preApprovalScreen` has a `type` == `QR_SCAN`, the app should open the camera to scan the QR code before confirming the operation. Use the camera to scan the QR code containing the necessary data payload for the operation.
 
 **Deeplink Flow:**
 

@@ -74,7 +74,7 @@ Each message has its unique identifier. To get the body of the message, use the 
 ```typescript
 try {
     let messageId = messagesList[0].id
-    const resp = await this.mtoken.getMessageDetail(messageId)
+    const resp = await this.mtoken.inbox.getMessageDetail(messageId)
     if (resp.responseObject) {
         // process the message
     } else {
@@ -92,7 +92,7 @@ To mark the message as read by the user, use the following code:
 ```typescript
 try {
     let messageId = messagesList[0].id
-    const resp = await this.mtoken.markRead(messageId)
+    const resp = await this.mtoken.inbox.markRead(messageId)
     if (resp.status == "OK") {
         // the message was marked as read
     } else {
@@ -107,9 +107,9 @@ Alternatively, you can mark all messages as read:
 
 ```typescript
 try {
-    const resp = await this.mtoken.markAllRead()
+    const resp = await this.mtoken.inbox.markAllRead()
     if (resp.status == "OK") {
-        // all messages was marked as read
+        // all messages were marked as read
     } else {
         // error    
     }
