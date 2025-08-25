@@ -17,7 +17,7 @@
 import { PowerAuth, PowerAuthAuthentication, PowerAuthUtils } from 'react-native-powerauth-mobile-sdk';
 import { TestSuite } from './TestSuite';
 import { IntegrationUtils } from './utils/IntegrationUtils';
-import { WultraMobileToken, WMTQROperationParser, WMTUserAgent, WMTSigningKey, WMTKnownRestApiError, WMTPushPlatform } from 'react-native-mtoken-sdk';
+import { WultraMobileToken, WMTQROperationParser, WMTUserAgent, WMTSigningKey, WMTKnownRestApiError, WMTPushData, WMTAPNSEnvironment } from 'react-native-mtoken-sdk';
 
 export class TestSuite_Integration extends TestSuite {
 
@@ -291,7 +291,7 @@ export class TestSuite_Integration extends TestSuite {
         let payload: any
         
         await this.mtoken.push.register(
-            WMTPushPlatform.fcm(token).supportLegacyServer(),
+            WMTPushData.fcm(token, true),
             request => {
                 const body = request.body as string
                 payload = JSON.parse(body).requestObject
@@ -304,12 +304,30 @@ export class TestSuite_Integration extends TestSuite {
         this.assertEquals(payload.environment, undefined, "Environment in request body should be undefined")
     }
 
+    async testRegisterPushApnsLegacy() {
+        const token = "your_apns_token"
+        let payload: any
+        
+        await this.mtoken.push.register(
+            WMTPushData.apns(token, WMTAPNSEnvironment.production, true),
+            request => {
+                const body = request.body as string
+                payload = JSON.parse(body).requestObject
+                return request
+            }
+        )
+        
+        this.assertEquals(payload.token, token, "Token in request body should match the provided token")
+        this.assertEquals(payload.platform, "ios", "Platform in request body should be 'apns'")
+        this.assertEquals(payload.environment, undefined, "Environment in request body should be undefined")
+    }
+
     async testRegisterPushApns() {
         const token = "your_apns_token"
         let payload: any
         
         await this.mtoken.push.register(
-            WMTPushPlatform.apns(token),
+            WMTPushData.apns(token, undefined),
             request => {
                 const body = request.body as string
                 payload = JSON.parse(body).requestObject
@@ -327,7 +345,7 @@ export class TestSuite_Integration extends TestSuite {
         let payload: any
         
         await this.mtoken.push.register(
-            WMTPushPlatform.apns(token, "production"),
+            WMTPushData.apns(token, WMTAPNSEnvironment.production),
             request => {
                 const body = request.body as string
                 payload = JSON.parse(body).requestObject
@@ -345,7 +363,7 @@ export class TestSuite_Integration extends TestSuite {
         let payload: any
         
         await this.mtoken.push.register(
-            WMTPushPlatform.apns(token, "development"),
+            WMTPushData.apns(token, WMTAPNSEnvironment.development),
             request => {
                 const body = request.body as string
                 payload = JSON.parse(body).requestObject
@@ -363,7 +381,7 @@ export class TestSuite_Integration extends TestSuite {
         let payload: any
         
         await this.mtoken.push.register(
-            WMTPushPlatform.fcm(token),
+            WMTPushData.fcm(token),
             request => {
                 const body = request.body as string
                 payload = JSON.parse(body).requestObject

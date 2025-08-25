@@ -30,23 +30,21 @@ export class WMTPush extends WMTNetworking {
    * ----
    * For example, to register an FCM (Firebase Cloud Messaging) token, you can use:
    * ```typescript
-   * const pushData = WMTPushPlatform.fcm("your_fcm_token")
+   * const pushData = WMTPushData.fcm("your_fcm_token")
    * await mtoken.push.register(pushData)
    * ```
    * ----
    *
    * If you are using an older version of the Wultra Mobile Token API (1.9 or earlier), you may need to use the legacy format:
    * ```typescript
-   * const pushData = WMTPushPlatform.fcm("your_fcm_token").supportLegacyServer()
+   * const pushData = WMTPushData.fcm("your_fcm_token").supportLegacyServer()
    * await mtoken.push.register(pushData)
    * ```
    */
-  async register(data: WMTPushPlatform, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<void>> {
-
-    let anyData = data as any
+  async register(data: WMTPushData, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<void>> {
 
     return await this.postSignedWithToken<void>(
-      { requestObject: { token: anyData.token, platform: anyData.platform, environment: anyData.apnsEnvironment } },
+      { requestObject: data.requestObject },
       PowerAuthAuthentication.possession(),
       "/api/push/device/register/token",
       "possession_universal",
@@ -57,63 +55,76 @@ export class WMTPush extends WMTNetworking {
 }
 
 /// Environment for Apple Push Notification Service (APNs).
-type WMTAPNSEnvironment = "production" | "development"
+export enum WMTAPNSEnvironment {
+  production = "production",
+  development = "development"
+}
 
 /// Represents a push platform and its token for Wultra Mobile Token API.
-export class WMTPushPlatform {
+export class WMTPushData {
 
-  private token: string
-  private platform: string
-  private apnsEnvironment?: WMTAPNSEnvironment
+  private readonly token: string
+  private readonly platform: WMTPushPlatform | WMTLegacyPushPlatform
+  private readonly apnsEnvironment?: WMTAPNSEnvironment
 
-  private constructor(token: string, platform: string, apnsEnvironment?: WMTAPNSEnvironment) {
+  private constructor(token: string, platform: WMTPushPlatform | WMTLegacyPushPlatform, apnsEnvironment?: WMTAPNSEnvironment) {
     this.token = token
     this.platform = platform
     this.apnsEnvironment = apnsEnvironment
   }
 
-  /** Create a WMTPushPlatform instance for Apple Push Notification Service (APNs).
+  /** Create a WMTPushData instance for Apple Push Notification Service (APNs).
    *
    * @param token device token received from APNs. Format of the token is usually a hexadecimal string.
    * @param environment optional environment for APNs.
    *                    The environment can be either `development` or `production`.
    *                    If not set, then the environment is not specified and the server will use the configured environment.
+   * @param supportLegacyServer If your server is running an older version of the Wultra Mobile Token API (1.9 or earlier), 
+   *                            you may need to use the legacy format.
    */
-  static apns(token: string, environment?: WMTAPNSEnvironment): WMTPushPlatform {
-    return new WMTPushPlatform(token, "apns", environment)
+  static apns(token: string, environment?: WMTAPNSEnvironment, supportLegacyServer?: boolean): WMTPushData {
+    return new WMTPushData(token, supportLegacyServer ? "ios" : "apns", supportLegacyServer ? undefined : environment)
   }
 
-  /** Create a WMTPushPlatform instance for Firebase Cloud Messaging (FCM).
+  /** Create a WMTPushData instance for Firebase Cloud Messaging (FCM).
    *
    * @param token device token received from FCM.
+   * @param supportLegacyServer If your server is running an older version of the Wultra Mobile Token API (1.9 or earlier), 
+   *                            you may need to use the legacy format.
    */
-  static fcm(token: string): WMTPushPlatform {
-    return new WMTPushPlatform(token, "fcm")
+  static fcm(token: string, supportLegacyServer?: boolean): WMTPushData {
+    return new WMTPushData(token, supportLegacyServer ? "android" : "fcm")
   }
 
-  /** Create a WMTPushPlatform instance for Huawei Mobile Services (HMS).
+  /** Create a WMTPushData instance for Huawei Mobile Services (HMS).
    *
    * @param token device token received from HMS.
+   * @param supportLegacyServer If your server is running an older version of the Wultra Mobile Token API (1.9 or earlier), 
+   *                            you may need to use the legacy format.
    */
-  static huawei(token: string): WMTPushPlatform {
-    return new WMTPushPlatform(token, "hms")
+  static huawei(token: string, supportLegacyServer?: boolean): WMTPushData {
+    return new WMTPushData(token, supportLegacyServer ? "huawei" : "hms")
   }
 
-  /**
-   * If your server is running an older version of the Wultra Mobile Token API (1.9 or earlier), 
-   * you may need to use the legacy format.
-   * 
-   * Note that this modifies and returns the same instance (this).
-   */
-  supportLegacyServer(): WMTPushPlatform {
-    if (this.platform === "apns") {
-      this.platform = "ios"
-      this.apnsEnvironment = undefined // Legacy server does not support APNS environment.
-    } else if (this.platform === "fcm") {
-      this.platform = "android"
-    } else if (this.platform === "hms") {
-      this.platform = "huawei"
+  /** Returns the request object to be sent to the server. */
+  get requestObject() {
+    return {
+      token: this.token,
+      platform: this.platform,
+      environment: this.apnsEnvironment
     }
-    return this
-  }
+  };
 }
+
+/** Represents a push platform for Wultra Mobile Token API.
+ *
+ * Internal type
+ */
+type WMTPushPlatform = "apns" | "fcm" | "hms"
+
+/**
+ * Legacy push platform types for Wultra Mobile Token API versions 1.9 and earlier.
+ * 
+ * Internal type
+ */  
+type WMTLegacyPushPlatform = "ios" | "android" | "huawei"

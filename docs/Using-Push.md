@@ -33,7 +33,7 @@ const push = mtoken.push
 
 `WMTPush` has only one method:
 
-- `async register(data: WMTPushPlatform, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<void>>` - Registers the PowerAuth activation for push notifications on the PowerAuth backend.
+- `async register(data: WMTPushData, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<void>>` - Registers the PowerAuth activation for push notifications on the PowerAuth backend.
     - `data`: Push platform and token retrieved from the device.
 
 ## Registering to Push Notifications Example
@@ -41,7 +41,7 @@ const push = mtoken.push
 <!-- begin box warning -->
 If you're using an older PowerAuth server version 1.9, you need to set up the platform object to support legacy push registration with:
 ```typescript
-const data = WMTPushPlatform.fcm(token).supportLegacyServer()
+const data = WMTPushData.fcm(token, true)
 ```
 <!-- end -->
 
@@ -67,7 +67,7 @@ async function registerForPushNotifications() {
     }
     let token = (await Notifications.getDevicePushTokenAsync()).data
 
-    let response = await this.mtoken.push.register(WMTPushPlatform.fcm(token))
+    let response = await this.mtoken.push.register(WMTPushData.fcm(token))
 
     if (response.status == "OK") {
         // push registered
