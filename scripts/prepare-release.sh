@@ -5,7 +5,7 @@ set -u # stop when undefined variable is used
 #set -x # print all execution (good for debugging)
 
 ######### USAGE #########
-# This script prepares the release of the Flutter package by running the JavaScript script from Wultra infrastructure repository.
+# This script prepares the release by running the JavaScript script from Wultra infrastructure repository.
 # It can be run in 3 modes:
 # 1. With a version argument: it will prepare the release with the current version in the package.json file.
 #    Example: sh scripts/prepare-release.sh 1.0.0
