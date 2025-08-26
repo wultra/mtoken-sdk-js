@@ -37,7 +37,7 @@ export class WMTPush extends WMTNetworking {
    *
    * If you are using an older version of the Wultra Mobile Token API (1.9 or earlier), you may need to use the legacy format:
    * ```typescript
-   * const pushData = WMTPushData.fcm("your_fcm_token").supportLegacyServer()
+   * const pushData = WMTPushData.fcm("your_fcm_token", true)
    * await mtoken.push.register(pushData)
    * ```
    */
@@ -82,7 +82,7 @@ export class WMTPushData {
    * @param supportLegacyServer If your server is running an older version of the Wultra Mobile Token API (1.9 or earlier), 
    *                            you may need to use the legacy format.
    */
-  static apns(token: string, environment?: WMTAPNSEnvironment, supportLegacyServer?: boolean): WMTPushData {
+  static apns(token: string, environment?: WMTAPNSEnvironment, supportLegacyServer: boolean = false): WMTPushData {
     return new WMTPushData(token, supportLegacyServer ? "ios" : "apns", supportLegacyServer ? undefined : environment)
   }
 
@@ -92,7 +92,7 @@ export class WMTPushData {
    * @param supportLegacyServer If your server is running an older version of the Wultra Mobile Token API (1.9 or earlier), 
    *                            you may need to use the legacy format.
    */
-  static fcm(token: string, supportLegacyServer?: boolean): WMTPushData {
+  static fcm(token: string, supportLegacyServer: boolean = false): WMTPushData {
     return new WMTPushData(token, supportLegacyServer ? "android" : "fcm")
   }
 
@@ -102,7 +102,7 @@ export class WMTPushData {
    * @param supportLegacyServer If your server is running an older version of the Wultra Mobile Token API (1.9 or earlier), 
    *                            you may need to use the legacy format.
    */
-  static huawei(token: string, supportLegacyServer?: boolean): WMTPushData {
+  static huawei(token: string, supportLegacyServer: boolean = false): WMTPushData {
     return new WMTPushData(token, supportLegacyServer ? "huawei" : "hms")
   }
 
