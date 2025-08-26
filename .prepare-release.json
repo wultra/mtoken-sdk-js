@@ -1,0 +1,39 @@
+{
+    "_purpose": "This file is used as a definition file for the prepare-release script.",
+    "_info": "It defines files that contains version number that should be updated during the release preparation.",
+    "_customBuildscript": "If needed, in the library object, set \"buildscript\": \"your-custom-build-command\" command if your build command is different than 'npm i && npm run build'",
+    "library": {
+        "name": "mtoken-sdk-js",
+        "type": "npm",
+        "artifacts": [
+            "build/cdv/cordova-mtoken-sdk-%VERSION%.tgz",
+            "build/react-native/react-native-mtoken-sdk-%VERSION%.tgz"
+        ]
+    },
+    "files": [
+        {
+            "description": "Main package definition file.",
+            "path": "package.json",
+            "type": "version_replace",
+            "match": "\"version\": \"%VERSION%\",\n"
+        },
+        {
+            "description": "Changelog for the wultra documentation.",
+            "path": "docs/Changelog.md",
+            "type": "version_verify",
+            "match": "## %VERSION%"
+        },
+        {
+            "description": "Compatibility in the documentation.",
+            "path": "docs/Readme.md",
+            "type": "versionstream_verify",
+            "match": "| `%VERSION_STREAM%`"
+        },
+        {
+            "description": "Compatibility in the documentation.",
+            "path": "docs/SDK-Integration.md",
+            "type": "versionstream_verify",
+            "match": "| `%VERSION_STREAM%`"
+        }
+    ]
+}

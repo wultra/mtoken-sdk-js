@@ -17,6 +17,7 @@ Defining it as a peer dependency ensures that only a single instance of the Powe
 
 | mToken Version | PowerAuth JS SDK |
 |----------------|------------------|
+| `2.1.x`        | `^4.1.0`         |
 | `2.0.x`        | `^4.1.0`         |
 | `1.1.x`        | `^3.2.0`         |
 | `1.0.x`        | `^3.0.0`         |
