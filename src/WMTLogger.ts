@@ -34,6 +34,9 @@ export enum WMTLoggerVerbosity {
     DEBUG   = 5
 }
 
+/** Log listener that is called when a message is logged. */
+export type WMTLogListener = (message: string, verbosity: WMTLoggerVerbosity) => void
+
 /**
  * Mobile Token logging utility.
  */
@@ -45,23 +48,43 @@ export class WMTLogger {
     /** Include time in the logs? */
     public static includeTime: boolean = true
 
-    static debug(message: string | any) {
+    /** Optional log listener. */
+    private static logListener: WMTLogListener | null = null
+
+    /** Whether the log listener should follow the current verbosity level. */
+    private static logListenerFollowsVerbosity: boolean = true
+
+    /** Sets the log listener called when a message is logged. */
+    static setLogListener(
+        listener: WMTLogListener | null,
+        followVerbosity: boolean = true
+    ) {
+        if (!listener) {
+            this.logListener = null
+            this.logListenerFollowsVerbosity = true
+        } else {
+            this.logListener = listener
+            this.logListenerFollowsVerbosity = followVerbosity
+        }
+    }
+
+    static debug(message: string) {
         this.log(message, WMTLoggerVerbosity.DEBUG)
     }
 
-    static info(message: string | any) {
+    static info(message: string) {
         this.log(message, WMTLoggerVerbosity.INFO)
     }
 
-    static warn(message: string | any) {
+    static warn(message: string) {
         this.log(message, WMTLoggerVerbosity.WARN)
     }
 
-    static verbose(message: string | any) {
+    static verbose(message: string) {
         this.log(message, WMTLoggerVerbosity.VERBOSE)
     }
 
-    static error(message: string | any) {
+    static error(message: string) {
         this.log(message, WMTLoggerVerbosity.ERROR)
     }
 
@@ -70,12 +93,11 @@ export class WMTLogger {
         return new WMTException(message)
     }
 
-    private static log(message: string | any, level: WMTLoggerVerbosity) {
+    private static log(message: string, level: WMTLoggerVerbosity) {
+        const verbosityAllowed = this.verbosity >= level
 
-        if (this.verbosity >= level) {
-
+        if (verbosityAllowed) {
             let lvl: string
-
             switch (level) {
                 case WMTLoggerVerbosity.DEBUG:
                     lvl = "DBG"
@@ -96,8 +118,18 @@ export class WMTLogger {
                     lvl = "UKN"
                     break
             }
-
+            // Print to console only when allowed by verbosity
             console.log(`[WMT:${lvl}${this.includeTime ? " - " + new Date().toISOString() : ""}] ${message}`)
+        }
+
+        // Determine if we should notify the listener (bypass when followVerbosity=false)
+        const shouldNotifyListener = !this.logListenerFollowsVerbosity || verbosityAllowed
+        if (shouldNotifyListener && this.logListener) {
+            try {
+                this.logListener(message, level)
+            } catch {
+                // Silence eventually thrown error in the listener
+            }
         }
     }
 }
