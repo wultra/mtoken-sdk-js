@@ -26,7 +26,7 @@ export class TestSuite_Logger extends TestSuite {
      * Helper listener capturing the last message and verbosity.
      * Values are cleared on read to mimic single-read behavior.
      */
-    private classListener() {
+    private logListenerFactory() {
         return new class {
             private _lastMessage: string | null = null;
             private _lastVerbosity: WMTLoggerVerbosity | null = null;
@@ -44,16 +44,16 @@ export class TestSuite_Logger extends TestSuite {
             }
 
             startListening(followVerbosity: boolean) {
-                WMTLogger.setLogListener((message, verbosity) => {
-                    this._lastMessage = message
-                    this._lastVerbosity = verbosity
-                }, followVerbosity)
+                WMTLogger.setLogListener((message: string, verbosity: WMTLoggerVerbosity) => {
+                    this._lastMessage = message;
+                    this._lastVerbosity = verbosity;
+                }, followVerbosity);
             }
 
             stopListening() {
                 WMTLogger.setLogListener(null);
             }
-        }
+        }();
     }
 
     testListener() {
@@ -63,7 +63,7 @@ export class TestSuite_Logger extends TestSuite {
 
         WMTLogger.includeTime = false;
 
-        const listener = this.classListener();
+        const listener = this.logListenerFactory();
 
         try {
             // Start listening with verbosity following
@@ -100,7 +100,7 @@ export class TestSuite_Logger extends TestSuite {
             // Stop listening
             listener.stopListening();
 
-            // Start listening with verbosity not following
+            // Start listening with verbosity, not following
             listener.startListening(false);
             WMTLogger.verbosity = WMTLoggerVerbosity.NONE;
             WMTLogger.info('Info message');

@@ -118,11 +118,12 @@ export class WMTLogger {
                     lvl = "UKN"
                     break
             }
-            // Print to console only when allowed by verbosity
             console.log(`[WMT:${lvl}${this.includeTime ? " - " + new Date().toISOString() : ""}] ${message}`)
         }
 
-        // Determine if we should notify the listener (bypass when followVerbosity=false)
+        // Notify the listener if either:
+        // - logListenerFollowsVerbosity is false (the listener receives all messages regardless of verbosity), or
+        // - the message passes the current verbosity level.
         const shouldNotifyListener = !this.logListenerFollowsVerbosity || verbosityAllowed
         if (shouldNotifyListener && this.logListener) {
             try {
