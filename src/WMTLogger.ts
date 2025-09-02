@@ -59,13 +59,8 @@ export class WMTLogger {
         listener: WMTLogListener | null,
         followVerbosity: boolean = true
     ) {
-        if (!listener) {
-            this.logListener = null
-            this.logListenerFollowsVerbosity = true
-        } else {
-            this.logListener = listener
-            this.logListenerFollowsVerbosity = followVerbosity
-        }
+        this.logListener = listener
+        this.logListenerFollowsVerbosity = followVerbosity
     }
 
     static debug(message: string) {
