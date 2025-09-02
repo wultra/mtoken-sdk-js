@@ -20,6 +20,7 @@ import { TestSuite_Integration } from './TestSuite_Integration'
 import { TestSuite_IntegrationInbox } from './TestSuite_IntegrationInbox'
 import { TestSuite_PACUtils } from './TestSuite_PACUtils'
 import { TestSuite_QRParser } from './TestSuite_QRParser'
+import { TestSuite_Logger } from './TestSuite_Logger'
 
 export class TestExecutor {
 
@@ -29,6 +30,7 @@ export class TestExecutor {
         this.suites.push(new TestSuite_Deserialization())
         this.suites.push(new TestSuite_PACUtils())
         this.suites.push(new TestSuite_QRParser())
+        this.suites.push(new TestSuite_Logger())
         this.suites.push(new TestSuite_Integration())
         this.suites.push(new TestSuite_IntegrationInbox())
     }
