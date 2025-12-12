@@ -26,7 +26,7 @@
   "license": "Apache-2.0",
   "homepage": "https://www.wultra.com/mobile-security-suite",
   "devDependencies": {
-    "@types/react": "^18.2.44",
+    "@types/react": "^19.2.7",
     "cordova-powerauth-mobile-sdk": "^4.1.0",
     "esbuild": "^0.25.0",
     "gulp": "^5.0.0",
@@ -34,7 +34,7 @@
     "gulp-replace": "^1.1.4",
     "gulp-strip-import-export": "^1.0.0",
     "gulp-typescript": "^6.0.0-alpha.1",
-    "react": "18.2.0",
+    "react": "19.2.3",
     "react-native": "0.74.5",
     "rimraf": "^6.0.1",
     "typescript": "^5.2.2",
