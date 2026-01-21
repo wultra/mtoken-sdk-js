@@ -30,6 +30,10 @@ export class IntegrationUtils {
     private sdkConfig = ""
     private activationName = "" // will be filled when activation is created
     private registrationId = "" // will be filled when activation is created
+    private oidcProviderId: string | undefined
+    private oidcProviderIdPkce: string | undefined
+    private oidcUsername: string | undefined
+    private oidcPassword: string | undefined
 
     async loadCredentials() {
 
@@ -40,6 +44,17 @@ export class IntegrationUtils {
         this.cloudApplicationId = credentials.cloudApplicationId
         this.enrollmentUrl = credentials.enrollmentUrl
         this.sdkConfig = credentials.sdkConfig
+        this.oidcProviderId = credentials.oidcProviderId
+        this.oidcProviderIdPkce = credentials.oidcProviderIdPkce
+        this.oidcUsername = credentials.oidcUsername
+        this.oidcPassword = credentials.oidcPassword
+    }
+
+    async createPaInstance(activationName: string): Promise<PowerAuth> {
+        const cfg = new PowerAuthConfiguration(this.sdkConfig, this.enrollmentUrl)
+        const pa = new PowerAuth(activationName)
+        await pa.configure(cfg)
+        return pa
     }
 
     async prepareActivation(pin: string, userId: string | null = null): Promise<{ powerauth: PowerAuth, mtoken: WultraMobileToken }> {
@@ -49,9 +64,7 @@ export class IntegrationUtils {
 
         // CREATE PA INSTANCE
 
-        const cfg = new PowerAuthConfiguration(this.sdkConfig, this.enrollmentUrl)
-        const pa = new PowerAuth(this.activationName)
-        await pa.configure(cfg)
+        const pa = await this.createPaInstance(this.activationName)
 
         // REMOVE LOCAL INSTANCE IF PRESENT
 
@@ -171,6 +184,20 @@ export class IntegrationUtils {
         }
         return result
     }
+      
+    getOidcProps(): OIDCProps | null {
+        const providerId = (this.oidcProviderId ?? "").trim()
+        const providerIdPkce = (this.oidcProviderIdPkce ?? "").trim()
+
+        if (!providerId && !providerIdPkce) return null
+
+        return {
+            providerId: providerId || undefined,
+            providerIdPkce: providerIdPkce || undefined,
+            username: (this.oidcUsername ?? "").trim() || undefined,
+            password: (this.oidcPassword ?? "").trim() || undefined,
+        }
+  }
 
     private async makeCall(payload: string | undefined, url: string, method: string = "POST"): Promise<any> {
         const creds = `${this.cloudServerLogin}:${this.cloudServerPassword}`
@@ -235,4 +262,11 @@ export interface NewInboxMessage {
     read: boolean
     type: string
     timestamp: number
+}
+
+export interface OIDCProps {
+  providerId?: string
+  providerIdPkce?: string
+  username?: string
+  password?: string
 }
