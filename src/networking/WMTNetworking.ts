@@ -16,7 +16,7 @@
 
 import { WMTKnownRestApiError } from "./WMTKnownRestApiError"
 import { WMTException } from "../WMTException"
-import { PowerAuth, PowerAuthAuthentication } from 'react-native-powerauth-mobile-sdk'
+import { PowerAuth, PowerAuthAuthentication, PowerAuthDecryptor } from 'react-native-powerauth-mobile-sdk'
 import { WMTLogger, WMTLoggerVerbosity } from "../WMTLogger"
 import { WMTPlatformUtils } from "../WMTPlatformUtils"
 
@@ -70,14 +70,15 @@ export class WMTNetworking {
         uriId: string,
         returnDataExpected: boolean,
         requestProcessor?: WMTRequestProcessor,
-        jsonConfig?: WMTJsonConfig
+        jsonConfig?: WMTJsonConfig,
+        e2ee: WMTE2EEConfiguration = WMTE2EEConfiguration.notEncrypted
     ): Promise<WMTResponse<T>> {
 
-        let body = JSON.stringify(requestData)
-        let paHeader = await this.pa.requestSignature(auth, "POST", uriId, body)
-        let headers = new Headers()
+        const body = JSON.stringify(requestData)
+        const paHeader = await this.pa.requestSignature(auth, "POST", uriId, body)
+        const headers = new Headers()
         headers.set(paHeader.key, paHeader.value)
-        return await this.post(body, endpoindPath, returnDataExpected, headers, requestProcessor, jsonConfig)
+        return await this.post(body, endpoindPath, returnDataExpected, headers, requestProcessor, jsonConfig, e2ee)
     }
 
     protected async postSignedWithToken<T>(
@@ -88,6 +89,7 @@ export class WMTNetworking {
         returnDataExpected: boolean,
         requestProcessor?: WMTRequestProcessor,
         jsonConfig?: WMTJsonConfig,
+        e2ee: WMTE2EEConfiguration = WMTE2EEConfiguration.notEncrypted
     ): Promise<WMTResponse<T>> {
 
         let body = JSON.stringify(requestData)
@@ -97,7 +99,7 @@ export class WMTNetworking {
         let headers = new Headers()
         headers.set(paHeader.key, paHeader.value)
 
-        return await this.post(body, endpoindPath, returnDataExpected, headers, requestProcessor, jsonConfig)
+        return await this.post(body, endpoindPath, returnDataExpected, headers, requestProcessor, jsonConfig, e2ee)
     }
 
     protected async post<T>(
@@ -107,6 +109,7 @@ export class WMTNetworking {
         headers: Headers,
         requestProcessor?: WMTRequestProcessor,
         jsonConfig?: WMTJsonConfig,
+        e2ee: WMTE2EEConfiguration = WMTE2EEConfiguration.notEncrypted
     ): Promise<WMTResponse<T>> {
 
         let method = "POST"
@@ -123,6 +126,22 @@ export class WMTNetworking {
             // leave empty to default to system value
         } else {
             headers.set("User-Agent", this.userAgent)
+        }
+
+        let decryptor: PowerAuthDecryptor | undefined
+        if (e2ee === WMTE2EEConfiguration.applicationScope) {
+            // Get encryptor
+            const encryptor = this.pa.getEncryptorForApplicationScope()
+
+            // Encrypt plaintext payload
+            const encrypted = await encryptor.encryptRequest(requestSerialized, "UTF8")
+            decryptor = encrypted.decryptor
+
+            // Add E2EE header
+            headers.set(encrypted.header.key, encrypted.header.value)
+
+            // HTTP body is now the cryptogram JSON
+            requestSerialized = JSON.stringify(encrypted.cryptogram)
         }
 
         let request: RequestInit = {
@@ -149,6 +168,13 @@ export class WMTNetworking {
         if (WMTLogger.verbosity >= WMTLoggerVerbosity.VERBOSE) {
             WMTLogger.verbose(this.getHeadersString(result.headers))
             WMTLogger.verbose(responseBody)
+        }
+
+        if (decryptor && result.status === 200) {
+            // server returns cryptogram JSON when E2EE is used
+            const encryptedResponse = JSON.parse(responseBody)
+            const decryptedJsonString = await decryptor.decryptResponse(encryptedResponse, "UTF8")
+            responseBody = decryptedJsonString
         }
 
         let response = JSON.parse(responseBody, (key: string, value: any) => {
@@ -215,4 +241,10 @@ export interface WMTResponse<T> {
 export interface WMTResponseError {
     code: WMTKnownRestApiError | string
     message: string
+}
+
+export enum WMTE2EEConfiguration {
+    notEncrypted,
+    applicationScope,
+    // activationScope, // can be added later
 }
