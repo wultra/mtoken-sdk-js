@@ -254,12 +254,12 @@ export class TestSuite_OIDC extends TestSuite {
     //  * and returns the final deeplink URL.
     //  */
     // private async loginWithAuth0LikeFlow(
-    //     authorizeUrl: string | URL,
+    //     authorizeUri: string | URL,
     //     username: string,
     //     password: string,
     //     expectedRedirectUriPrefix: string
     // ): Promise<string> {
-    //     const startUrl = typeof authorizeUrl === "string" ? authorizeUrl : authorizeUrl.toString()
+    //     const startUrl = typeof authorizeUri === "string" ? authorizeUri : authorizeUri.toString()
 
     //     // 1) GET /authorize -> should respond with 3xx Location to login page (/u/login?state=...)
     //     const step1 = await this.performRequest({ url: startUrl, method: "GET", tag: "authorize(GET)" })

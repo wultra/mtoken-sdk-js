@@ -15,7 +15,7 @@
     "react": "18.3.1",
     "react-native": "0.76.1",
     "react-native-device-info": "^14.0.0",
-    "react-native-mtoken-sdk": "file:../build/react-native/react-native-mtoken-sdk-0.0.1-dev.tgz",
+    "react-native-mtoken-sdk": "workspace:*",
     "react-native-powerauth-mobile-sdk": "^4.1.0"
   },
   "devDependencies": {

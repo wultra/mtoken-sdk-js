@@ -55,7 +55,7 @@ export class WMTOIDC extends WMTNetworking {
      *  - Builds the full authorization URL that must be opened in a browser or web view.
      *
      * The returned {@link WMTOIDCAuthorizationRequest} contains everything needed to:
-     *  1. Redirect the user to the provider’s login page (`authorizeUrl`)
+     *  1. Redirect the user to the provider’s login page (`authorizeUri`)
      *  2. Later be validated with the final redirect URL from the OIDC provider
      *
      * @returns {@link WMTOIDCAuthorizationRequest} containing all necessary data for starting the OIDC authorization flow.

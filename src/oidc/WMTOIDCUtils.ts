@@ -44,10 +44,17 @@ export class WMTOIDCUtils {
         const length = dataLength >= this.MIN_LENGTH && dataLength <= this.MAX_LENGTH ? dataLength : this.MIN_LENGTH
 
         try {
-            const verifierB64 = await PowerAuthCryptoUtils.randomBytes(length)
-            const codeVerifier = this.base64ToBase64Url(verifierB64)
+            // RFC 7636 §4.2: code_challenge = BASE64URL(SHA256(ASCII(code_verifier)))
 
-            const challengeB64 = await PowerAuthCryptoUtils.hashSha256(verifierB64)
+            // Generate cryptographically secure random bytes (returned as standard Base64).
+            const verifierB64 = await PowerAuthCryptoUtils.randomBytes(length)
+            // Convert to Base64URL (RFC 4648 §5, no padding) — this is the code_verifier string.
+            const codeVerifier = this.base64ToBase64Url(verifierB64)
+            // Wrap ASCII bytes of codeVerifier into Base64 so hashSha256 can accept them.
+            const codeVerifierAsciiAsB64 = btoa(codeVerifier)
+            // SHA-256 hash of the ASCII codeVerifier bytes, returned as standard Base64.
+            const challengeB64 = await PowerAuthCryptoUtils.hashSha256(codeVerifierAsciiAsB64)
+            // Convert the hash to Base64URL (no padding) for the authorization request.
             const codeChallenge = this.base64ToBase64Url(challengeB64)
 
             return { codeVerifier, codeChallenge, codeMethod: "S256" }
@@ -113,8 +120,8 @@ export class WMTOIDCUtils {
             }
 
             if (pkceCodes) {
-                query.codeChallenge = pkceCodes.codeChallenge
-                query.codeChallengeMethod = pkceCodes.codeMethod
+                query.code_challenge = pkceCodes.codeChallenge
+                query.code_challenge_method = pkceCodes.codeMethod
             }
 
             const qs = Object.entries(query)
@@ -123,7 +130,6 @@ export class WMTOIDCUtils {
 
             const sep = base.includes("?") ? (base.endsWith("?") || base.endsWith("&") ? "" : "&") : "?"
             const url = new URL(`${base}${sep}${qs}`)
-            console.log(url.toString())
 
             WMTLogger.debug("OIDC: Successfully created authorizationUri")
             return url

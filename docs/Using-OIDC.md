@@ -171,7 +171,7 @@ import { PowerAuthActivation, PowerAuthAuthentication } from "react-native-power
 import { WMTOIDCUtils } from "./oidc/WMTOIDCUtils"
 
 try {
-    // Proccess callback url
+    // Process callback url
     const oidcParams = WMTOIDCUtils.processWebCallback(callbackUrl, authRequest)
 
     // Create activation object with OIDC parameters
@@ -187,7 +187,7 @@ try {
 ```
 
 <!-- begin box warning -->
-**Note:** The `state` is validated inside `processWebCallback()`. Aways pass tlhe same `authRequest` instance you used to open the authorization URL.
+**Note:** The `state` is validated inside `processWebCallback()`. Always pass the same `authRequest` instance you used to open the authorization URL.
 <!-- end -->
 
 ---
