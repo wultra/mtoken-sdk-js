@@ -11,7 +11,7 @@
     "plugin.xml"
   ],
   "peerDependencies": {
-    "cordova-powerauth-mobile-sdk": "^4.1.0"
+    "cordova-powerauth-mobile-sdk": "^4.3.0"
   },
   "keywords": [
     "cordova",
