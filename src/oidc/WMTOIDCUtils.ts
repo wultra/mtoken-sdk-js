@@ -116,7 +116,7 @@ export class WMTOIDCUtils {
                 scope: config.scopes,
                 state,
                 nonce,
-                response_type: "code",
+                response_type: "code"
             }
 
             if (pkceCodes) {

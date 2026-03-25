@@ -106,6 +106,6 @@ export class WultraMobileToken {
         this.push.acceptLanguage = lang
         this.inbox.acceptLanguage = lang
         this.oidc.acceptLanguage = lang
-        WMTLogger.info(`accent language set to ${lang}`)
+        WMTLogger.info(`accept language set to ${lang}`)
     }
 }

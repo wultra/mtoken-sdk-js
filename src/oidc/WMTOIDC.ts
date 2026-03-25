@@ -79,7 +79,7 @@ export class WMTOIDC extends WMTNetworking {
             config,
             nonce,
             state,
-            pkceCodes,
+            pkceCodes
         })
 
         return {
@@ -87,7 +87,7 @@ export class WMTOIDC extends WMTNetworking {
             providerId: config.providerId,
             nonce,
             state,
-            codeVerifier: pkceCodes?.codeVerifier,
+            codeVerifier: pkceCodes?.codeVerifier
         }
     }
 }

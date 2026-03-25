@@ -168,7 +168,7 @@ Once you have the callback URL, process it to obtain OIDC parameters and create 
 
 ```ts
 import { PowerAuthActivation, PowerAuthAuthentication } from "react-native-powerauth-mobile-sdk"
-import { WMTOIDCUtils } from "./oidc/WMTOIDCUtils"
+import { WMTOIDCUtils } from "react-native-mtoken-sdk"
 
 try {
     // Process callback url
