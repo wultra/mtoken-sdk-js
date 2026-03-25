@@ -5,10 +5,6 @@
   "source": "src/index.ts",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "workspaces": [
-    ".",
-    "exampleReactNative"
-  ],
   "files": [
     "README.md",
     "LICENSE",
