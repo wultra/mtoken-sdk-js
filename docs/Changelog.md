@@ -1,12 +1,14 @@
 # Changelog
 
-## 2.1.0 (TBA)
+## X.X.X (TBA)
+- Implemented OIDC activation
+
+## 2.1.0
 - Added `mobileTokenData` to authorize request for passing customer-specific data ([documentation](Using-Operations.md#Passing-Additional-Mobile-Token-Data))
   - Available with PowerAuth server 1.10+
   - Can be used for fraud detection systems (FDS) or other custom business logic
 - `register` method in `WMTPush` now accepts `WMTPushData` object instead of separate parameters
   - for more information, see [migration guide](Version-2.1.md)
-- Implemented OIDC activation
 
 ## 2.0.0
 
