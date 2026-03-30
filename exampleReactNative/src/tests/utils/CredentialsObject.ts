@@ -5,4 +5,9 @@ export interface CredentialsObject {
     cloudApplicationId: string
     enrollmentUrl: string
     sdkConfig: string
+
+    oidcProviderId?: string
+    oidcProviderIdPkce?: string
+    oidcUsername?: string
+    oidcPassword?: string
 }

@@ -21,6 +21,7 @@ import { TestSuite_IntegrationInbox } from './TestSuite_IntegrationInbox'
 import { TestSuite_PACUtils } from './TestSuite_PACUtils'
 import { TestSuite_QRParser } from './TestSuite_QRParser'
 import { TestSuite_Logger } from './TestSuite_Logger'
+import { TestSuite_OIDC } from './TestSuite_OIDC'
 
 export class TestExecutor {
 
@@ -33,6 +34,7 @@ export class TestExecutor {
         this.suites.push(new TestSuite_Logger())
         this.suites.push(new TestSuite_Integration())
         this.suites.push(new TestSuite_IntegrationInbox())
+        this.suites.push(new TestSuite_OIDC())
     }
 
     async runAllTests(): Promise<{ totalTests: number, succeededTests: number }> {

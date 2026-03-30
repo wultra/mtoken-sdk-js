@@ -38,6 +38,13 @@ export * from './inbox/WMTInboxCount'
 export * from './inbox/WMTInboxMessage'
 export * from './inbox/WMTInboxMessageDetail'
 
+// OIDC
+export * from './oidc/WMTOIDC'
+export * from './oidc/WMTOIDCConfig'
+export * from './oidc/WMTOIDCUtils'
+export * from './oidc/WMTOIDCAuthorizationRequest'
+export * from './oidc/WMTPKCECodes'
+
 // NETWORKING
 export * from './networking/WMTKnownRestApiError'
 export * from './networking/WMTNetworking'

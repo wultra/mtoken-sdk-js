@@ -20,6 +20,7 @@ import { WMTPush } from './push/WMTPush'
 import { WMTInbox } from './inbox/WMTInbox'
 import { WMTUserAgent } from './networking/WMTNetworking'
 import { WMTLogger } from './WMTLogger'
+import { WMTOIDC } from './oidc/WMTOIDC'
 
 /**
  * MobileToken class exposes APIs that enable:
@@ -38,6 +39,9 @@ export class WultraMobileToken {
 
     /** Inbox manager - recieve message to communicate with the user. */
     inbox: WMTInbox
+
+    /** OIDC manager - receive the config and help with OIDC activation preparation. */
+    oidc: WMTOIDC
 
     /**
      * 
@@ -64,18 +68,21 @@ export class WultraMobileToken {
         this.operations = new WMTOperations(powerAuth, baseURL)
         this.push = new WMTPush(powerAuth, baseURL)
         this.inbox = new WMTInbox(powerAuth, baseURL)
+        this.oidc = new WMTOIDC(powerAuth, baseURL)
 
         // Set the accept language properties.
         let lang = acceptLanguage ?? "en"
         this.operations.acceptLanguage = lang
         this.push.acceptLanguage = lang
         this.inbox.acceptLanguage = lang
+        this.oidc.acceptLanguage = lang
 
         // Set the user agent properties.
         let agent = userAgent ?? WMTUserAgent.LIBRARY_DEFAULT
         this.operations.userAgent = agent
         this.push.userAgent = agent
         this.inbox.userAgent = agent
+        this.oidc.userAgent = agent
 
         WMTLogger.debug("Mobile Token object created with:")
         WMTLogger.debug(" - baseURL: " + baseURL)
@@ -98,6 +105,7 @@ export class WultraMobileToken {
         this.operations.acceptLanguage = lang
         this.push.acceptLanguage = lang
         this.inbox.acceptLanguage = lang
-        WMTLogger.info(`accent language set to ${lang}`)
+        this.oidc.acceptLanguage = lang
+        WMTLogger.info(`accept language set to ${lang}`)
     }
 }

@@ -1,79 +1,99 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# exampleReactNative
 
-# Getting Started
+React Native test app for the Wultra Mobile Token JS SDK. Runs integration tests on-device against a live PowerAuth server. Tests execute automatically at app launch.
 
->**Note**: Make sure you have completed the [React Native - Environment Setup](https://reactnative.dev/docs/environment-setup) instructions till "Creating a new application" step, before proceeding.
+## Prerequisites
 
-## Step 1: Start the Metro Server
+- Node.js ≥ 18
+- [React Native environment](https://reactnative.dev/docs/environment-setup) set up (Xcode, CocoaPods, Android Studio)
+- Root SDK dependencies installed (`yarn install` in the repo root)
 
-First, you will need to start **Metro**, the JavaScript _bundler_ that ships _with_ React Native.
+## Configure Credentials
 
-To start Metro, run the following command from the _root_ of your React Native project:
-
-```bash
-# using npm
-npm start
-
-# OR using Yarn
-yarn start
-```
-
-## Step 2: Start your Application
-
-Let Metro Bundler run in its _own_ terminal. Open a _new_ terminal from the _root_ of your React Native project. Run the following command to start your _Android_ or _iOS_ app:
-
-### For Android
+Tests require a live PowerAuth server. Copy the credentials template and fill in your values:
 
 ```bash
-# using npm
-npm run android
-
-# OR using Yarn
-yarn android
+cp src/tests/utils/credentials.json src/tests/utils/credentials-private.json
+# Edit credentials-private.json with your server URL, login, password, app ID, etc.
 ```
 
-### For iOS
+The `credentials-private.json` file is git-ignored.
+
+## Running on iOS
+
+> **Note:** This app uses **npm** (not yarn). The SDK is installed from a gulp-built `.tgz` file.
 
 ```bash
-# using npm
-npm run ios
+# 1. Build the SDK (from repo root)
+cd /path/to/mtoken-sdk-js
+yarn install
+gulp
 
-# OR using Yarn
-yarn ios
+# 2. Install dependencies and the SDK package
+cd exampleReactNative
+npm install
+npm r react-native-mtoken-sdk
+npm i ../build/react-native/react-native-mtoken-sdk-0.0.1-dev.tgz
+
+# 3. Install CocoaPods (use system pod, not bundle exec)
+cd ios
+pod install
+cd ..
+
+# 4. Start Metro bundler
+npx react-native start --reset-cache
+
+# 5. Build & run from Xcode
+#    Open: ios/exampleReactNative.xcworkspace
+#    Press ⌘R to build and run
 ```
 
-If everything is set up _correctly_, you should see your new app running in your _Android Emulator_ or _iOS Simulator_ shortly provided you have set up your emulator/simulator correctly.
+**Quick reinstall after SDK changes:**
 
-This is one way to run your app — you can also run it directly from within Android Studio and Xcode respectively.
+```bash
+npm run reinstall        # rebuilds SDK via gulp + reinstalls .tgz
+# Then reload Metro (⌘R in Simulator) or restart the app
+```
 
-## Step 3: Modifying your App
+## Running on Android
 
-Now that you have successfully run the app, let's modify it.
+Follow steps 1–2 from the iOS section (build SDK + install deps), then:
 
-1. Open `App.tsx` in your text editor of choice and edit some lines.
-2. For **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Developer Menu** (<kbd>Ctrl</kbd> + <kbd>M</kbd> (on Window and Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (on macOS)) to see your changes!
+```bash
+# Start Metro bundler
+npx react-native start --reset-cache
 
-   For **iOS**: Hit <kbd>Cmd ⌘</kbd> + <kbd>R</kbd> in your iOS Simulator to reload the app and see your changes!
+# In a second terminal — build and run on Android
+npx react-native run-android
+```
 
-## Congratulations! :tada:
+Or open `android/` in Android Studio and run from there.
 
-You've successfully run and modified your React Native App. :partying_face:
+**Physical device:** If the app shows "Unable to load script", Metro can't be reached from the phone. Run:
 
-### Now what?
+```bash
+adb reverse tcp:8081 tcp:8081
+```
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [Introduction to React Native](https://reactnative.dev/docs/getting-started).
+Then restart the app. This tunnels the Metro port from the device to your Mac (only needed for physical devices, not emulators).
 
-# Troubleshooting
+## Test Structure
 
-If you can't get this to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+Tests auto-discover and run all methods starting with `test` in each suite:
 
-# Learn More
+| Suite | What it tests |
+|-------|---------------|
+| `TestSuite_Deserialization` | Response/model deserialization |
+| `TestSuite_Integration` | Operations (approve, reject, fetch) |
+| `TestSuite_IntegrationInbox` | Inbox message management |
+| `TestSuite_Logger` | SDK logger |
+| `TestSuite_OIDC` | OpenID Connect activation flow |
+| `TestSuite_PACUtils` | PowerAuth activation code utilities |
+| `TestSuite_QRParser` | QR code parsing |
 
-To learn more about React Native, take a look at the following resources:
+## Troubleshooting
 
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+- **`Unable to load script` on Android physical device** — The phone can't reach Metro on your Mac. Run `adb reverse tcp:8081 tcp:8081` to tunnel the port, then restart the app. This is only needed for physical devices, not emulators.
+- **`createWultraMobileToken is not a function`** — You likely compiled with `npx tsc` instead of `gulp`. Always use `gulp` to build the SDK.
+- **CocoaPods errors with Ruby 3.4** — Use system `pod install` directly, not `bundle exec pod install`. System CocoaPods 1.16+ handles Ruby 3.4 correctly.
+- **`Cannot find module 'react-native/scripts/react_native_pods.rb'`** — `node_modules` is missing. Run `npm install` in `exampleReactNative/` first, then `pod install`.
