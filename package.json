@@ -35,7 +35,7 @@
     "gulp-strip-import-export": "^1.0.0",
     "gulp-typescript": "^6.0.0-alpha.1",
     "react": "18.2.0",
-    "react-native": "0.74.5",
+    "react-native": "0.85.3",
     "react-native-powerauth-mobile-sdk": "^4.3.0",
     "rimraf": "^6.0.1",
     "typescript": "^5.2.2"
