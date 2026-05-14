@@ -19,6 +19,19 @@ import { type WMTUserOperation } from "./WMTUserOperation"
 import { type WMTOnlineOperation } from "./WMTOnlineOperation"
 import { PowerAuthAuthentication } from 'react-native-powerauth-mobile-sdk'
 import type { WMTQROperation } from './WMTQROperation'
+import type { WMTPreApprovalScreen } from './WMTPreApprovalScreen'
+import type { WMTPreApprovalElementListItem } from './WMTPreApprovalElement'
+import type { WMTPreApprovalControls } from './WMTPreApprovalControls'
+import type { WMTAnyObject } from '../utils/WMTAnyObject'
+import { WMTLogger } from '../WMTLogger'
+
+/**
+ * Rejection reason for an operation.
+ *
+ * Standard reasons are `INCORRECT_DATA`, `UNEXPECTED_OPERATION`, `UNKNOWN`, and `PREAPPROVAL`.
+ * Custom string reasons are also accepted.
+ */
+export type WMTRejectionReason = "INCORRECT_DATA" | "UNEXPECTED_OPERATION" | "UNKNOWN" | "PREAPPROVAL" | (string & {})
 
 /** Operation handling.  */
 export class WMTOperations extends WMTNetworking {
@@ -32,7 +45,7 @@ export class WMTOperations extends WMTNetworking {
     * @returns Server response (with list of operations).
     */
     async getOperations(requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<WMTUserOperation[]>> {
-        return await this.postSignedWithToken<WMTUserOperation[]>(
+        const response = await this.postSignedWithToken<WMTUserOperation[]>(
             {},
             PowerAuthAuthentication.possession(),
             "/api/auth/token/app/operation/list",
@@ -41,6 +54,7 @@ export class WMTOperations extends WMTNetworking {
             requestProcessor,
             { dateFields: this.jsonDateFields }
         )
+        return WMTOperations.normalizeOperationsResponse(response)
     }
 
     /**
@@ -51,7 +65,7 @@ export class WMTOperations extends WMTNetworking {
      * @returns Server response (with operation detail)
      */
     async getDetail(operationId: string, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<WMTUserOperation>> {
-        return await this.postSignedWithToken<WMTUserOperation>(
+        const response = await this.postSignedWithToken<WMTUserOperation>(
             { requestObject: { id: operationId } },
             PowerAuthAuthentication.possession(),
             "/api/auth/token/app/operation/detail",
@@ -60,6 +74,7 @@ export class WMTOperations extends WMTNetworking {
             requestProcessor,
             { dateFields: this.jsonDateFields }
         )
+        return WMTOperations.normalizeOperationResponse(response)
     }
 
     /**
@@ -70,7 +85,7 @@ export class WMTOperations extends WMTNetworking {
      * @returns Server response (with the list of operations).
      */
     async getHistory(authentication: PowerAuthAuthentication, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<WMTUserOperation[]>> {
-        return await this.postSigned<WMTUserOperation[]>(
+        const response = await this.postSigned<WMTUserOperation[]>(
             {},
             authentication,
             "/api/auth/token/app/operation/history",
@@ -79,6 +94,7 @@ export class WMTOperations extends WMTNetworking {
             requestProcessor,
             { dateFields: this.jsonDateFields }
         )
+        return WMTOperations.normalizeOperationsResponse(response)
     }
 
     /**
@@ -108,13 +124,18 @@ export class WMTOperations extends WMTNetworking {
      * Reject operation with a reason.
      * 
      * @param operationId ID of the operation.
-     * @param reason Reason for the rejection.
+     * @param reason Reason for the rejection (e.g. `"INCORRECT_DATA"`, `"UNEXPECTED_OPERATION"`, `"PREAPPROVAL"`).
      * @param requestProcessor You may modify the request via this processor. It's highly recommended to only modify HTTP headers.
+     * @param mobileTokenData Optional mobile token data to send with the rejection (e.g. pre-approval screen visit records).
      * @returns Server response
      */
-    async reject(operationId: string, reason: "INCORRECT_DATA" | "UNEXPECTED_OPERATION" | "UNKNOWN" | string, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<void>> {
+    async reject(operationId: string, reason: WMTRejectionReason, requestProcessor?: WMTRequestProcessor, mobileTokenData?: WMTAnyObject): Promise<WMTResponse<void>> {
+        const requestObject: Record<string, unknown> = { id: operationId, reason: reason }
+        if (mobileTokenData) {
+            requestObject.mobileTokenData = mobileTokenData
+        }
         return await this.postSigned<void>(
-            { requestObject: { id: operationId, reason: reason } },
+            { requestObject },
             PowerAuthAuthentication.possession(),
             "/api/auth/token/app/operation/cancel",
             "/operation/cancel",
@@ -147,7 +168,7 @@ export class WMTOperations extends WMTNetworking {
      * @returns Server response (with operation detail)
      */
     async claim(operationId: string, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<WMTUserOperation>> {
-        return await this.postSignedWithToken<WMTUserOperation>(
+        const response = await this.postSignedWithToken<WMTUserOperation>(
             { requestObject: { id: operationId } },
             PowerAuthAuthentication.possession(),
             "/api/auth/token/app/operation/detail/claim",
@@ -156,6 +177,86 @@ export class WMTOperations extends WMTNetworking {
             requestProcessor,
             { dateFields: this.jsonDateFields }
         )
+        return WMTOperations.normalizeOperationResponse(response)
+    }
+
+    // --- Pre-approval screen normalization ---
+
+    /**
+     * Normalizes pre-approval screen data in a single-operation response.
+     * Maps legacy `preApprovalScreen` to `preApprovalScreens` and converts
+     * legacy `items`/`approvalType` to `elements`/`controls`.
+     */
+    private static normalizeOperationResponse(response: WMTResponse<WMTUserOperation>): WMTResponse<WMTUserOperation> {
+        if (response.responseObject) {
+            WMTOperations.normalizeOperation(response.responseObject)
+        }
+        return response
+    }
+
+    /**
+     * Normalizes pre-approval screen data in a list-of-operations response.
+     */
+    private static normalizeOperationsResponse(response: WMTResponse<WMTUserOperation[]>): WMTResponse<WMTUserOperation[]> {
+        if (response.responseObject) {
+            for (const operation of response.responseObject) {
+                WMTOperations.normalizeOperation(operation)
+            }
+        }
+        return response
+    }
+
+    /**
+     * Normalizes a single operation's UI data for pre-approval screen compatibility.
+     */
+    private static normalizeOperation(operation: WMTUserOperation): void {
+        if (!operation.ui) {
+            return
+        }
+
+        const ui = operation.ui
+
+        // If plural is already present, use it as-is
+        if (ui.preApprovalScreens && ui.preApprovalScreens.length > 0) {
+            // Normalize each screen's legacy fields
+            for (const screen of ui.preApprovalScreens) {
+                WMTOperations.normalizePreApprovalScreen(screen)
+            }
+            return
+        }
+
+        // Fallback: legacy singular → wrap into array
+        if (ui.preApprovalScreen) {
+            WMTLogger.warn("Using legacy pre-approval format. Consider updating backend to the new preApprovalScreens model.")
+            WMTOperations.normalizePreApprovalScreen(ui.preApprovalScreen)
+            ui.preApprovalScreens = [ui.preApprovalScreen]
+        }
+    }
+
+    /**
+     * Normalizes legacy fields on a single pre-approval screen.
+     * Converts `items` → `elements` (LIST_ITEM) and `approvalType` → `controls`.
+     */
+    private static normalizePreApprovalScreen(screen: WMTPreApprovalScreen): void {
+        // Convert legacy items → elements (additive, don't overwrite existing elements)
+        if (!screen.elements && screen.items && screen.items.length > 0) {
+            screen.elements = screen.items.map(text => ({
+                type: "LIST_ITEM",
+                text
+            } as WMTPreApprovalElementListItem))
+        }
+
+        // Convert legacy approvalType → controls (additive, don't overwrite existing controls)
+        if (!screen.controls && screen.approvalType) {
+            const controls: WMTPreApprovalControls = {
+                approve: { type: screen.approvalType }
+            }
+            if (screen.approvalType === "SLIDER") {
+                controls.flip = true
+                controls.decline = { type: "BACK" }
+            }
+            screen.controls = controls
+        }
     }
 }
 
