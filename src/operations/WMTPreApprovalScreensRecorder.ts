@@ -45,6 +45,9 @@ export interface WMTPreApprovalScreenVisit {
 /**
  * Records user navigation through pre-approval screens.
  *
+ * Each "visit" captures an opening timestamp and, when closed, a closing
+ * timestamp and the action that ended the visit.
+ *
  * Implements `WMTMobileTokenDataRecord` so it can be stored in
  * `WMTMobileTokenDataBuilder` under the `"preApprovalScreens"` key.
  *
@@ -64,6 +67,7 @@ export class WMTPreApprovalScreensRecorder implements WMTMobileTokenDataRecord {
 
     readonly key = "preApprovalScreens"
 
+    private openVisit: WMTPreApprovalScreenVisit | undefined = undefined
     private visits: WMTPreApprovalScreenVisit[] = []
     private now: () => Date
 
@@ -81,76 +85,88 @@ export class WMTPreApprovalScreensRecorder implements WMTMobileTokenDataRecord {
     /**
      * Records the opening of a pre-approval screen.
      *
-     * If the previous visit is still open (no matching `end()` call),
-     * it will be auto-closed with a warning.
+     * If a different visit is already open, it is appended as-is
+     * (without `timestampClosed` / `action`). If the same screen is
+     * already open, this call is a no-op.
      *
      * @param id Screen identifier matching `WMTPreApprovalScreen.id`.
      * @returns This recorder for chaining.
      */
     begin(id: string): this {
-        // Auto-close any unclosed previous visit
-        const lastVisit = this.visits.length > 0 ? this.visits[this.visits.length - 1] : undefined
-        if (lastVisit && !lastVisit.timestampClosed) {
-            WMTLogger.warn(`PreApprovalScreensRecorder: Auto-closing unclosed visit to screen "${lastVisit.screen}".`)
-            lastVisit.timestampClosed = this.now().toISOString()
+        if (!id) { return this }
+
+        if (this.openVisit) {
+            if (this.openVisit.screen === id) { return this }
+            this.visits.push(this.openVisit)
         }
 
-        this.visits.push({
+        this.openVisit = {
             screen: id,
             timestampOpened: this.now().toISOString()
-        })
+        }
         return this
     }
 
     /**
-     * Records the closing of a pre-approval screen.
+     * Closes the current visit (if its id matches) and records the action.
      *
-     * @param id Screen identifier. Must match the most recent `begin()` call.
+     * Falls back to the last recorded visit with the same id that is still
+     * unclosed (no `timestampClosed` and no `action`).
+     *
+     * @param id Screen identifier.
      * @param action The action that closed the screen.
      * @returns This recorder for chaining.
      */
     end(id: string, action: WMTScreenAction): this {
-        const lastVisit = this.visits.length > 0 ? this.visits[this.visits.length - 1] : undefined
-        if (!lastVisit || lastVisit.screen !== id) {
-            WMTLogger.warn(`PreApprovalScreensRecorder: end("${id}") does not match the last begin(). Ignoring.`)
+        // Currently open visit matches this id → close & append
+        if (this.openVisit && this.openVisit.screen === id) {
+            this.openVisit.timestampClosed = this.now().toISOString()
+            this.openVisit.action = action
+            this.visits.push(this.openVisit)
+            this.openVisit = undefined
             return this
         }
-        if (lastVisit.timestampClosed) {
-            WMTLogger.warn(`PreApprovalScreensRecorder: Screen "${id}" is already closed. Ignoring duplicate end().`)
-            return this
+
+        // Fallback: last recorded visit with same id still unfinished
+        const lastIdx = this.visits.length - 1
+        if (lastIdx >= 0
+            && this.visits[lastIdx].screen === id
+            && !this.visits[lastIdx].timestampClosed
+            && !this.visits[lastIdx].action) {
+            this.visits[lastIdx].timestampClosed = this.now().toISOString()
+            this.visits[lastIdx].action = action
         }
-        lastVisit.timestampClosed = this.now().toISOString()
-        lastVisit.action = action
+
         return this
     }
 
     /**
-     * Clears all recorded visits.
+     * Clears all recorded visits, allowing the recorder to start fresh.
      *
      * @returns This recorder for chaining.
      */
     reset(): this {
+        this.openVisit = undefined
         this.visits = []
         return this
     }
 
     /**
-     * Builds a snapshot of the recorded visits.
+     * Produces the value representation for `mobileTokenData`.
      *
-     * Any still-open visit is auto-closed with a warning.
+     * If a visit is still open, it is auto-closed (with `timestampClosed`
+     * but no action) and a warning is logged.
      *
      * @returns Array of visit records ready for JSON serialization.
      */
     build(): WMTPreApprovalScreenVisit[] {
-        const snapshot = this.visits.map(v => ({ ...v }))
-
-        // Auto-close any unclosed visit in the snapshot
-        const lastVisit = snapshot.length > 0 ? snapshot[snapshot.length - 1] : undefined
-        if (lastVisit && !lastVisit.timestampClosed) {
-            WMTLogger.warn(`PreApprovalScreensRecorder: Auto-closing unclosed visit to screen "${lastVisit.screen}" during build().`)
-            lastVisit.timestampClosed = this.now().toISOString()
+        if (this.openVisit) {
+            WMTLogger.warn(`PreApprovalScreensRecorder: Building with unended visit for screen "${this.openVisit.screen}", ending it automatically with no action.`)
+            this.openVisit.timestampClosed = this.now().toISOString()
+            this.visits.push(this.openVisit)
+            this.openVisit = undefined
         }
 
-        return snapshot
+        return [...this.visits]
     }
 }

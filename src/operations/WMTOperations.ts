@@ -246,16 +246,13 @@ export class WMTOperations extends WMTNetworking {
             } as WMTPreApprovalElementListItem))
         }
 
-        // Convert legacy approvalType → controls (additive, don't overwrite existing controls)
-        if (!screen.controls && screen.approvalType) {
-            const controls: WMTPreApprovalControls = {
-                approve: { type: screen.approvalType }
+        // Convert legacy approvalType → controls (only SLIDER triggers controls)
+        if (!screen.controls && screen.approvalType === "SLIDER") {
+            screen.controls = {
+                flip: true,
+                decline: { type: "BACK" },
+                approve: { type: "SLIDER" }
             }
-            if (screen.approvalType === "SLIDER") {
-                controls.flip = true
-                controls.decline = { type: "BACK" }
-            }
-            screen.controls = controls
         }
     }
 }
