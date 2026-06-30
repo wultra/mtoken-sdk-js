@@ -17,6 +17,7 @@
 import {
     WMTResponse,
     WMTUserOperation,
+    WMTOperations,
     WMTMobileTokenDataBuilder,
     WMTPreApprovalScreensRecorder,
     WMTPreApprovalElementListItem,
@@ -171,17 +172,37 @@ export class TestSuite_PreApprovalScreens extends TestSuite {
 
         const response = JSON.parse(json) as WMTResponse<WMTUserOperation[]>
         const operation = response.responseObject!![0]
+
+        // Apply normalization (same as getOperations path)
+        WMTOperations.normalizeOperation(operation)
+
         this.assertNotNull(operation.ui)
 
-        // Legacy singular should still be available
-        this.assertNotNull(operation.ui!!.preApprovalScreen)
-        this.assertEquals("QR_SCAN", operation.ui!!.preApprovalScreen!!.type)
+        // Legacy singular should be converted to plural
+        this.assertNotNull(operation.ui!!.preApprovalScreens)
+        this.assertEquals(1, operation.ui!!.preApprovalScreens!!.length)
 
-        // Legacy fields preserved
-        this.assertNotNull(operation.ui!!.preApprovalScreen!!.items)
-        this.assertEquals(3, operation.ui!!.preApprovalScreen!!.items!!.length)
-        this.assertEquals("Item 1", operation.ui!!.preApprovalScreen!!.items!![0])
-        this.assertEquals("SLIDER", operation.ui!!.preApprovalScreen!!.approvalType)
+        const screen = operation.ui!!.preApprovalScreens!![0]
+        this.assertEquals("QR_SCAN", screen.type)
+        this.assertEquals("Scan QR", screen.heading)
+        this.assertEquals("Please scan", screen.message)
+
+        // Fallback image injected by legacy normalization
+        this.assertEquals("fallback_image", screen.image)
+
+        // Legacy items converted to elements with fallback icon
+        this.assertNotNull(screen.elements)
+        this.assertEquals(3, screen.elements!!.length)
+        const item1 = screen.elements!![0] as WMTPreApprovalElementListItem
+        this.assertEquals("LIST_ITEM", item1.type)
+        this.assertEquals("Item 1", item1.text)
+        this.assertEquals("fallback_icon", item1.icon)
+
+        // Legacy SLIDER approvalType converted to controls
+        this.assertNotNull(screen.controls)
+        this.assertTrue(screen.controls!!.flip!!)
+        this.assertEquals("BACK", screen.controls!!.decline!!.type)
+        this.assertEquals("SLIDER", screen.controls!!.approve!!.type)
     }
 
     // --- Deserialization: No preApprovalScreen at all ---
@@ -206,8 +227,11 @@ export class TestSuite_PreApprovalScreens extends TestSuite {
 
         const response = JSON.parse(json) as WMTResponse<WMTUserOperation[]>
         const operation = response.responseObject!![0]
+
+        // Apply normalization
+        WMTOperations.normalizeOperation(operation)
+
         this.assertNotNull(operation.ui)
-        this.assertNull(operation.ui!!.preApprovalScreen)
         this.assertNull(operation.ui!!.preApprovalScreens)
     }
 
@@ -233,7 +257,7 @@ export class TestSuite_PreApprovalScreens extends TestSuite {
         this.assertNull(operation.ui)
     }
 
-    // --- Deserialization: Unknown element types (forward compatibility) ---
+    // --- Deserialization: Unknown element types normalized to UNKNOWN ---
 
     testUnknownElementType() {
         const json = `{
@@ -262,15 +286,15 @@ export class TestSuite_PreApprovalScreens extends TestSuite {
         }`
 
         const response = JSON.parse(json) as WMTResponse<WMTUserOperation[]>
-        const screens = response.responseObject!![0].ui!!.preApprovalScreens!!
-        this.assertEquals(1, screens.length)
+        const operation = response.responseObject!![0]
+        WMTOperations.normalizeOperation(operation)
 
-        const elements = screens[0].elements!!
+        const elements = operation.ui!!.preApprovalScreens!![0].elements!!
         this.assertEquals(2, elements.length)
 
-        // Unknown type is preserved
+        // Unknown type is normalized to UNKNOWN
         const unknown = elements[0] as WMTPreApprovalElementBase
-        this.assertEquals("FUTURE_TYPE", unknown.type)
+        this.assertEquals("UNKNOWN", unknown.type)
         this.assertEquals("Some future element", unknown.text)
 
         // Known type works normally
@@ -311,7 +335,7 @@ export class TestSuite_PreApprovalScreens extends TestSuite {
         this.assertNull(screen.controls)
     }
 
-    // --- Deserialization: Unknown screen type (forward compatibility) ---
+    // --- Deserialization: Unknown screen type normalized to UNKNOWN ---
 
     testUnknownScreenType() {
         const json = `{
@@ -336,8 +360,11 @@ export class TestSuite_PreApprovalScreens extends TestSuite {
         }`
 
         const response = JSON.parse(json) as WMTResponse<WMTUserOperation[]>
-        const screen = response.responseObject!![0].ui!!.preApprovalScreens!![0]
-        this.assertEquals("FUTURE_SCREEN_TYPE", screen.type)
+        const operation = response.responseObject!![0]
+        WMTOperations.normalizeOperation(operation)
+
+        const screen = operation.ui!!.preApprovalScreens!![0]
+        this.assertEquals("UNKNOWN", screen.type)
         this.assertEquals("Future", screen.heading)
     }
 
@@ -731,7 +758,12 @@ export class TestSuite_PreApprovalScreens extends TestSuite {
         }`
 
         const response = JSON.parse(json) as WMTResponse<WMTUserOperation[]>
-        const ui = response.responseObject!![0].ui!!
+        const operation = response.responseObject!![0]
+
+        // Apply normalization
+        WMTOperations.normalizeOperation(operation)
+
+        const ui = operation.ui!!
 
         // preApprovalScreens (plural) should take priority
         this.assertNotNull(ui.preApprovalScreens)

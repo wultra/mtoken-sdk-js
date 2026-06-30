@@ -20,8 +20,8 @@ import { type WMTOnlineOperation } from "./WMTOnlineOperation"
 import { PowerAuthAuthentication } from 'react-native-powerauth-mobile-sdk'
 import type { WMTQROperation } from './WMTQROperation'
 import type { WMTPreApprovalScreen } from './WMTPreApprovalScreen'
+import type { WMTUserOperationUIData } from './WMTUserOperationUIData'
 import type { WMTPreApprovalElementListItem } from './WMTPreApprovalElement'
-import type { WMTPreApprovalControls } from './WMTPreApprovalControls'
 import type { WMTAnyObject } from '../utils/WMTAnyObject'
 import { WMTLogger } from '../WMTLogger'
 
@@ -180,12 +180,12 @@ export class WMTOperations extends WMTNetworking {
         return WMTOperations.normalizeOperationResponse(response)
     }
 
-    // --- Pre-approval screen normalization ---
+    // --- Pre-approval screen decoding ---
 
     /**
-     * Normalizes pre-approval screen data in a single-operation response.
-     * Maps legacy `preApprovalScreen` to `preApprovalScreens` and converts
-     * legacy `items`/`approvalType` to `elements`/`controls`.
+     * Decodes legacy pre-approval payloads in a single-operation response.
+     * Maps a legacy singular `preApprovalScreen` into the `preApprovalScreens`
+     * array and converts legacy `items`/`approvalType` into `elements`/`controls`.
      */
     private static normalizeOperationResponse(response: WMTResponse<WMTUserOperation>): WMTResponse<WMTUserOperation> {
         if (response.responseObject) {
@@ -195,7 +195,7 @@ export class WMTOperations extends WMTNetworking {
     }
 
     /**
-     * Normalizes pre-approval screen data in a list-of-operations response.
+     * Decodes legacy pre-approval payloads in a list-of-operations response.
      */
     private static normalizeOperationsResponse(response: WMTResponse<WMTUserOperation[]>): WMTResponse<WMTUserOperation[]> {
         if (response.responseObject) {
@@ -207,54 +207,121 @@ export class WMTOperations extends WMTNetworking {
     }
 
     /**
-     * Normalizes a single operation's UI data for pre-approval screen compatibility.
+     * Decodes a single operation's UI data, mapping any legacy pre-approval
+     * payload onto the public `preApprovalScreens` model.
+     *
+     * This is automatically called by `getOperations`, `getDetail`, `getHistory`,
+     * and `claim`. You can also call it manually to normalize raw JSON-parsed data
+     * (e.g. in tests).
      */
-    private static normalizeOperation(operation: WMTUserOperation): void {
+    static normalizeOperation(operation: WMTUserOperation): void {
         if (!operation.ui) {
             return
         }
 
-        const ui = operation.ui
+        // The legacy singular `preApprovalScreen` is not part of the public model.
+        // It may still arrive in older server payloads, so we read it from the raw object.
+        const ui = operation.ui as WMTUserOperationUIData & { preApprovalScreen?: WMTLegacyPreApprovalScreen }
 
-        // If plural is already present, use it as-is
+        // If plural is already present, decode each screen's legacy fields and finish.
         if (ui.preApprovalScreens && ui.preApprovalScreens.length > 0) {
-            // Normalize each screen's legacy fields
             for (const screen of ui.preApprovalScreens) {
                 WMTOperations.normalizePreApprovalScreen(screen)
             }
+            delete ui.preApprovalScreen
             return
         }
 
-        // Fallback: legacy singular → wrap into array
+        // Fallback: legacy singular → wrap into the plural array.
         if (ui.preApprovalScreen) {
             WMTLogger.warn("Using legacy pre-approval format. Consider updating backend to the new preApprovalScreens model.")
-            WMTOperations.normalizePreApprovalScreen(ui.preApprovalScreen)
-            ui.preApprovalScreens = [ui.preApprovalScreen]
+            const screen = ui.preApprovalScreen as WMTPreApprovalScreen
+            WMTOperations.normalizePreApprovalScreen(screen)
+            ui.preApprovalScreens = [screen]
+            delete ui.preApprovalScreen
         }
     }
 
+    private static readonly FALLBACK_IMAGE = "fallback_image"
+    private static readonly FALLBACK_ICON = "fallback_icon"
+
     /**
-     * Normalizes legacy fields on a single pre-approval screen.
-     * Converts `items` → `elements` (LIST_ITEM) and `approvalType` → `controls`.
+     * Decodes legacy fields on a single pre-approval screen.
+     * Converts `items` → `elements` (LIST_ITEM) and `approvalType` → `controls`,
+     * then removes the legacy fields from the public model.
+     *
+     * Only enters the legacy branch when no new-model markers are present
+     * (`elements`, `controls`, `id`, `backButton`, `image`).
      */
+    private static readonly KNOWN_SCREEN_TYPES: readonly string[] = ["INFO", "WARNING", "QR_SCAN"]
+    private static readonly KNOWN_ELEMENT_TYPES: readonly string[] = ["LIST_ITEM", "ALERT", "BUTTON"]
+
     private static normalizePreApprovalScreen(screen: WMTPreApprovalScreen): void {
-        // Convert legacy items → elements (additive, don't overwrite existing elements)
-        if (!screen.elements && screen.items && screen.items.length > 0) {
-            screen.elements = screen.items.map(text => ({
+        // Normalize unknown screen types to "UNKNOWN" (matching iOS/Android behavior)
+        if (screen.type && !WMTOperations.KNOWN_SCREEN_TYPES.includes(screen.type)) {
+            screen.type = "UNKNOWN"
+        }
+
+        const legacy = screen as WMTPreApprovalScreen & WMTLegacyPreApprovalScreen
+
+        // Detect if this is actually a new-model payload
+        const hasNewModel = screen.elements !== undefined
+            || screen.controls !== undefined
+            || screen.id !== undefined
+            || screen.backButton !== undefined
+            || screen.image !== undefined
+
+        if (hasNewModel) {
+            // New-model screen — just clean up any leftover legacy fields
+            delete legacy.items
+            delete legacy.approvalType
+            WMTOperations.normalizeElements(screen)
+            return
+        }
+
+        // --- Legacy branch ---
+
+        // Inject fallback image
+        screen.image = WMTOperations.FALLBACK_IMAGE
+
+        // Convert legacy items → elements with fallback icon
+        if (legacy.items && legacy.items.length > 0) {
+            screen.elements = legacy.items.map(text => ({
                 type: "LIST_ITEM",
-                text
+                text,
+                icon: WMTOperations.FALLBACK_ICON
             } as WMTPreApprovalElementListItem))
         }
 
         // Convert legacy approvalType → controls (only SLIDER triggers controls)
-        if (!screen.controls && screen.approvalType === "SLIDER") {
+        if (legacy.approvalType === "SLIDER") {
             screen.controls = {
                 flip: true,
                 decline: { type: "BACK" },
                 approve: { type: "SLIDER" }
             }
         }
+
+        delete legacy.items
+        delete legacy.approvalType
+
+        WMTOperations.normalizeElements(screen)
     }
+
+    private static normalizeElements(screen: WMTPreApprovalScreen): void {
+        if (!screen.elements) return
+        for (const element of screen.elements) {
+            if (element.type && !WMTOperations.KNOWN_ELEMENT_TYPES.includes(element.type)) {
+                element.type = "UNKNOWN"
+            }
+        }
+    }
+}
+
+/** Shape of legacy pre-approval fields that may appear in older server payloads. */
+interface WMTLegacyPreApprovalScreen {
+    items?: string[]
+    approvalType?: "SLIDER" | "BUTTON"
 }
 
 class QROperationUtil {

@@ -27,10 +27,6 @@ export type WMTPreApprovalScreenType = "INFO" | "WARNING" | "QR_SCAN" | "UNKNOWN
  *
  * The `type` field defines the kind of screen. Multiple screens can be chained to
  * form a multi-step pre-approval flow.
- *
- * Legacy fields (`items`, `approvalType`) are preserved for backward compatibility
- * with older server responses. When processing operations, the SDK normalizes
- * legacy fields into the new `elements` and `controls` structure.
  */
 export interface WMTPreApprovalScreen {
     /**
@@ -38,7 +34,7 @@ export interface WMTPreApprovalScreen {
      *
      * May be `undefined` for forward compatibility with future server-defined types.
      */
-    type?: WMTPreApprovalScreenType | string
+    type?: WMTPreApprovalScreenType
 
     /** Heading of the pre-approval screen. */
     heading: string
@@ -60,20 +56,4 @@ export interface WMTPreApprovalScreen {
 
     /** Approve/decline button configuration for the screen. */
     controls?: WMTPreApprovalControls
-
-    /**
-     * Array of items to be displayed as list of choices.
-     *
-     * @deprecated Use `elements` with `LIST_ITEM` type instead. Kept for backward
-     * compatibility with legacy server responses.
-     */
-    items?: string[]
-
-    /**
-     * Type of the approval button.
-     *
-     * @deprecated Use `controls.approve.type` instead. Kept for backward
-     * compatibility with legacy server responses.
-     */
-    approvalType?: "SLIDER" | "BUTTON"
 }

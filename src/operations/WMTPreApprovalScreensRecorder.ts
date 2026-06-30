@@ -39,7 +39,7 @@ export interface WMTPreApprovalScreenVisit {
     timestampClosed?: string
 
     /** Action that closed the screen (`undefined` if still open). */
-    action?: string
+    action?: WMTScreenAction
 }
 
 /**

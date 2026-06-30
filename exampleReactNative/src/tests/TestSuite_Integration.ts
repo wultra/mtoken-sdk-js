@@ -180,7 +180,7 @@ export class TestSuite_Integration extends TestSuite {
         const resp = await this.mtoken.operations.claim(op.operationId)
         const operation = resp.responseObject!!
         this.assertNotNull(operation, "Failed to claim the operation")
-        this.assertEquals(operation.ui!!.preApprovalScreen!!.type, "QR_SCAN")
+        this.assertEquals(operation.ui!!.preApprovalScreens!![0].type, "QR_SCAN")
 
         const totp = (await this.utils.getOperation(op.operationId)).proximityOtp
         this.assertNotNull(totp, "Even with proximityCheckEnabled: true, in proximityOtp nil")

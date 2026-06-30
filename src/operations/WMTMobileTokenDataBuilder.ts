@@ -59,10 +59,18 @@ export class WMTMobileTokenDataBuilder {
     /**
      * Stores a key-value pair. Overwrites any existing entry with the same key.
      *
-     * @param keyOrRecord A string key or a `WMTMobileTokenDataRecord`.
-     * @param value The value to store (required when `keyOrRecord` is a string).
+     * @param key A string key.
+     * @param value The value to store.
      * @returns This builder for chaining.
      */
+    put(key: string, value: unknown): this
+    /**
+     * Stores a structured record under its declared key.
+     *
+     * @param record A `WMTMobileTokenDataRecord` whose `build()` result will be stored.
+     * @returns This builder for chaining.
+     */
+    put(record: WMTMobileTokenDataRecord): this
     put(keyOrRecord: string | WMTMobileTokenDataRecord, value?: unknown): this {
         if (typeof keyOrRecord === "string") {
             this.data[keyOrRecord] = value

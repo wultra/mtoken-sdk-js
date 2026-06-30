@@ -17,9 +17,6 @@
 import type { WMTUserOperationAttribute } from "./WMTUserOperationAttribute"
 import type { WMTPreApprovalScreen } from "./WMTPreApprovalScreen"
 
-// Re-export for backward compatibility
-export type { WMTPreApprovalScreen } from "./WMTPreApprovalScreen"
-
 /** Operation UI model that contains data for screens for pre and/or post approved operation. */
 export interface WMTUserOperationUIData {
 
@@ -30,17 +27,9 @@ export interface WMTUserOperationUIData {
     blockApprovalOnCall?: boolean
 
     /**
-     * UI for pre-approval operation screen.
+     * UI for pre-approval operation screens.
      *
-     * @deprecated Use `preApprovalScreens` instead. This field is kept for backward
-     * compatibility with older server responses that return a single screen object.
-     */
-    preApprovalScreen?: WMTPreApprovalScreen
-
-    /**
-     * UI for multiple pre-approval operation screens.
-     *
-     * When the server sends the legacy singular `preApprovalScreen`, the SDK normalizes
+     * When the server sends the legacy singular `preApprovalScreen`, the SDK decodes
      * it into this array automatically.
      */
     preApprovalScreens?: WMTPreApprovalScreen[]

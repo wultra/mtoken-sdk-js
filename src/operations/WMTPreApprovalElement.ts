@@ -40,7 +40,7 @@ export interface WMTPreApprovalElementBase {
     id?: string
 
     /** Element type discriminator. */
-    type?: WMTPreApprovalElementType | string
+    type?: WMTPreApprovalElementType
 
     /** Text content of the element. */
     text?: string
