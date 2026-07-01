@@ -522,14 +522,14 @@ export class TestSuite_PreApprovalScreens extends TestSuite {
 
         recorder
             .begin("screen1")
-            // no end() — begin next screen auto-closes previous
+            // no end() — begin next screen pushes previous as-is (no close)
             .begin("screen2")
             .end("screen2", "CONTINUE")
 
         const visits = recorder.build()
         this.assertEquals(2, visits.length)
-        // screen1 should have been auto-closed
-        this.assertNotNull(visits[0].timestampClosed)
+        // screen1 was pushed without closing (matches iOS/Android behavior)
+        this.assertNull(visits[0].timestampClosed)
         this.assertNull(visits[0].action)
     }
 
