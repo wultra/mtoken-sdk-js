@@ -121,16 +121,27 @@ export class WMTOperations extends WMTNetworking {
     }
 
     /**
-     * Reject operation with a reason.
-     * 
+     * Reject operation by ID with a reason.
+     *
      * @param operationId ID of the operation.
      * @param reason Reason for the rejection (e.g. `"INCORRECT_DATA"`, `"UNEXPECTED_OPERATION"`, `"PREAPPROVAL"`).
      * @param requestProcessor You may modify the request via this processor. It's highly recommended to only modify HTTP headers.
-     * @param mobileTokenData Optional mobile token data to send with the rejection (e.g. pre-approval screen visit records).
      * @returns Server response
      */
-    async reject(operationId: string, reason: WMTRejectionReason, requestProcessor?: WMTRequestProcessor, mobileTokenData?: WMTAnyObject): Promise<WMTResponse<void>> {
-        const requestObject: Record<string, unknown> = { id: operationId, reason: reason }
+    async reject(operationId: string, reason: WMTRejectionReason, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<void>>
+    /**
+     * Reject operation with a reason.
+     *
+     * @param operation Operation to reject.
+     * @param reason Reason for the rejection (e.g. `"INCORRECT_DATA"`, `"UNEXPECTED_OPERATION"`, `"PREAPPROVAL"`).
+     * @param requestProcessor You may modify the request via this processor. It's highly recommended to only modify HTTP headers.
+     * @returns Server response
+     */
+    async reject(operation: WMTOnlineOperation, reason: WMTRejectionReason, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<void>>
+    async reject(operationOrId: string | WMTOnlineOperation, reason: WMTRejectionReason, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<void>> {
+        const id = typeof operationOrId === "string" ? operationOrId : operationOrId.id
+        const mobileTokenData = typeof operationOrId === "string" ? undefined : operationOrId.mobileTokenData
+        const requestObject: Record<string, unknown> = { id, reason }
         if (mobileTokenData) {
             requestObject.mobileTokenData = mobileTokenData
         }
@@ -224,7 +235,7 @@ export class WMTOperations extends WMTNetworking {
         const ui = operation.ui as WMTUserOperationUIData & { preApprovalScreen?: WMTLegacyPreApprovalScreen }
 
         // If plural is already present, decode each screen's legacy fields and finish.
-        if (ui.preApprovalScreens && ui.preApprovalScreens.length > 0) {
+        if (ui.preApprovalScreens) {
             for (const screen of ui.preApprovalScreens) {
                 WMTOperations.normalizePreApprovalScreen(screen)
             }

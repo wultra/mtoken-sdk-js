@@ -130,6 +130,20 @@ export class TestSuite_Integration extends TestSuite {
         this.assertEquals(resp.status, "OK")
     }
 
+    async testRejectPaymentWithOperation() {
+        const serverOp = await this.utils.createOperation()
+        const detail = (await this.mtoken.operations.getDetail(serverOp.operationId)).responseObject!!
+
+        detail.mobileTokenData = { rejectionContext: "pre-approval", screenId: "intro-warning" }
+
+        const resp = await this.mtoken.operations.reject(detail, "PREAPPROVAL")
+        this.assertEquals(resp.status, "OK", "Reject with operation object should succeed")
+
+        const rejectedOp = await this.utils.getOperation(serverOp.operationId)
+        this.assertEquals(rejectedOp.additionalData?.mobileTokenData?.rejectionContext, "pre-approval", "Mobile token data rejectionContext should be 'pre-approval'")
+        this.assertEquals(rejectedOp.additionalData?.mobileTokenData?.screenId, "intro-warning", "Mobile token data screenId should be 'intro-warning'")
+    }
+
     async testOperationHistory() {
         // lets create 1 operation and leave it in the state of "pending"
         const op = await this.utils.createOperation()

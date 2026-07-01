@@ -771,6 +771,40 @@ export class TestSuite_PreApprovalScreens extends TestSuite {
         this.assertEquals("New 1", ui.preApprovalScreens!![0].heading)
     }
 
+    // --- Deserialization: Empty preApprovalScreens array does NOT trigger legacy fallback ---
+
+    testEmptyPreApprovalScreensArrayNoLegacyFallback() {
+        const json = `{
+            "status": "OK",
+            "responseObject": [{
+                "id": "op-empty",
+                "name": "payment",
+                "data": "A1*A100",
+                "status": "PENDING",
+                "operationCreated": "2025-01-01T00:00:00+0000",
+                "operationExpires": "2025-01-01T00:05:00+0000",
+                "allowedSignatureType": { "type": "2FA", "variants": ["possession_knowledge"] },
+                "formData": { "title": "Payment", "message": "Confirm", "attributes": [] },
+                "ui": {
+                    "preApprovalScreen": {
+                        "type": "INFO",
+                        "heading": "Legacy",
+                        "message": "Should be ignored"
+                    },
+                    "preApprovalScreens": []
+                }
+            }]
+        }`
+
+        const response = JSON.parse(json) as WMTResponse<WMTUserOperation[]>
+        const operation = response.responseObject!![0]
+        WMTOperations.normalizeOperation(operation)
+
+        // Empty plural array takes priority — legacy singular is NOT used
+        this.assertNotNull(operation.ui!!.preApprovalScreens)
+        this.assertEquals(0, operation.ui!!.preApprovalScreens!!.length)
+    }
+
     // --- Deserialization: Element with minimal fields ---
 
     testElementMinimalFields() {

@@ -333,10 +333,12 @@ All available methods and attributes of `WMTOperations` API are:
 - `async authorize(operation: WMTOnlineOperation, authentication: PowerAuthAuthentication, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<void>>` - Authorize provided operation.
   - `operation` - An operation to approve, retrieved from `getOperations` call or [created locally](#creating-a-custom-operation).
   - `authentication` - PowerAuth authentication object for operation signing.
-- `async reject(operationId: string, reason: "INCORRECT_DATA" | "UNEXPECTED_OPERATION" | "PREAPPROVAL" | "UNKNOWN" | string, requestProcessor?: WMTRequestProcessor, mobileTokenData?: object): Promise<WMTResponse<void>>` - Reject provided operation.
-  - `operationId` - An operation to reject.
+- `async reject(operationId: string, reason: WMTRejectionReason, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<void>>` - Reject operation by ID.
+  - `operationId` - ID of the operation to reject.
   - `reason` - Rejection reason.
-  - `mobileTokenData` - Optional mobile token data to send with the rejection (e.g. pre-approval screen visit records).
+- `async reject(operation: WMTOnlineOperation, reason: WMTRejectionReason, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<void>>` - Reject operation.
+  - `operation` - Operation to reject (from `getOperations` or created locally).
+  - `reason` - Rejection reason.
 - `async authorizeOffline(operation: WMTQROperation, authentication: PowerAuthAuthentication, uriId: string = "/operation/authorize/offline"): Promise<string>` - Sign offline (QR) operation.
   - `operation` - Offline operation retrieved via the `QROperationParser.parse` method (or otherwise).
   - `authentication` - PowerAuth authentication object for operation signing.
@@ -559,6 +561,7 @@ Types:
 - `WARNING`
 - `INFO`
 - `QR_SCAN` – this type indicates that the `WMTUserOperationProximityCheck` must be used
+- `UNKNOWN` – fallback value assigned by the SDK when the server sends an unrecognized screen type
 
 A pre-approval screen can contain the following building blocks:
 
