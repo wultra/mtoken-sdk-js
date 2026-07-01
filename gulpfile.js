@@ -172,7 +172,12 @@ const sdkVersion = require('./package.json').version
         "WMTSignatureFactor",
         "WMTQROperationDataFieldType",
         "WMTAttributeType",
-        "WMTPush"
+        "WMTAttributeAlertType",
+        "WMTPush",
+        "WMTPushData",
+        "WMTAPNSEnvironment",
+        "WMTMobileTokenDataBuilder",
+        "WMTPreApprovalScreensRecorder"
     ];
 
     // export all objects as modules to cordova.
