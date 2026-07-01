@@ -120,23 +120,19 @@ You can attach customer-specific metadata to operations during authorization or 
 
 ## Reject an Operation
 
-To reject an operation use `reject`. Operation rejection is confirmed by the possession factor, so there is no need to create the `PowerAuthAuthentication` object. You can simply use it like in the following example.
+To reject an operation use `reject`. Operation rejection is confirmed by the possession factor, so there is no need to create the `PowerAuthAuthentication` object.
+
+Two overloads are available:
 
 ```typescript
-// Reject operation with some reason
-async function reject(operation: WMTOnlineOperation, reason: "INCORRECT_DATA" | "UNEXPECTED_OPERATION" | "UNKNOWN" | string) {
-    try {
-        const response = await this.operations.reject(operation.id, reason)
-        if (response.status == "OK") {
-            // operation rejected
-        } else {
-            // server error (for example powerauth activation no longer valid)
-        }
-    } catch (e) {
-        // failure (for example network not available or invalid powerauth state)
-    }
-}
+// Reject by operation ID
+const response = await this.operations.reject(operation.id, "INCORRECT_DATA")
+
+// Reject with the full operation object (includes mobileTokenData in the request)
+const response = await this.operations.reject(operation, "PREAPPROVAL")
 ```
+
+Standard rejection reasons: `"INCORRECT_DATA"`, `"UNEXPECTED_OPERATION"`, `"UNKNOWN"`, `"PREAPPROVAL"`. Custom string reasons are also accepted.
 
 ## Operation Detail
 
@@ -474,12 +470,7 @@ export interface WMTUserOperationUIData {
 }
 ```
 
-PreApprovalScreen types:
-
-- `WARNING`
-- `INFO`
-- `QR_SCAN` this type indicates that the `WMTUserOperationProximityCheck` must be used for authorization
-- `UNKNOWN` fallback value assigned by the SDK when the server sends an unrecognized screen type
+PreApprovalScreen types: see [Pre-Approval Screens](#pre-approval-screens) for the full list and details.
 
 PostApprovalScreen types:
 `PostApprovalScreen*` classes commonly contain `heading` and `message` and different payload data
@@ -526,6 +517,11 @@ export interface WMTOnlineOperation {
      * Additional information with proximity check data 
      */
     proximityCheck?: WMTUserOperationProximityCheck
+
+    /**
+     * Optional customer-specific data sent alongside authorize/reject requests.
+     */
+    mobileTokenData?: Record<string, unknown>
 }
 ```
 
@@ -634,7 +630,7 @@ Each recorded "visit" contains:
 The `WMTPreApprovalScreensRecorder` exposes the following methods:
 
 - `begin(id)` – starts a new visit for the given screen ID. If another visit is already open, it is automatically added to the list (without a closing timestamp or action).
-- `end(id, action)` – closes the current visit if the given id matches. If no visit is open, but the most recent recorded visit has the same id and is still unclosed, it is finalized instead.
+- `end(id, action)` – closes the current visit if the given id matches. Otherwise, falls back to the most recent recorded visit if it has the same id and is still unclosed.
 - `reset()` – resets recorded visits.
 
 ```typescript

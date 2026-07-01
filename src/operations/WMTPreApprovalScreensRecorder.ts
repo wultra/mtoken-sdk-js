@@ -155,7 +155,9 @@ export class WMTPreApprovalScreensRecorder implements WMTMobileTokenDataRecord {
      * Produces the value representation for `mobileTokenData`.
      *
      * If a visit is still open, it is auto-closed (with `timestampClosed`
-     * but no action) and a warning is logged.
+     * but no action) and a warning is logged. This permanently consumes
+     * the open visit — calling `build()` again without new `begin()`/`end()`
+     * calls will not include it a second time.
      *
      * @returns Array of visit records ready for JSON serialization.
      */

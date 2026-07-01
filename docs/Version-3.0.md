@@ -70,16 +70,6 @@ interface WMTPreApprovalScreen {
 
 New supporting types are exported from the package: `WMTPreApprovalElement`, `WMTPreApprovalElementListItem`, `WMTPreApprovalElementAlert`, `WMTPreApprovalElementButton`, `WMTPreApprovalControls`, and related type aliases.
 
-## Import Path Change
+## Import Path
 
-If you import from `react-native-mtoken-sdk`, all new types are exported from the package root — no changes needed beyond updating to the new type names.
-
-If you previously imported `WMTPreApprovalScreen` from `WMTUserOperationUIData`, update your import to the new module:
-
-```typescript
-// Before (2.1.x)
-import type { WMTPreApprovalScreen } from 'react-native-mtoken-sdk'
-
-// After (3.0.x) — same import path, new shape
-import type { WMTPreApprovalScreen } from 'react-native-mtoken-sdk'
-```
+The import path for `WMTPreApprovalScreen` is unchanged — it is still exported from the package root. However, the type's shape has changed (new optional fields like `id`, `backButton`, `image`, `elements`, `controls`). All new supporting types (`WMTPreApprovalElement`, `WMTPreApprovalControls`, etc.) are also exported from the package root.
