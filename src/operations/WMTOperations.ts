@@ -242,7 +242,18 @@ export class WMTOperations extends WMTNetworking {
         }
     }
 
+    /**
+     * Sentinel injected as `image` during legacy conversion because the legacy
+     * format has no image field. UI code should check for this value and render
+     * a suitable default (e.g. a generic icon or no image).
+     */
     private static readonly FALLBACK_IMAGE = "fallback_image"
+
+    /**
+     * Sentinel injected as `icon` on list item elements during legacy conversion
+     * because legacy items have no icon. UI code should check for this value
+     * and provide a default rendering.
+     */
     private static readonly FALLBACK_ICON = "fallback_icon"
 
     /**

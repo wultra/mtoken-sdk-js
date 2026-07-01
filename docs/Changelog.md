@@ -1,8 +1,9 @@
 # Changelog
 
-## X.X.X (TBA)
+## 3.0.0 (TBA)
 - Implemented OIDC activation
 - Added PreApproval Screens & PreApprovalScreenRecorder support ([documentation](Using-Operations.md#pre-approval-screens))
+- Added `mobileTokenData` to reject request for passing customer-specific data
 
 ## 2.1.0
 - Added `mobileTokenData` to authorize request for passing customer-specific data ([documentation](Using-Operations.md#Passing-Additional-Mobile-Token-Data))

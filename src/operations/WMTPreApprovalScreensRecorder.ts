@@ -1,5 +1,5 @@
 //
-// Copyright 2025 Wultra s.r.o.
+// Copyright 2026 Wultra s.r.o.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -110,8 +110,8 @@ export class WMTPreApprovalScreensRecorder implements WMTMobileTokenDataRecord {
     /**
      * Closes the current visit (if its id matches) and records the action.
      *
-     * Falls back to the last recorded visit with the same id that is still
-     * unclosed (no `timestampClosed` and no `action`).
+     * If no open visit matches, falls back to the last recorded visit if it
+     * has the same id and is still unclosed (no `timestampClosed` / `action`).
      *
      * @param id Screen identifier.
      * @param action The action that closed the screen.
