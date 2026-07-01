@@ -22,7 +22,6 @@ import type { WMTQROperation } from './WMTQROperation'
 import type { WMTPreApprovalScreen } from './WMTPreApprovalScreen'
 import type { WMTUserOperationUIData } from './WMTUserOperationUIData'
 import type { WMTPreApprovalElementListItem } from './WMTPreApprovalElement'
-import type { WMTAnyObject } from '../utils/WMTAnyObject'
 import { WMTLogger } from '../WMTLogger'
 
 /**
