@@ -271,8 +271,8 @@ export class WMTOperations extends WMTNetworking {
      * Converts `items` → `elements` (LIST_ITEM) and `approvalType` → `controls`,
      * then removes the legacy fields from the public model.
      *
-     * Only enters the legacy branch when no new-model markers are present
-     * (`elements`, `controls`, `id`, `backButton`, `image`).
+     * Only enters the legacy branch when legacy-only fields
+     * (`items`, `approvalType`) are present.
      */
     private static readonly KNOWN_SCREEN_TYPES: readonly string[] = ["INFO", "WARNING", "QR_SCAN"]
     private static readonly KNOWN_ELEMENT_TYPES: readonly string[] = ["LIST_ITEM", "ALERT", "BUTTON"]
@@ -285,17 +285,10 @@ export class WMTOperations extends WMTNetworking {
 
         const legacy = screen as WMTPreApprovalScreen & WMTLegacyPreApprovalScreen
 
-        // Detect if this is actually a new-model payload
-        const hasNewModel = screen.elements !== undefined
-            || screen.controls !== undefined
-            || screen.id !== undefined
-            || screen.backButton !== undefined
-            || screen.image !== undefined
+        // Only enter legacy conversion when legacy-only fields are present.
+        const hasLegacyFields = legacy.items !== undefined || legacy.approvalType !== undefined
 
-        if (hasNewModel) {
-            // New-model screen — just clean up any leftover legacy fields
-            delete legacy.items
-            delete legacy.approvalType
+        if (!hasLegacyFields) {
             WMTOperations.normalizeElements(screen)
             return
         }

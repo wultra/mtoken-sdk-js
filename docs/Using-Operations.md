@@ -501,6 +501,7 @@ PreApprovalScreen types:
 - `WARNING`
 - `INFO`
 - `QR_SCAN` this type indicates that the `WMTUserOperationProximityCheck` must be used for authorization
+- `UNKNOWN` fallback value assigned by the SDK when the server sends an unrecognized screen type
 
 PostApprovalScreen types:
 `PostApprovalScreen*` classes commonly contain `heading` and `message` and different payload data
