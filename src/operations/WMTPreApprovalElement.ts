@@ -33,7 +33,7 @@ export type WMTPreApprovalButtonAction = "LINK" | "MAIL" | "PHONE"
  * Base interface for a pre-approval screen element.
  *
  * Concrete element shapes are distinguished by the `type` field.
- * Unknown types are preserved for forward compatibility.
+ * Unrecognized types are normalized to `"UNKNOWN"` by the SDK.
  */
 export interface WMTPreApprovalElementBase {
     /** Optional element identifier. */
@@ -89,7 +89,7 @@ export interface WMTPreApprovalElementButton extends WMTPreApprovalElementBase {
  * Union type representing any pre-approval element.
  *
  * The `type` field discriminates between concrete shapes.
- * Unknown types are represented by the base interface for forward compatibility.
+ * Unrecognized types are normalized to `"UNKNOWN"` and represented by the base interface.
  */
 export type WMTPreApprovalElement =
     | WMTPreApprovalElementListItem

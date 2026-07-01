@@ -32,7 +32,7 @@ export interface WMTPreApprovalScreen {
     /**
      * Type of PreApprovalScreen (`WARNING`, `INFO`, `QR_SCAN`).
      *
-     * May be `undefined` for forward compatibility with future server-defined types.
+     * Unrecognized server-provided types are normalized to `"UNKNOWN"` by the SDK.
      */
     type?: WMTPreApprovalScreenType
 
