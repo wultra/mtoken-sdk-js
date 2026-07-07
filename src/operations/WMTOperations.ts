@@ -136,9 +136,12 @@ export class WMTOperations extends WMTNetworking {
         const timeService = this.pa.timeSynchronizationService
         const localTimeAdjustment = await timeService.localTimeAdjustment()
         const now = Date.now()
-        const adjustedReceived = proximityCheck.timestampReceived.getTime() + localTimeAdjustment
+        const receivedMs = proximityCheck.timestampReceived.getTime()
+        if (Number.isNaN(receivedMs)) {
+            throw WMTLogger.errorAndException("Proximity check timestampReceived is invalid.")
+        }
+        const adjustedReceived = receivedMs + localTimeAdjustment
         const timestampSent = now + localTimeAdjustment
-
         if (adjustedReceived > timestampSent) {
             throw WMTLogger.errorAndException(
                 `Proximity check timestamp is invalid (timestampReceived(adjusted)=${adjustedReceived}, timestampSent=${timestampSent}). The device time likely changed after the proximity check was received.`
