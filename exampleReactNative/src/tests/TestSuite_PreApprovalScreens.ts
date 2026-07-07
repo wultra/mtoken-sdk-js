@@ -30,9 +30,22 @@ import type {
     WMTPreApprovalControls,
     WMTPreApprovalScreenVisit
 } from 'react-native-mtoken-sdk';
+import { PowerAuth } from 'react-native-powerauth-mobile-sdk';
 import { TestSuite } from './TestSuite';
 
 export class TestSuite_PreApprovalScreens extends TestSuite {
+
+    /**
+     * Creates a recorder with injected time providers so the PowerAuth
+     * platform channel is never called during tests.
+     */
+    private createRecorder(timeProvider?: () => Date, timeAdjustmentProvider?: () => Promise<number>): WMTPreApprovalScreensRecorder {
+        return new WMTPreApprovalScreensRecorder(
+            new PowerAuth("test-instance"),
+            timeProvider ?? (() => new Date()),
+            timeAdjustmentProvider ?? (async () => 0)
+        )
+    }
 
     // --- Deserialization: New format (preApprovalScreens array) ---
 
@@ -450,13 +463,13 @@ export class TestSuite_PreApprovalScreens extends TestSuite {
         this.assertEquals("modified", snapshot2["key"])
     }
 
-    testBuilderWithRecord() {
-        const recorder = new WMTPreApprovalScreensRecorder(() => new Date("2025-01-01T12:00:00Z"))
+    async testBuilderWithRecord() {
+        const recorder = this.createRecorder(() => new Date("2025-01-01T12:00:00Z"))
             .begin("screen1")
             .end("screen1", "CONTINUE")
 
         const builder = new WMTMobileTokenDataBuilder()
-        builder.put(recorder)
+        await builder.putRecord(recorder)
 
         const result = builder.build()
         this.assertNotNull(result["preApprovalScreens"])
@@ -466,10 +479,10 @@ export class TestSuite_PreApprovalScreens extends TestSuite {
         this.assertEquals("screen1", visits[0].screen)
     }
 
-    testBuilderRemoveRecord() {
-        const recorder = new WMTPreApprovalScreensRecorder()
+    async testBuilderRemoveRecord() {
+        const recorder = this.createRecorder()
         const builder = new WMTMobileTokenDataBuilder()
-        builder.put(recorder)
+        await builder.putRecord(recorder)
 
         this.assertTrue(builder.remove(recorder))
         const result = builder.build()
@@ -478,9 +491,9 @@ export class TestSuite_PreApprovalScreens extends TestSuite {
 
     // --- PreApprovalScreensRecorder tests ---
 
-    testRecorderBasicFlow() {
+    async testRecorderBasicFlow() {
         const fixedTime = new Date("2025-06-01T10:00:00Z")
-        const recorder = new WMTPreApprovalScreensRecorder(() => fixedTime)
+        const recorder = this.createRecorder(() => fixedTime)
 
         recorder
             .begin("intro-warning")
@@ -488,7 +501,7 @@ export class TestSuite_PreApprovalScreens extends TestSuite {
             .begin("qr-scan")
             .end("qr-scan", "SCAN")
 
-        const visits = recorder.build()
+        const visits = await recorder.build()
         this.assertEquals(2, visits.length)
 
         this.assertEquals("intro-warning", visits[0].screen)
@@ -500,9 +513,9 @@ export class TestSuite_PreApprovalScreens extends TestSuite {
         this.assertEquals("SCAN", visits[1].action)
     }
 
-    testRecorderRevisitScreen() {
+    async testRecorderRevisitScreen() {
         const fixedTime = new Date("2025-06-01T10:00:00Z")
-        const recorder = new WMTPreApprovalScreensRecorder(() => fixedTime)
+        const recorder = this.createRecorder(() => fixedTime)
 
         recorder
             .begin("intro")
@@ -510,15 +523,15 @@ export class TestSuite_PreApprovalScreens extends TestSuite {
             .begin("intro")
             .end("intro", "CONTINUE")
 
-        const visits = recorder.build()
+        const visits = await recorder.build()
         this.assertEquals(2, visits.length)
         this.assertEquals("CLOSE", visits[0].action)
         this.assertEquals("CONTINUE", visits[1].action)
     }
 
-    testRecorderAutoCloseOnBegin() {
+    async testRecorderAutoCloseOnBegin() {
         const fixedTime = new Date("2025-06-01T10:00:00Z")
-        const recorder = new WMTPreApprovalScreensRecorder(() => fixedTime)
+        const recorder = this.createRecorder(() => fixedTime)
 
         recorder
             .begin("screen1")
@@ -526,108 +539,108 @@ export class TestSuite_PreApprovalScreens extends TestSuite {
             .begin("screen2")
             .end("screen2", "CONTINUE")
 
-        const visits = recorder.build()
+        const visits = await recorder.build()
         this.assertEquals(2, visits.length)
         // screen1 was pushed without closing (matches iOS/Android behavior)
         this.assertNull(visits[0].timestampClosed)
         this.assertNull(visits[0].action)
     }
 
-    testRecorderAutoCloseOnBuild() {
+    async testRecorderAutoCloseOnBuild() {
         const fixedTime = new Date("2025-06-01T10:00:00Z")
-        const recorder = new WMTPreApprovalScreensRecorder(() => fixedTime)
+        const recorder = this.createRecorder(() => fixedTime)
 
         recorder.begin("screen1")
         // No end() call
 
-        const visits = recorder.build()
+        const visits = await recorder.build()
         this.assertEquals(1, visits.length)
         // Should be auto-closed during build
         this.assertNotNull(visits[0].timestampClosed)
     }
 
-    testRecorderReset() {
-        const recorder = new WMTPreApprovalScreensRecorder()
+    async testRecorderReset() {
+        const recorder = this.createRecorder()
 
         recorder
             .begin("screen1")
             .end("screen1", "CONTINUE")
             .reset()
 
-        const visits = recorder.build()
+        const visits = await recorder.build()
         this.assertEquals(0, visits.length)
     }
 
-    testRecorderEndMismatch() {
-        const recorder = new WMTPreApprovalScreensRecorder()
+    async testRecorderEndMismatch() {
+        const recorder = this.createRecorder()
 
         recorder
             .begin("screen1")
             .end("wrong-id", "CONTINUE") // should be ignored
 
-        const visits = recorder.build()
+        const visits = await recorder.build()
         this.assertEquals(1, visits.length)
         // screen1 is still open (end was ignored), auto-closed by build
         this.assertNull(visits[0].action)
     }
 
-    testRecorderEndAlreadyClosed() {
-        const recorder = new WMTPreApprovalScreensRecorder()
+    async testRecorderEndAlreadyClosed() {
+        const recorder = this.createRecorder()
 
         recorder
             .begin("screen1")
             .end("screen1", "CONTINUE")
             .end("screen1", "BACK") // duplicate end — should be ignored
 
-        const visits = recorder.build()
+        const visits = await recorder.build()
         this.assertEquals(1, visits.length)
         this.assertEquals("CONTINUE", visits[0].action)
     }
 
-    testRecorderBuildReturnsSnapshot() {
-        const recorder = new WMTPreApprovalScreensRecorder()
+    async testRecorderBuildReturnsSnapshot() {
+        const recorder = this.createRecorder()
 
         recorder
             .begin("screen1")
             .end("screen1", "CONTINUE")
 
-        const snapshot1 = recorder.build()
+        const snapshot1 = await recorder.build()
 
         recorder
             .begin("screen2")
             .end("screen2", "BACK")
 
-        const snapshot2 = recorder.build()
+        const snapshot2 = await recorder.build()
 
         this.assertEquals(1, snapshot1.length)
         this.assertEquals(2, snapshot2.length)
     }
 
-    testRecorderKey() {
-        const recorder = new WMTPreApprovalScreensRecorder()
+    async testRecorderKey() {
+        const recorder = this.createRecorder()
         this.assertEquals("preApprovalScreens", recorder.key)
     }
 
-    testRecorderCustomAction() {
-        const recorder = new WMTPreApprovalScreensRecorder(() => new Date("2025-06-01T10:00:00Z"))
+    async testRecorderCustomAction() {
+        const recorder = this.createRecorder(() => new Date("2025-06-01T10:00:00Z"))
 
         recorder
             .begin("custom-screen")
             .end("custom-screen", "MY_CUSTOM_ACTION")
 
-        const visits = recorder.build()
+        const visits = await recorder.build()
         this.assertEquals(1, visits.length)
         this.assertEquals("MY_CUSTOM_ACTION", visits[0].action)
     }
 
     // --- Full integration: Builder + Recorder ---
 
-    testBuilderRecorderIntegration() {
+    async testBuilderRecorderIntegration() {
         const fixedTime = new Date("2025-06-01T10:00:00Z")
         const builder = new WMTMobileTokenDataBuilder({ "baseKey": "baseValue" })
         builder.put("riskScore", 0.82)
 
-        const recorder = new WMTPreApprovalScreensRecorder(() => fixedTime)
+        const recorder = this.createRecorder(() => fixedTime)
             .begin("intro-warning")
             .end("intro-warning", "CLOSE")
             .begin("intro-warning")
@@ -637,7 +650,7 @@ export class TestSuite_PreApprovalScreens extends TestSuite {
             .begin("call-or-confirm")
             .end("call-or-confirm", "CONTINUE")
 
-        builder.put(recorder)
+        await builder.putRecord(recorder)
 
         const result = builder.build()
         this.assertEquals("baseValue", result["baseKey"])
@@ -844,5 +857,108 @@ export class TestSuite_PreApprovalScreens extends TestSuite {
 
         this.assertEquals("ALERT", elements[1].type)
         this.assertEquals("BUTTON", elements[2].type)
+    }
+
+    // --- Recorder time synchronization ---
+
+    async testRecorderAppliesTimeAdjustment() {
+        const fixedTime = new Date("2025-06-15T10:30:00Z")
+        const recorder = this.createRecorder(() => fixedTime, async () => 90000) // +1.5 minutes
+
+        recorder
+            .begin("screen1")
+            .end("screen1", "CONTINUE")
+            .begin("screen2")
+
+        const visits = await recorder.build()
+        this.assertEquals("2025-06-15T10:31:30.000Z", visits[0].timestampOpened)
+        this.assertEquals("2025-06-15T10:31:30.000Z", visits[0].timestampClosed)
+        this.assertEquals("2025-06-15T10:31:30.000Z", visits[1].timestampOpened)
+        this.assertEquals("2025-06-15T10:31:30.000Z", visits[1].timestampClosed)
+    }
+
+    async testRecorderAppliesNegativeTimeAdjustment() {
+        const fixedTime = new Date("2025-06-15T10:30:00Z")
+        const recorder = this.createRecorder(() => fixedTime, async () => -60000) // -1 minute
+
+        recorder
+            .begin("screen1")
+            .end("screen1", "CONTINUE")
+
+        const visits = await recorder.build()
+        this.assertEquals("2025-06-15T10:29:00.000Z", visits[0].timestampOpened)
+        this.assertEquals("2025-06-15T10:29:00.000Z", visits[0].timestampClosed)
+    }
+
+    async testRecorderTimeAdjustmentFailureFallsBack() {
+        const fixedTime = new Date("2025-06-15T10:30:00Z")
+        const recorder = this.createRecorder(() => fixedTime, async () => { throw new Error("not available") })
+
+        recorder
+            .begin("screen1")
+            .end("screen1", "CONTINUE")
+
+        const visits = await recorder.build()
+        this.assertEquals("2025-06-15T10:30:00.000Z", visits[0].timestampOpened)
+        this.assertEquals("2025-06-15T10:30:00.000Z", visits[0].timestampClosed)
+    }
+
+    async testRecorderRepeatedBuildReflectsUpdatedAdjustment() {
+        const fixedTime = new Date("2025-06-15T10:30:00Z")
+        let adjustment = 0
+        const recorder = this.createRecorder(() => fixedTime, async () => adjustment)
+
+        recorder
+            .begin("screen1")
+            .end("screen1", "CONTINUE")
+
+        // First build: time not synchronized yet (zero adjustment)
+        let visits = await recorder.build()
+        this.assertEquals("2025-06-15T10:30:00.000Z", visits[0].timestampOpened)
+
+        // Second build: time synchronized in the meantime
+        adjustment = 30000
+        visits = await recorder.build()
+        this.assertEquals("2025-06-15T10:30:30.000Z", visits[0].timestampOpened)
+    }
+
+    // --- Legacy singular payload: iOS parity ---
+
+    testLegacyConversionIgnoresNewModelKeys() {
+        const operation = {
+            ui: {
+                preApprovalScreen: {
+                    type: "INFO",
+                    heading: "Info",
+                    message: "Message",
+                    id: "screen1",
+                    image: "custom_image",
+                    elements: [{ type: "ALERT", text: "ignored" }]
+                }
+            }
+        } as unknown as WMTUserOperation
+
+        WMTOperations.normalizeOperation(operation)
+
+        // Singular payload is always legacy-converted; new-model keys are ignored
+        const screen = operation.ui!!.preApprovalScreens!![0]
+        this.assertNull(screen.id)
+        this.assertEquals("fallback_image", screen.image)
+        this.assertNull(screen.elements)
+        this.assertNull(screen.controls)
+    }
+
+    testMalformedLegacyPayloadYieldsNoScreens() {
+        const operation = {
+            ui: {
+                preApprovalScreen: {
+                    type: "INFO"
+                }
+            }
+        } as unknown as WMTUserOperation
+
+        WMTOperations.normalizeOperation(operation)
+
+        this.assertNull(operation.ui!!.preApprovalScreens)
     }
 }

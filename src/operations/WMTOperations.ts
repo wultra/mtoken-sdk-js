@@ -233,7 +233,7 @@ export class WMTOperations extends WMTNetworking {
         // It may still arrive in older server payloads, so we read it from the raw object.
         const ui = operation.ui as WMTUserOperationUIData & { preApprovalScreen?: WMTLegacyPreApprovalScreen }
 
-        // If plural is already present, decode each screen's legacy fields and finish.
+        // If plural is already present, it is the new model — normalize enum types and finish.
         if (ui.preApprovalScreens) {
             for (const screen of ui.preApprovalScreens) {
                 WMTOperations.normalizePreApprovalScreen(screen)
@@ -242,12 +242,12 @@ export class WMTOperations extends WMTNetworking {
             return
         }
 
-        // Fallback: legacy singular → wrap into the plural array.
+        // Legacy singular → always convert into a single-element plural array.
         if (ui.preApprovalScreen) {
-            WMTLogger.warn("Using legacy pre-approval format. Consider updating backend to the new preApprovalScreens model.")
-            const screen = ui.preApprovalScreen as WMTPreApprovalScreen
-            WMTOperations.normalizePreApprovalScreen(screen)
-            ui.preApprovalScreens = [screen]
+            const converted = WMTOperations.screenFromLegacy(ui.preApprovalScreen)
+            if (converted) {
+                ui.preApprovalScreens = [converted]
+            }
             delete ui.preApprovalScreen
         }
     }
@@ -266,41 +266,53 @@ export class WMTOperations extends WMTNetworking {
      */
     private static readonly FALLBACK_ICON = "fallback_icon"
 
-    /**
-     * Decodes legacy fields on a single pre-approval screen.
-     * Converts `items` → `elements` (LIST_ITEM) and `approvalType` → `controls`,
-     * then removes the legacy fields from the public model.
-     *
-     * Only enters the legacy branch when legacy-only fields
-     * (`items`, `approvalType`) are present.
-     */
     private static readonly KNOWN_SCREEN_TYPES: readonly string[] = ["INFO", "WARNING", "QR_SCAN"]
     private static readonly KNOWN_ELEMENT_TYPES: readonly string[] = ["LIST_ITEM", "ALERT", "BUTTON"]
 
+    /**
+     * Normalizes a new-model pre-approval screen: maps unknown screen and
+     * element types to `"UNKNOWN"` and removes stray legacy fields
+     * (`items`, `approvalType`) without converting them (matching iOS,
+     * which ignores legacy fields in the new model).
+     */
     private static normalizePreApprovalScreen(screen: WMTPreApprovalScreen): void {
-        // Normalize unknown screen types to "UNKNOWN" (matching iOS/Android behavior)
         if (screen.type && !WMTOperations.KNOWN_SCREEN_TYPES.includes(screen.type)) {
             screen.type = "UNKNOWN"
         }
 
         const legacy = screen as WMTPreApprovalScreen & WMTLegacyPreApprovalScreen
+        delete legacy.items
+        delete legacy.approvalType
 
-        // Only enter legacy conversion when legacy-only fields are present.
-        const hasLegacyFields = legacy.items !== undefined || legacy.approvalType !== undefined
+        WMTOperations.normalizeElements(screen)
+    }
 
-        if (!hasLegacyFields) {
-            WMTOperations.normalizeElements(screen)
-            return
+    /**
+     * Converts the legacy singular pre-approval screen payload to the new model.
+     *
+     * Maps `items` → `elements` (LIST_ITEM with fallback icon) and
+     * `approvalType == "SLIDER"` → `controls`. Any other keys are ignored
+     * (no merging with new-model fields) and `image` is always set to the
+     * fallback sentinel.
+     *
+     * @returns The converted screen, or `undefined` when the payload cannot be parsed.
+     */
+    private static screenFromLegacy(raw: WMTLegacyPreApprovalScreen): WMTPreApprovalScreen | undefined {
+        if (typeof raw.type !== "string" || typeof raw.heading !== "string" || typeof raw.message !== "string") {
+            WMTLogger.error("Failed to parse legacy pre-approval screen: missing type, heading or message.")
+            return undefined
         }
 
-        // --- Legacy branch ---
-
-        // Inject fallback image
-        screen.image = WMTOperations.FALLBACK_IMAGE
+        const screen: WMTPreApprovalScreen = {
+            type: WMTOperations.KNOWN_SCREEN_TYPES.includes(raw.type) ? raw.type as WMTPreApprovalScreen["type"] : "UNKNOWN",
+            heading: raw.heading,
+            message: raw.message,
+            image: WMTOperations.FALLBACK_IMAGE
+        }
 
         // Convert legacy items → elements with fallback icon
-        if (legacy.items && legacy.items.length > 0) {
-            screen.elements = legacy.items.map(text => ({
+        if (Array.isArray(raw.items) && raw.items.length > 0) {
+            screen.elements = raw.items.map(text => ({
                 type: "LIST_ITEM",
                 text,
                 icon: WMTOperations.FALLBACK_ICON
@@ -308,7 +320,7 @@ export class WMTOperations extends WMTNetworking {
         }
 
         // Convert legacy approvalType → controls (only SLIDER triggers controls)
-        if (legacy.approvalType === "SLIDER") {
+        if (raw.approvalType === "SLIDER") {
             screen.controls = {
                 flip: true,
                 decline: { type: "BACK" },
@@ -316,10 +328,8 @@ export class WMTOperations extends WMTNetworking {
             }
         }
 
-        delete legacy.items
-        delete legacy.approvalType
-
-        WMTOperations.normalizeElements(screen)
+        WMTLogger.warn("Using legacy pre-approval format. Consider updating backend to the new preApprovalScreens model.")
+        return screen
     }
 
     private static normalizeElements(screen: WMTPreApprovalScreen): void {
@@ -332,8 +342,11 @@ export class WMTOperations extends WMTNetworking {
     }
 }
 
-/** Shape of legacy pre-approval fields that may appear in older server payloads. */
+/** Shape of the legacy singular pre-approval payload that may appear in older server payloads. */
 interface WMTLegacyPreApprovalScreen {
+    type?: string
+    heading?: string
+    message?: string
     items?: string[]
     approvalType?: "SLIDER" | "BUTTON"
 }

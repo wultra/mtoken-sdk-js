@@ -25,8 +25,11 @@ export interface WMTMobileTokenDataRecord {
     /** Key under which this record will be stored in the `mobileTokenData` dictionary. */
     readonly key: string
 
-    /** Produces the value to be stored for `key`. Must be JSON-serializable. */
-    build(): unknown
+    /**
+     * Produces the value to be stored for `key`. Must be JSON-serializable.
+     * May return a `Promise` for async implementations.
+     */
+    build(): unknown | Promise<unknown>
 }
 
 /**
@@ -39,7 +42,7 @@ export interface WMTMobileTokenDataRecord {
  * ```typescript
  * const builder = new WMTMobileTokenDataBuilder()
  * builder.put("riskScore", 0.82)
- * builder.put(recorder) // WMTMobileTokenDataRecord
+ * await builder.putRecord(recorder) // WMTMobileTokenDataRecord
  * operation.mobileTokenData = builder.build()
  * ```
  */
@@ -63,20 +66,19 @@ export class WMTMobileTokenDataBuilder {
      * @param value The value to store.
      * @returns This builder for chaining.
      */
-    put(key: string, value: unknown): this
+    put(key: string, value: unknown): this {
+        this.data[key] = value
+        return this
+    }
+
     /**
      * Stores a structured record under its declared key.
      *
      * @param record A `WMTMobileTokenDataRecord` whose `build()` result will be stored.
      * @returns This builder for chaining.
      */
-    put(record: WMTMobileTokenDataRecord): this
-    put(keyOrRecord: string | WMTMobileTokenDataRecord, value?: unknown): this {
-        if (typeof keyOrRecord === "string") {
-            this.data[keyOrRecord] = value
-        } else {
-            this.data[keyOrRecord.key] = keyOrRecord.build()
-        }
+    async putRecord(record: WMTMobileTokenDataRecord): Promise<this> {
+        this.data[record.key] = await record.build()
         return this
     }
 

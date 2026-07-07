@@ -609,12 +609,12 @@ interface WMTMobileTokenDataRecord {
     /** Top-level key under which this record is stored. */
     key: string
 
-    /** Produces the value to store for this key. */
-    build(): unknown
+    /** Produces the value to store for this key. May return a Promise. */
+    build(): unknown | Promise<unknown>
 }
 ```
 
-You can pass records to the builder with `builder.put(record)`.
+You can pass records to the builder with `await builder.putRecord(record)`.
 
 ### Predefined Record Helper: `WMTPreApprovalScreensRecorder`
 
@@ -633,14 +633,16 @@ The `WMTPreApprovalScreensRecorder` exposes the following methods:
 - `end(id, action)` – closes the current visit if the given id matches. Otherwise, falls back to the most recent recorded visit if it has the same id and is still unclosed.
 - `reset()` – resets recorded visits.
 
+Timestamps are captured in local device time and shifted by the PowerAuth server time adjustment when the record is built (when you call `putRecord`). This ensures the payload contains server-synchronized timestamps even when the device clock is off or the time was not yet synchronized while the user navigated the screens. For best accuracy, pass the recorder to the builder at authorization time, not earlier.
+
 ```typescript
 import { WMTMobileTokenDataBuilder, WMTPreApprovalScreensRecorder } from 'react-native-mtoken-sdk'
 
 // Create MobileTokenData builder instance
 const builder = new WMTMobileTokenDataBuilder()
 
-// Create the screen recorder
-const screenRecorder = new WMTPreApprovalScreensRecorder()
+// Create the screen recorder (requires a PowerAuth instance)
+const screenRecorder = new WMTPreApprovalScreensRecorder(powerAuth)
 
 // Display UI for the PreApproval screen and record that it was shown
 screenRecorder.begin(screen.id)
@@ -650,7 +652,7 @@ screenRecorder.end(screen.id, "CONTINUE")
 // ... repeat for all screens from operation.ui.preApprovalScreens
 
 // When the PreApproval flow is finished, pass the recorder to the builder
-builder.put(screenRecorder)
+await builder.putRecord(screenRecorder)
 
 // Assign created mobileTokenData to the Operation before approving/rejecting
 operation.mobileTokenData = builder.build()

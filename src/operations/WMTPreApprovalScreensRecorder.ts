@@ -14,6 +14,7 @@
 // and limitations under the License.
 //
 
+import { PowerAuth } from "react-native-powerauth-mobile-sdk"
 import { WMTLogger } from "../WMTLogger"
 import type { WMTMobileTokenDataRecord } from "./WMTMobileTokenDataBuilder"
 
@@ -42,24 +43,34 @@ export interface WMTPreApprovalScreenVisit {
     action?: WMTScreenAction
 }
 
+/** Internal visit representation that keeps timestamps as `Date` objects. */
+interface InternalVisit {
+    screen: string
+    timestampOpened: Date
+    timestampClosed?: Date
+    action?: WMTScreenAction
+}
+
 /**
  * Records user navigation through pre-approval screens.
  *
  * Each "visit" captures an opening timestamp and, when closed, a closing
- * timestamp and the action that ended the visit.
+ * timestamp and the action that ended the visit. Timestamps are captured
+ * in local device time and synchronized against the server time
+ * (via PowerAuth time synchronization) when `build()` is called.
  *
  * Implements `WMTMobileTokenDataRecord` so it can be stored in
  * `WMTMobileTokenDataBuilder` under the `"preApprovalScreens"` key.
  *
  * Usage:
  * ```typescript
- * const recorder = new WMTPreApprovalScreensRecorder()
+ * const recorder = new WMTPreApprovalScreensRecorder(powerAuth)
  *     .begin("intro-warning")
  *     .end("intro-warning", "CONTINUE")
  *     .begin("qr-scan")
  *     .end("qr-scan", "SCAN")
  *
- * builder.put(recorder)
+ * await builder.putRecord(recorder)
  * operation.mobileTokenData = builder.build()
  * ```
  */
@@ -67,19 +78,30 @@ export class WMTPreApprovalScreensRecorder implements WMTMobileTokenDataRecord {
 
     readonly key = "preApprovalScreens"
 
-    private openVisit: WMTPreApprovalScreenVisit | undefined = undefined
-    private visits: WMTPreApprovalScreenVisit[] = []
+    private openVisit: InternalVisit | undefined = undefined
+    private visits: InternalVisit[] = []
     private now: () => Date
+    private localTimeAdjustmentMs: () => Promise<number>
 
     /**
      * Creates a new recorder.
      *
+     * Timestamps are captured in local device time. When `build()` is called,
+     * the `powerAuth` instance provides the local time adjustment against
+     * the server and all timestamps are shifted by it. If the time is not
+     * synchronized, the adjustment is zero and local time is used as-is.
+     *
+     * @param powerAuth PowerAuth instance used to obtain the local time
+     *   adjustment against the server when the record is built.
      * @param timeProvider Optional function returning the current time.
-     *   Defaults to `() => new Date()`. Inject a custom provider for
-     *   deterministic testing or to use PowerAuth time synchronization.
+     *   Defaults to `() => new Date()`. Inject for deterministic testing.
+     * @param timeAdjustmentProvider Optional function returning the local
+     *   time adjustment in milliseconds. Defaults to PowerAuth time
+     *   synchronization. Inject for deterministic testing.
      */
-    constructor(timeProvider?: () => Date) {
+    constructor(powerAuth: PowerAuth, timeProvider?: () => Date, timeAdjustmentProvider?: () => Promise<number>) {
         this.now = timeProvider ?? (() => new Date())
+        this.localTimeAdjustmentMs = timeAdjustmentProvider ?? (() => powerAuth.timeSynchronizationService.localTimeAdjustment())
     }
 
     /**
@@ -102,7 +124,7 @@ export class WMTPreApprovalScreensRecorder implements WMTMobileTokenDataRecord {
 
         this.openVisit = {
             screen: id,
-            timestampOpened: this.now().toISOString()
+            timestampOpened: this.now()
         }
         return this
     }
@@ -120,7 +142,7 @@ export class WMTPreApprovalScreensRecorder implements WMTMobileTokenDataRecord {
     end(id: string, action: WMTScreenAction): this {
         // Currently open visit matches this id → close & append
         if (this.openVisit && this.openVisit.screen === id) {
-            this.openVisit.timestampClosed = this.now().toISOString()
+            this.openVisit.timestampClosed = this.now()
             this.openVisit.action = action
             this.visits.push(this.openVisit)
             this.openVisit = undefined
@@ -133,7 +155,7 @@ export class WMTPreApprovalScreensRecorder implements WMTMobileTokenDataRecord {
             && this.visits[lastIdx].screen === id
             && !this.visits[lastIdx].timestampClosed
             && !this.visits[lastIdx].action) {
-            this.visits[lastIdx].timestampClosed = this.now().toISOString()
+            this.visits[lastIdx].timestampClosed = this.now()
             this.visits[lastIdx].action = action
         }
 
@@ -159,16 +181,50 @@ export class WMTPreApprovalScreensRecorder implements WMTMobileTokenDataRecord {
      * the open visit — calling `build()` again without new `begin()`/`end()`
      * calls will not include it a second time.
      *
+     * All timestamps are shifted by the PowerAuth local time adjustment
+     * against the server, so the resulting payload is in synchronized time
+     * even when the visits were recorded before the time was synchronized.
+     *
      * @returns Array of visit records ready for JSON serialization.
      */
-    build(): WMTPreApprovalScreenVisit[] {
+    async build(): Promise<WMTPreApprovalScreenVisit[]> {
         if (this.openVisit) {
             WMTLogger.warn(`PreApprovalScreensRecorder: Building with unended visit for screen "${this.openVisit.screen}", ending it automatically with no action.`)
-            this.openVisit.timestampClosed = this.now().toISOString()
+            this.openVisit.timestampClosed = this.now()
             this.visits.push(this.openVisit)
             this.openVisit = undefined
         }
 
-        return [...this.visits]
+        const adjustmentMs = await this.timeAdjustment()
+
+        return this.visits.map(v => {
+            const visit: WMTPreApprovalScreenVisit = {
+                screen: v.screen,
+                timestampOpened: WMTPreApprovalScreensRecorder.serialize(v.timestampOpened, adjustmentMs)
+            }
+            if (v.timestampClosed) {
+                visit.timestampClosed = WMTPreApprovalScreensRecorder.serialize(v.timestampClosed, adjustmentMs)
+            }
+            if (v.action) {
+                visit.action = v.action
+            }
+            return visit
+        })
+    }
+
+    /** Local time adjustment against the server in milliseconds (fallback: zero). */
+    private async timeAdjustment(): Promise<number> {
+        try {
+            const ms = await this.localTimeAdjustmentMs()
+            WMTLogger.debug(`PreApprovalScreensRecorder: Adjusting timestamps by ${ms} ms (local time adjustment against the server).`)
+            return ms
+        } catch (e) {
+            WMTLogger.warn(`PreApprovalScreensRecorder: Failed to obtain local time adjustment, timestamps will use unadjusted device time: ${e}`)
+            return 0
+        }
+    }
+
+    private static serialize(timestamp: Date, adjustmentMs: number): string {
+        return new Date(timestamp.getTime() + adjustmentMs).toISOString()
     }
 }
