@@ -2,6 +2,7 @@
 
 ## X.X.X (TBA)
 - Implemented OIDC activation
+- Improved proximity check time handling, timestamps are now adjusted to server-synchronized time automatically during authorization
 
 ## 2.1.0
 - Added `mobileTokenData` to authorize request for passing customer-specific data ([documentation](Using-Operations.md#Passing-Additional-Mobile-Token-Data))

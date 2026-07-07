@@ -562,10 +562,18 @@ When the app is launched via a deeplink, preserve the data from the deeplink and
 - Once the QR code is scanned or a match from the deeplink is found, create a `WMTUserOperationProximityCheck` with:
   - `totp`: The actual Time-Based One-Time Password.
   - `type`: Set to `QR_CODE` or `DEEPLINK`.
-  - `timestampReceived`: The timestamp when the QR code was scanned (by default, it is created as the current timestamp when the object is instantiated).
+  - `timestampReceived`: The timestamp when the QR code was scanned or the deeplink was received (by default, use the current timestamp when the object is instantiated).
 
-- Authorizing the `WMTUserOperationProximityCheck`
-  When authorizing, the SDK will by default add `timestampSent` to the `WMTUserOperationProximityCheck` object. This timestamp indicates when the operation was sent.
+- Automatic Time Synchronization
+
+  The SDK automatically produces server-aligned timestamps (`timestampReceived` and `timestampSent`) in the authorization request during `authorize`. This ensures correct timestamps even when the device system clock has been manually changed. If time is not yet synchronized with the server, the SDK will synchronize it before sending the authorization request.
+
+```typescript
+// Create the proximity check — provide the TOTP, type and the received timestamp.
+// The SDK handles timestamp adjustment automatically during authorization.
+operation.proximityCheck = { totp: "123456", type: "QR_CODE", timestampReceived: new Date() }
+await this.mtoken.operations.authorize(operation, authentication)
+```
 
 ### WMTPACUtils
 

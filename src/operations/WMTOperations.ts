@@ -19,6 +19,8 @@ import { type WMTUserOperation } from "./WMTUserOperation"
 import { type WMTOnlineOperation } from "./WMTOnlineOperation"
 import { PowerAuthAuthentication } from 'react-native-powerauth-mobile-sdk'
 import type { WMTQROperation } from './WMTQROperation'
+import type { WMTUserOperationProximityCheck } from './WMTUserOperationProximityCheck'
+import { WMTLogger } from "../WMTLogger"
 
 /** Operation handling.  */
 export class WMTOperations extends WMTNetworking {
@@ -83,6 +85,10 @@ export class WMTOperations extends WMTNetworking {
 
     /**
      * Authorize operation with given PowerAuth authentication object.
+     *
+     * If the operation has a proximity check, the SDK automatically adjusts its timestamps
+     * using server-synchronized time. If time is not yet synchronized, the SDK will
+     * synchronize it before proceeding with the authorization.
      * 
      * @param operation Operation to authorize.
      * @param authentication A multi-factor authentication object for signing. 2FA should be used (password or biometrics).
@@ -90,18 +96,69 @@ export class WMTOperations extends WMTNetworking {
      * @returns Server response
      */
     async authorize(operation: WMTOnlineOperation, authentication: PowerAuthAuthentication, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<void>> {
-        let proximityCopy: any = undefined
-        if (operation.proximityCheck) {
-            proximityCopy = { otp: operation.proximityCheck.totp, type: operation.proximityCheck.type, timestampReceived: operation.proximityCheck.timestampReceived, timestampSent: new Date() }
+        const proximityCheck = operation.proximityCheck
+        let proximityRequest: any = undefined
+        if (proximityCheck) {
+            await this.ensureTimeSynchronized()
+            proximityRequest = await this.buildProximityCheckRequestData(proximityCheck)
         }
         return await this.postSigned<void>(
-            { requestObject: { id: operation.id, data: operation.data, proximityCheck: proximityCopy, mobileTokenData: operation.mobileTokenData } },
+            { requestObject: { id: operation.id, data: operation.data, proximityCheck: proximityRequest, mobileTokenData: operation.mobileTokenData } },
             authentication,
             "/api/auth/token/app/operation/authorize",
             "/operation/authorize",
             false,
             requestProcessor
         )
+    }
+
+    /**
+     * Ensures that the local time is synchronized with the PowerAuth server.
+     *
+     * If the time is not synchronized yet, it synchronizes it. Throws when the synchronization fails.
+     */
+    private async ensureTimeSynchronized(): Promise<void> {
+        const timeService = this.pa.timeSynchronizationService
+        if (await timeService.isTimeSynchronized()) {
+            WMTLogger.debug("Proximity check: time already synchronized.")
+            return
+        }
+        WMTLogger.info("Proximity check: time not synchronized, synchronizing before authorize.")
+        await timeService.synchronizeTime()
+    }
+
+    /**
+     * Builds the proximity check request data with timestamps adjusted to the server-synchronized time.
+     *
+     * Must only be called when the time is synchronized with the server (see `ensureTimeSynchronized`).
+     */
+    private async buildProximityCheckRequestData(proximityCheck: WMTUserOperationProximityCheck): Promise<any> {
+        const timeService = this.pa.timeSynchronizationService
+        const localTimeAdjustment = await timeService.localTimeAdjustment()
+        const now = Date.now()
+        const adjustedReceived = proximityCheck.timestampReceived.getTime() + localTimeAdjustment
+        const timestampSent = now + localTimeAdjustment
+
+        if (adjustedReceived > timestampSent) {
+            throw WMTLogger.errorAndException(
+                `Proximity check timestamp is invalid (timestampReceived(adjusted)=${adjustedReceived}, timestampSent=${timestampSent}). The device time likely changed after the proximity check was received.`
+            )
+        }
+
+        WMTLogger.debug(
+            "Proximity check timestamps: " +
+            `timestampReceived=${proximityCheck.timestampReceived.getTime()}, ` +
+            `adjustedReceived=${adjustedReceived}, ` +
+            `timestampSent(serverTime)=${timestampSent}, ` +
+            `localTimeAdjustment=${localTimeAdjustment}ms`
+        )
+
+        return {
+            otp: proximityCheck.totp,
+            type: proximityCheck.type,
+            timestampReceived: new Date(adjustedReceived),
+            timestampSent: new Date(timestampSent)
+        }
     }
 
     /**
