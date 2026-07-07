@@ -424,6 +424,9 @@ export class TestSuite_PreApprovalScreens extends TestSuite {
         const notRemoved = builder.remove("nonexistent")
         this.assertFalse(notRemoved)
 
+        // Keys inherited from Object.prototype must not report a removal
+        this.assertFalse(builder.remove("toString"))
+
         const result = builder.build()
         this.assertNull(result["key1"])
         this.assertEquals("value2", result["key2"])

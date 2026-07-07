@@ -90,7 +90,7 @@ export class WMTMobileTokenDataBuilder {
      */
     remove(keyOrRecord: string | WMTMobileTokenDataRecord): boolean {
         const key = typeof keyOrRecord === "string" ? keyOrRecord : keyOrRecord.key
-        if (key in this.data) {
+        if (Object.prototype.hasOwnProperty.call(this.data, key)) {
             delete this.data[key]
             return true
         }

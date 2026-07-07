@@ -177,9 +177,9 @@ export class WMTPreApprovalScreensRecorder implements WMTMobileTokenDataRecord {
      * Produces the value representation for `mobileTokenData`.
      *
      * If a visit is still open, it is auto-closed (with `timestampClosed`
-     * but no action) and a warning is logged. This permanently consumes
-     * the open visit — calling `build()` again without new `begin()`/`end()`
-     * calls will not include it a second time.
+     * but no action), appended to the recorded visits and a warning is
+     * logged. Subsequent `build()` calls return all recorded visits again,
+     * including the auto-closed one (it is closed only once).
      *
      * All timestamps are shifted by the PowerAuth local time adjustment
      * against the server, so the resulting payload is in synchronized time
