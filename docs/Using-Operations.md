@@ -516,7 +516,7 @@ export class WMTUserOperationProximityCheck {
     readonly totp: string
 
     /** Type of the Proximity check */
-    readonly type: ProximityCheckType
+    readonly type: WMTProximityCheckType
 
     /**
      * Timestamp when the operation was scanned (qrCode) or delivered to the device (deeplink).
@@ -528,7 +528,7 @@ export class WMTUserOperationProximityCheck {
      * @param totp The Time-based one time password.
      * @param type Type of the proximity check (`QR_CODE` or `DEEPLINK`).
      */
-    constructor(totp: string, type: ProximityCheckType)
+    constructor(totp: string, type: WMTProximityCheckType)
 }
 ```
 

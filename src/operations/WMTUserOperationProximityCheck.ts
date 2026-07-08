@@ -22,8 +22,8 @@ export type WMTProximityCheckType = "QR_CODE" | "DEEPLINK"
  * Object that is used to hold data about a proximity check.
  * Data shall be assigned to the operation when obtained.
  *
- * The SDK automatically adjusts `timestampReceived` using server-synchronized time
- * during the operation authorization, so consumers only need to create this object
+ * The SDK uses server-synchronized time during the operation authorization to compute the
+ * timestamps sent to the server, so consumers only need to create this object
  * with `totp` and `type`.
  */
 export class WMTUserOperationProximityCheck {
