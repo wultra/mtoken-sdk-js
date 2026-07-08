@@ -16,7 +16,7 @@
 
 
 /** Type of the proximity check. */
-export type ProximityCheckType = "QR_CODE" | "DEEPLINK"
+export type WMTProximityCheckType = "QR_CODE" | "DEEPLINK"
 
 /**
  * Object that is used to hold data about a proximity check.
@@ -32,7 +32,7 @@ export class WMTUserOperationProximityCheck {
     readonly totp: string
 
     /** Type of the Proximity check. */
-    readonly type: ProximityCheckType
+    readonly type: WMTProximityCheckType
 
     private readonly _timestampReceived: Date
 
@@ -40,7 +40,7 @@ export class WMTUserOperationProximityCheck {
      * @param totp The Time-based one time password.
      * @param type Type of the proximity check.
      */
-    constructor(totp: string, type: ProximityCheckType) {
+    constructor(totp: string, type: WMTProximityCheckType) {
         this.totp = totp
         this.type = type
         this._timestampReceived = new Date()
