@@ -50,6 +50,6 @@ export class WMTUserOperationProximityCheck {
      * Timestamp when the operation was scanned (qrCode) or delivered to the device (deeplink).
      */
     get timestampReceived(): Date {
-        return this._timestampReceived
+        return new Date(this._timestampReceived.getTime())
     }
 }
