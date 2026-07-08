@@ -17,7 +17,7 @@
 import { PowerAuth, PowerAuthAuthentication, PowerAuthUtils } from 'react-native-powerauth-mobile-sdk';
 import { TestSuite } from './TestSuite';
 import { IntegrationUtils } from './utils/IntegrationUtils';
-import { WultraMobileToken, WMTQROperationParser, WMTUserAgent, WMTSigningKey, WMTKnownRestApiError, WMTPushData, WMTAPNSEnvironment, WMTException } from 'react-native-mtoken-sdk';
+import { WultraMobileToken, WMTQROperationParser, WMTUserAgent, WMTSigningKey, WMTKnownRestApiError, WMTPushData, WMTAPNSEnvironment, WMTException, WMTUserOperationProximityCheck } from 'react-native-mtoken-sdk';
 
 export class TestSuite_Integration extends TestSuite {
 
@@ -185,7 +185,7 @@ export class TestSuite_Integration extends TestSuite {
         const totp = (await this.utils.getOperation(op.operationId)).proximityOtp
         this.assertNotNull(totp, "Even with proximityCheckEnabled: true, in proximityOtp nil")
 
-        operation.proximityCheck = { totp: totp!!, type: "QR_CODE", timestampReceived: new Date() }
+        operation.proximityCheck = new WMTUserOperationProximityCheck(totp!!, "QR_CODE")
 
         var wrongAuth = PowerAuthAuthentication.password("xxxx") // wrong password on purpose
         const wrongResp = await this.mtoken.operations.authorize(operation, wrongAuth)
@@ -206,7 +206,7 @@ export class TestSuite_Integration extends TestSuite {
         const totp = (await this.utils.getOperation(op.operationId)).proximityOtp
         this.assertNotNull(totp, "Even with proximityCheckEnabled: true, in proximityOtp nil")
 
-        operation.proximityCheck = { totp: totp!!, type: "QR_CODE", timestampReceived: new Date() }
+        operation.proximityCheck = new WMTUserOperationProximityCheck(totp!!, "QR_CODE")
 
         // reset the time synchronization right before authorizing
         await this.powerAuth.timeSynchronizationService.resetTimeSynchronization()
@@ -233,7 +233,7 @@ export class TestSuite_Integration extends TestSuite {
         const totp = (await this.utils.getOperation(op.operationId)).proximityOtp
         this.assertNotNull(totp, "Even with proximityCheckEnabled: true, in proximityOtp nil")
 
-        operation.proximityCheck = { totp: totp!!, type: "QR_CODE", timestampReceived: new Date() }
+        operation.proximityCheck = new WMTUserOperationProximityCheck(totp!!, "QR_CODE")
 
         // synchronize the time upfront
         await this.powerAuth.timeSynchronizationService.synchronizeTime()
@@ -257,8 +257,12 @@ export class TestSuite_Integration extends TestSuite {
         this.assertNotNull(totp, "Even with proximityCheckEnabled: true, in proximityOtp nil")
 
         // simulate the device clock being far ahead: the received timestamp ends up
-        // in the future relative to the server time, which the SDK must reject
-        operation.proximityCheck = { totp: totp!!, type: "QR_CODE", timestampReceived: new Date(Date.now() + 60 * 60 * 1000) }
+        // in the future relative to the server time, which the SDK must reject.
+        // The public API intentionally prevents setting `timestampReceived`, so this test
+        // reaches into the private field to reproduce a clock-change-after-received scenario.
+        const proximityCheck = new WMTUserOperationProximityCheck(totp!!, "QR_CODE")
+        ;(proximityCheck as any)._timestampReceived = new Date(Date.now() + 60 * 60 * 1000)
+        operation.proximityCheck = proximityCheck
 
         const auth = PowerAuthAuthentication.password(this.pin)
         let thrown: any = undefined
