@@ -155,7 +155,7 @@ export class WMTOperations extends WMTNetworking {
         WMTLogger.debug(
             "Proximity check timestamps: " +
             `timestampReceived=${receivedMs}, ` +
-            `adjustedReceived=${adjustedReceived}, `
+            `adjustedReceived=${adjustedReceived}, ` +
             `timestampSent(serverTime)=${timestampSent}, ` +
             `localTimeAdjustment=${localTimeAdjustment}ms`
         )
