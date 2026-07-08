@@ -176,7 +176,6 @@ const sdkVersion = require('./package.json').version
         "WMTPush",
         "WMTPushData",
         "WMTAPNSEnvironment",
-        "WMTProximityCheckType",
         "WMTUserOperationProximityCheck",
     ];
 
