@@ -19,7 +19,7 @@ import { type WMTUserOperation } from "./WMTUserOperation"
 import { type WMTOnlineOperation } from "./WMTOnlineOperation"
 import { PowerAuthAuthentication } from 'react-native-powerauth-mobile-sdk'
 import type { WMTQROperation } from './WMTQROperation'
-import type { WMTUserOperationProximityCheck } from './WMTUserOperationProximityCheck'
+import type { WMTProximityCheckType, WMTUserOperationProximityCheck } from './WMTUserOperationProximityCheck'
 import { WMTLogger } from "../WMTLogger"
 
 /** Operation handling.  */
@@ -97,7 +97,9 @@ export class WMTOperations extends WMTNetworking {
      */
     async authorize(operation: WMTOnlineOperation, authentication: PowerAuthAuthentication, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<void>> {
         const proximityCheck = operation.proximityCheck
-        let proximityRequest: any = undefined
+        let proximityRequest: { otp: string; type:
+             WMTProximityCheckType; timestampReceived: Date;
+              timestampSent: Date } | undefined = undefined
         if (proximityCheck) {
             await this.ensureTimeSynchronized()
             proximityRequest = await this.buildProximityCheckRequestData(proximityCheck)
@@ -132,7 +134,9 @@ export class WMTOperations extends WMTNetworking {
      *
      * Must only be called when the time is synchronized with the server (see `ensureTimeSynchronized`).
      */
-    private async buildProximityCheckRequestData(proximityCheck: WMTUserOperationProximityCheck): Promise<any> {
+    private async buildProximityCheckRequestData(proximityCheck: WMTUserOperationProximityCheck):
+     Promise<{ otp: string; type: WMTProximityCheckType;
+         timestampReceived: Date; timestampSent: Date }> {
         const timeService = this.pa.timeSynchronizationService
         const localTimeAdjustment = await timeService.localTimeAdjustment()
         const now = Date.now()

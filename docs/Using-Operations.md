@@ -508,7 +508,7 @@ PostApprovalScreen types:
 Definition of `WMTUserOperationProximityCheck`:
 
 ```typescript
-export type ProximityCheckType = "QR_CODE" | "DEEPLINK"
+export type WMTProximityCheckType = "QR_CODE" | "DEEPLINK"
 
 export class WMTUserOperationProximityCheck {
 
