@@ -65,7 +65,7 @@ const sdkVersion = require('./package.json').version
         gulp.src(RN_packageFiles).pipe(gulp.dest(RN_buildDir));
 
     // create final tar package
-    const packRNPackage = () => exec(`pushd ${RN_buildDir} && npm pack`);
+    const packRNPackage = () => exec(`npm pack`, { cwd: RN_buildDir });
 
     // umbrella task
     var RN_buildTask = gulp.series(
@@ -172,7 +172,12 @@ const sdkVersion = require('./package.json').version
         "WMTSignatureFactor",
         "WMTQROperationDataFieldType",
         "WMTAttributeType",
-        "WMTPush"
+        "WMTAttributeAlertType",
+        "WMTPush",
+        "WMTPushData",
+        "WMTAPNSEnvironment",
+        "WMTMobileTokenDataBuilder",
+        "WMTPreApprovalScreensRecorder"
     ];
 
     // export all objects as modules to cordova.
@@ -209,7 +214,7 @@ const sdkVersion = require('./package.json').version
             .pipe(gulp.dest(CDV_buildDir));
 
     // create final tar package
-    const packCDVPackage = () => exec(`pushd ${CDV_buildDir} && npm pack`);
+    const packCDVPackage = () => exec(`npm pack`, { cwd: CDV_buildDir });
 
     // umbrella task
     var CDV_buildTask = gulp.series(

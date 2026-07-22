@@ -22,6 +22,7 @@ import { TestSuite_PACUtils } from './TestSuite_PACUtils'
 import { TestSuite_QRParser } from './TestSuite_QRParser'
 import { TestSuite_Logger } from './TestSuite_Logger'
 import { TestSuite_OIDC } from './TestSuite_OIDC'
+import { TestSuite_PreApprovalScreens } from './TestSuite_PreApprovalScreens'
 
 export class TestExecutor {
 
@@ -29,6 +30,7 @@ export class TestExecutor {
 
     constructor() {
         this.suites.push(new TestSuite_Deserialization())
+        this.suites.push(new TestSuite_PreApprovalScreens())
         this.suites.push(new TestSuite_PACUtils())
         this.suites.push(new TestSuite_QRParser())
         this.suites.push(new TestSuite_Logger())
