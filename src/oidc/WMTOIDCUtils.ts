@@ -105,7 +105,10 @@ export class WMTOIDCUtils {
         state: string
         pkceCodes?: WMTPKCECodes
     }): URL {
-        const { config, nonce, state, pkceCodes } = params
+        const config = params.config
+        const nonce = params.nonce
+        const state = params.state
+        const pkceCodes = params.pkceCodes
 
         try {
             const base = config.authorizeUri
@@ -125,7 +128,7 @@ export class WMTOIDCUtils {
             }
 
             const qs = Object.entries(query)
-                .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
+                .map(function(entry) { return encodeURIComponent(entry[0]) + "=" + encodeURIComponent(entry[1]) })
                 .join("&")
 
             const sep = base.includes("?") ? (base.endsWith("?") || base.endsWith("&") ? "" : "&") : "?"

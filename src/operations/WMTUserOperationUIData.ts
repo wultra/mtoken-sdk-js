@@ -15,6 +15,7 @@
 //
 
 import type { WMTUserOperationAttribute } from "./WMTUserOperationAttribute"
+import type { WMTPreApprovalScreen } from "./WMTPreApprovalScreen"
 
 /** Operation UI model that contains data for screens for pre and/or post approved operation. */
 export interface WMTUserOperationUIData {
@@ -25,8 +26,13 @@ export interface WMTUserOperationUIData {
     /** Block approval when on call (for example when on phone or skype call). */
     blockApprovalOnCall?: boolean
 
-    /** UI for pre-approval operation screen. */
-    preApprovalScreen?: WMTPreApprovalScreen
+    /**
+     * UI for pre-approval operation screens.
+     *
+     * When the server sends the legacy singular `preApprovalScreen`, the SDK decodes
+     * it into this array automatically.
+     */
+    preApprovalScreens?: WMTPreApprovalScreen[]
 
     /**
      * UI for post-approval operation screen.
@@ -36,39 +42,6 @@ export interface WMTUserOperationUIData {
      * For example: WMTPostApprovalScreenRedirect that provides data after URL redirect.
      */
     postApprovalScreen?: WMTPostApprovalScreen
-}
-
-/**
- *  PreApprovalScreen contains data to be presented before approving operation.
- *
- * `type` define different kind of data which can be passed with operation
- *  and shall be displayed before operation is confirmed.
- */
-export interface WMTPreApprovalScreen {
-    /**
-     * Type of PreApprovalScreen (`WARNING`, `INFO`, `QR_SCAN` - might be undefined for future compatibility).
-     */
-    type?: "INFO" | "WARNING" | "QR_SCAN" | "UNKNOWN"
-
-    /**
-     * Heading of the pre-approval screen.
-     */
-    heading: string
-
-    /**
-     * Message to the user.
-     */
-     message: string
-
-    /**
-     * Array of items to be displayed as list of choices.
-     */
-    items?: string[]
-
-    /**
-     * Type of the approval button.
-     */
-    approvalType?: "SLIDER" | "BUTTON"
 }
 
 export interface WMTPostApprovalScreen {
