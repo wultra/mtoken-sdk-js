@@ -12,6 +12,8 @@
 - [Operations API Reference](#operations-api-reference)
 - [WMTUserOperation](#wmtuseroperation)
 - [Creating a Custom Operation](#creating-a-custom-operation)
+- [Pre-Approval Screens](#pre-approval-screens)
+- [Mobile Token Data](#mobile-token-data)
 - [TOTP ProximityCheck](#totp-proximity-check)
 
 ## Introduction
@@ -114,49 +116,23 @@ async function approveWithBiometrics(operation: WMTUserOperation) {
 
 ### Passing Additional Mobile Token Data
 
-With PowerAuth server 1.10+, you can pass additional customer-specific data during operation authorization using the `mobileTokenData` property. This can be useful for fraud detection systems (FDS) or other custom business logic.
-
-```typescript
-async function approveWithAdditionalData(operation: WMTOnlineOperation, password: string) {
-
-    const fdsData = {
-        deviceFingerprint: "abc123def456",
-        riskScore: 0.8,
-        location: {
-            latitude: 50.0755,
-            longitude: 14.4378
-        }
-    }
-
-    operation.mobileTokenData = fdsData
-
-    const auth = PowerAuthAuthentication.password(password)
-    const response = await this.operations.authorize(operation, auth)
-    // continue with the flow ....
-}
-```
-
-The `mobileTokenData` is completely optional, and the structure is customer-specific. If you don't need this functionality, you can continue using operations without providing this property.
+You can attach customer-specific metadata to operations during authorization or rejection. See the [Mobile Token Data](#mobile-token-data) section for details and examples.
 
 ## Reject an Operation
 
-To reject an operation use `reject`. Operation rejection is confirmed by the possession factor, so there is no need to create the `PowerAuthAuthentication` object. You can simply use it like in the following example.
+To reject an operation use `reject`. Operation rejection is confirmed by the possession factor, so there is no need to create the `PowerAuthAuthentication` object.
+
+Two overloads are available:
 
 ```typescript
-// Reject operation with some reason
-async function reject(operation: WMTOnlineOperation, reason: "INCORRECT_DATA" | "UNEXPECTED_OPERATION" | "UNKNOWN" | string) {
-    try {
-        const response = await this.operations.reject(operation.id, reason)
-        if (response.status == "OK") {
-            // operation rejected
-        } else {
-            // server error (for example powerauth activation no longer valid)
-        }
-    } catch (e) {
-        // failure (for example network not available or invalid powerauth state)
-    }
-}
+// Reject by operation ID
+const response = await this.operations.reject(operation.id, "INCORRECT_DATA")
+
+// Reject with the full operation object (includes mobileTokenData in the request)
+const response = await this.operations.reject(operation, "PREAPPROVAL")
 ```
+
+Standard rejection reasons: `"INCORRECT_DATA"`, `"UNEXPECTED_OPERATION"`, `"UNKNOWN"`, `"PREAPPROVAL"`. Custom string reasons are also accepted.
 
 ## Operation Detail
 
@@ -331,8 +307,11 @@ All available methods and attributes of `WMTOperations` API are:
 - `async authorize(operation: WMTOnlineOperation, authentication: PowerAuthAuthentication, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<void>>` - Authorize provided operation.
   - `operation` - An operation to approve, retrieved from `getOperations` call or [created locally](#creating-a-custom-operation).
   - `authentication` - PowerAuth authentication object for operation signing.
-- `async reject(operationId: string, reason: "INCORRECT_DATA" | "UNEXPECTED_OPERATION" | "UNKNOWN" | string, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<void>>` - Reject provided operation.
-  - `operationId` - An operation to reject.
+- `async reject(operationId: string, reason: WMTRejectionReason, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<void>>` - Reject operation by ID.
+  - `operationId` - ID of the operation to reject.
+  - `reason` - Rejection reason.
+- `async reject(operation: WMTOnlineOperation, reason: WMTRejectionReason, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<void>>` - Reject operation.
+  - `operation` - Operation to reject (from `getOperations` or created locally).
   - `reason` - Rejection reason.
 - `async authorizeOffline(operation: WMTQROperation, authentication: PowerAuthAuthentication, uriId: string = "/operation/authorize/offline"): Promise<string>` - Sign offline (QR) operation.
   - `operation` - Offline operation retrieved via the `QROperationParser.parse` method (or otherwise).
@@ -477,8 +456,8 @@ export interface WMTUserOperationUIData {
     /** Block approval when on call (for example when on phone or skype call) */
     blockApprovalOnCall?: boolean
 
-    /** UI for pre-approval operation screen */
-    preApprovalScreen?: WMTPreApprovalScreen
+    /** Pre-approval screens to display before the operation can be approved */
+    preApprovalScreens?: WMTPreApprovalScreen[]
 
     /**
      * UI for post-approval operation screen
@@ -491,12 +470,7 @@ export interface WMTUserOperationUIData {
 }
 ```
 
-PreApprovalScreen types:
-
-- `WARNING`
-- `INFO`
-- `QR_SCAN` this type indicates that the `WMTUserOperationProximityCheck` must be used for authorization
-- `UNKNOWN`
+PreApprovalScreen types: see [Pre-Approval Screens](#pre-approval-screens) for the full list and details.
 
 PostApprovalScreen types:
 `PostApprovalScreen*` classes commonly contain `heading` and `message` and different payload data
@@ -555,8 +529,148 @@ export interface WMTOnlineOperation {
      * Additional information with proximity check data 
      */
     proximityCheck?: WMTUserOperationProximityCheck
+
+    /**
+     * Optional customer-specific data sent alongside authorize/reject requests.
+     */
+    mobileTokenData?: Record<string, unknown>
 }
 ```
+
+## Pre-Approval Screens
+
+Pre-approval screens define additional UI that can be displayed before the user decides to approve or reject an operation. They allow displaying structured instructions, warnings, or interactive elements to the user.
+
+The screens are available via `WMTUserOperation.ui.preApprovalScreens` and may contain multiple screens that the user navigates through.
+
+Types:
+
+- `WARNING`
+- `INFO`
+- `QR_SCAN` – this type indicates that the `WMTUserOperationProximityCheck` must be used
+- `UNKNOWN` – fallback value assigned by the SDK when the server sends an unrecognized screen type
+
+A pre-approval screen can contain the following building blocks:
+
+- Heading and message – textual content displayed at the top of the screen.
+- Optional metadata:
+  - `id` – unique screen identifier
+  - `backButton` – show a navigation back button
+  - `image` – in-app asset identifier
+- Elements – structured items that form the main content of the screen:
+  - List item (`LIST_ITEM`) – text with optional `icon` and `style` (`INFO`, `WARNING`, `DANGER`).
+  - Alert (`ALERT`) – highlighted box with `style` (`INFO`, `WARNING`, `DANGER`).
+  - Button (`BUTTON`) – action element with `action` (`LINK`, `MAIL`, `PHONE`), plus optional `actionSettings` string describing additional behavior (e.g. `"REJECT"`).
+- Controls – configuration of approve/decline actions:
+  - Decline – `BACK` or `REJECT`, with optional `text`.
+  - Approve – `SLIDER` or `BUTTON`, with optional `text` and optional countdown (`counter`). The counter defines how long (in seconds) the approve control remains disabled after the screen appears.
+  - Layout options – `axis` (`HORIZONTAL` or `VERTICAL`) and `flip` (swap order of controls).
+
+### Legacy Format Compatibility
+
+The SDK supports the legacy singular `preApprovalScreen` payload from older server versions and automatically converts it to the new `preApprovalScreens` list via `WMTOperations.normalizeOperation()`. During this conversion, the following sentinel values are injected because the legacy format does not carry these fields:
+
+- **`image`**: Set to `"fallback_image"`. Your UI layer should check for this value and render an appropriate default (e.g. a generic icon or no image).
+- **`icon`** (on list item elements): Set to `"fallback_icon"`. Your UI layer should detect this value and provide a suitable default rendering.
+
+These sentinels are only injected during legacy conversion — new-format payloads are passed through as-is. This behavior matches the iOS and Android SDKs.
+
+## Mobile Token Data
+
+With PowerAuth Server **1.10+**, you can pass additional, customer-specific metadata during operation authorization or rejection using the `mobileTokenData` property.
+
+This feature is especially useful for **fraud detection systems (FDS)**, customer risk evaluation, or other backend-specific business logic.
+
+### Direct Object Approach
+
+If you already have a static set of key–value pairs, you can directly assign an object to your operation:
+
+```typescript
+operation.mobileTokenData = {
+    deviceFingerprint: "abc123def456",
+    riskScore: 0.8,
+    location: { latitude: 50.0755, longitude: 14.4378 }
+}
+```
+
+### Builder-Based Approach
+
+For more dynamic, structured, or multi-step data, use the `WMTMobileTokenDataBuilder`.
+
+```typescript
+import { WMTMobileTokenDataBuilder } from 'react-native-mtoken-sdk'
+
+// Create the builder (optionally with initial data)
+const builder = new WMTMobileTokenDataBuilder({ deviceFingerprint: "abc123" })
+
+// Add generic entries
+builder.put("riskScore", 0.82)
+
+// Assign to the operation
+operation.mobileTokenData = builder.build()
+```
+
+### Record Helpers
+
+Sometimes, additional data attached to `mobileTokenData` is not just a few key–value pairs. It can represent structured sections of information (for example, a timeline of user actions).
+
+To support these cases, the SDK defines the `WMTMobileTokenDataRecord` interface:
+
+```typescript
+interface WMTMobileTokenDataRecord {
+    /** Top-level key under which this record is stored. */
+    key: string
+
+    /** Produces the value to store for this key. May return a Promise. */
+    build(): unknown | Promise<unknown>
+}
+```
+
+You can pass records to the builder with `await builder.putRecord(record)`.
+
+### Predefined Record Helper: `WMTPreApprovalScreensRecorder`
+
+The SDK includes a predefined implementation, `WMTPreApprovalScreensRecorder`, which records how users navigate through Pre-Approval screens.
+
+Each recorded "visit" contains:
+
+- Screen identifier (`screen`)
+- Opening timestamp
+- Closing timestamp
+- User action (`CONTINUE`, `CLOSE`, `REJECT`, `SCAN`, etc.)
+
+The `WMTPreApprovalScreensRecorder` exposes the following methods:
+
+- `begin(id)` – starts a new visit for the given screen ID. If another visit is already open, it is automatically added to the list (without a closing timestamp or action).
+- `end(id, action)` – closes the current visit if the given id matches. Otherwise, falls back to the most recent recorded visit if it has the same id and is still unclosed.
+- `reset()` – resets recorded visits.
+
+Timestamps are captured in local device time and shifted by the PowerAuth server time adjustment when the record is built (when you call `putRecord`). This ensures the payload contains server-synchronized timestamps even when the device clock is off or the time was not yet synchronized while the user navigated the screens. For best accuracy, pass the recorder to the builder at authorization time, not earlier.
+
+```typescript
+import { WMTMobileTokenDataBuilder, WMTPreApprovalScreensRecorder } from 'react-native-mtoken-sdk'
+
+// Create MobileTokenData builder instance
+const builder = new WMTMobileTokenDataBuilder()
+
+// Create the screen recorder (requires a PowerAuth instance)
+const screenRecorder = new WMTPreApprovalScreensRecorder(powerAuth)
+
+// Display UI for the PreApproval screen and record that it was shown
+screenRecorder.begin(screen.id)
+// Record when user leaves the PreApproval screen
+screenRecorder.end(screen.id, "CONTINUE")
+
+// ... repeat for all screens from operation.ui.preApprovalScreens
+
+// When the PreApproval flow is finished, pass the recorder to the builder
+await builder.putRecord(screenRecorder)
+
+// Assign created mobileTokenData to the Operation before approving/rejecting
+operation.mobileTokenData = builder.build()
+```
+
+The `mobileTokenData` is completely optional and the structure is customer-specific. If you don't need this functionality, you can continue using operations without providing this property.
 
 ## TOTP Proximity Check
 
@@ -564,7 +678,7 @@ Two-Factor Authentication (2FA) using Time-Based One-Time Passwords (TOTP) in th
 
 **QR Code Flow:**
 
-When the `WMTUserOperation.ui.preApprovalScreen` has a `type` == `QR_SCAN`, the app should open the camera to scan the QR code before confirming the operation. Use the camera to scan the QR code containing the necessary data payload for the operation.
+When the `WMTUserOperation.ui.preApprovalScreens` contains a screen with `type` == `QR_SCAN`, the app should open the camera to scan the QR code before confirming the operation. Use the camera to scan the QR code containing the necessary data payload for the operation.
 
 **Deeplink Flow:**
 
