@@ -2,6 +2,7 @@
 
 ## 3.0.0 (TBA)
 - Implemented OIDC activation
+- Improved proximity check time handling (breaking: `WMTUserOperationProximityCheck` is now a class; timestamps are adjusted to server-synchronized time automatically during authorization)
 - Added PreApproval Screens & PreApprovalScreensRecorder support ([documentation](Using-Operations.md#pre-approval-screens))
 - Added `reject(operation, reason)` overload that includes `operation.mobileTokenData` in the request for passing customer-specific data
 
