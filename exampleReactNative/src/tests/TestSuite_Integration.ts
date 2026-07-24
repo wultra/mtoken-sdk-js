@@ -17,7 +17,7 @@
 import { PowerAuth, PowerAuthAuthentication, PowerAuthUtils } from 'react-native-powerauth-mobile-sdk';
 import { TestSuite } from './TestSuite';
 import { IntegrationUtils } from './utils/IntegrationUtils';
-import { WultraMobileToken, WMTQROperationParser, WMTUserAgent, WMTSigningKey, WMTKnownRestApiError, WMTPushData, WMTAPNSEnvironment } from 'react-native-mtoken-sdk';
+import { WultraMobileToken, WMTQROperationParser, WMTUserAgent, WMTSigningKey, WMTKnownRestApiError, WMTPushData, WMTAPNSEnvironment, WMTException, WMTUserOperationProximityCheck } from 'react-native-mtoken-sdk';
 
 export class TestSuite_Integration extends TestSuite {
 
@@ -199,7 +199,7 @@ export class TestSuite_Integration extends TestSuite {
         const totp = (await this.utils.getOperation(op.operationId)).proximityOtp
         this.assertNotNull(totp, "Even with proximityCheckEnabled: true, in proximityOtp nil")
 
-        operation.proximityCheck = { totp: totp!!, type: "QR_CODE", timestampReceived: new Date() }
+        operation.proximityCheck = new WMTUserOperationProximityCheck(totp!!, "QR_CODE")
 
         var wrongAuth = PowerAuthAuthentication.password("xxxx") // wrong password on purpose
         const wrongResp = await this.mtoken.operations.authorize(operation, wrongAuth)
@@ -210,6 +210,86 @@ export class TestSuite_Integration extends TestSuite {
         const okResp = await this.mtoken.operations.authorize(operation, auth)
         this.assertNull(okResp.responseError, "Response error should be null")
         this.assertEquals(okResp.status, "OK")
+    }
+
+    async testProximityAuthorizeSynchronizesTimeWhenNotSynchronized() {
+        const op = await this.utils.createNonPersonalizedPACOperation()
+
+        // claim the operation and get its TOTP
+        const operation = (await this.mtoken.operations.claim(op.operationId)).responseObject!!
+        const totp = (await this.utils.getOperation(op.operationId)).proximityOtp
+        this.assertNotNull(totp, "Even with proximityCheckEnabled: true, in proximityOtp nil")
+
+        operation.proximityCheck = new WMTUserOperationProximityCheck(totp!!, "QR_CODE")
+
+        // reset the time synchronization right before authorizing
+        await this.powerAuth.timeSynchronizationService.resetTimeSynchronization()
+        this.assertFalse(await this.powerAuth.timeSynchronizationService.isTimeSynchronized(), "Time should not be synchronized after reset")
+
+        // the SDK must synchronize the time automatically during authorize
+        const auth = PowerAuthAuthentication.password(this.pin)
+        const resp = await this.mtoken.operations.authorize(operation, auth)
+        this.assertNull(resp.responseError, "Response error should be null")
+        this.assertEquals(resp.status, "OK")
+
+        // time must be synchronized after the authorization
+        this.assertTrue(await this.powerAuth.timeSynchronizationService.isTimeSynchronized(), "Time should be synchronized after authorize")
+
+        // verify the operation was approved on the server
+        this.assertEquals((await this.utils.getOperation(op.operationId)).status, "APPROVED", "Operation should be approved on the server")
+    }
+
+    async testProximityAuthorizeWithAlreadySynchronizedTime() {
+        const op = await this.utils.createNonPersonalizedPACOperation()
+
+        // claim the operation and get its TOTP
+        const operation = (await this.mtoken.operations.claim(op.operationId)).responseObject!!
+        const totp = (await this.utils.getOperation(op.operationId)).proximityOtp
+        this.assertNotNull(totp, "Even with proximityCheckEnabled: true, in proximityOtp nil")
+
+        operation.proximityCheck = new WMTUserOperationProximityCheck(totp!!, "QR_CODE")
+
+        // synchronize the time upfront
+        await this.powerAuth.timeSynchronizationService.synchronizeTime()
+        this.assertTrue(await this.powerAuth.timeSynchronizationService.isTimeSynchronized(), "Time should be synchronized")
+
+        const auth = PowerAuthAuthentication.password(this.pin)
+        const resp = await this.mtoken.operations.authorize(operation, auth)
+        this.assertNull(resp.responseError, "Response error should be null")
+        this.assertEquals(resp.status, "OK")
+
+        // verify the operation was approved on the server
+        this.assertEquals((await this.utils.getOperation(op.operationId)).status, "APPROVED", "Operation should be approved on the server")
+    }
+
+    async testProximityAuthorizeThrowsWhenReceivedInFuture() {
+        const op = await this.utils.createNonPersonalizedPACOperation()
+
+        // claim the operation and get its TOTP
+        const operation = (await this.mtoken.operations.claim(op.operationId)).responseObject!!
+        const totp = (await this.utils.getOperation(op.operationId)).proximityOtp
+        this.assertNotNull(totp, "Even with proximityCheckEnabled: true, in proximityOtp nil")
+
+        // simulate the device clock being far ahead: the received timestamp ends up
+        // in the future relative to the server time, which the SDK must reject.
+        // The public API intentionally prevents setting `timestampReceived`, so this test
+        // reaches into the private field to reproduce a clock-change-after-received scenario.
+        const proximityCheck = new WMTUserOperationProximityCheck(totp!!, "QR_CODE")
+        ;(proximityCheck as any)._timestampReceived = new Date(Date.now() + 60 * 60 * 1000)
+        operation.proximityCheck = proximityCheck
+
+        const auth = PowerAuthAuthentication.password(this.pin)
+        let thrown: any = undefined
+        try {
+            await this.mtoken.operations.authorize(operation, auth)
+        } catch (e) {
+            thrown = e
+        }
+        this.assertNotNull(thrown, "authorize should throw when the adjusted timestampReceived is in the future")
+        this.assertTrue(thrown instanceof WMTException, "Thrown error should be a WMTException")
+
+        // the SDK should reject before reaching the server, so the operation stays pending
+        this.assertEquals((await this.utils.getOperation(op.operationId)).status, "PENDING", "Operation should remain pending on the server")
     }
 
     async testOperationCanceledWithReason() {

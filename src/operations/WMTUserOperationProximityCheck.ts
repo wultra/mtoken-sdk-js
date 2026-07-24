@@ -14,17 +14,42 @@
 // and limitations under the License.
 //
 
+
+/** Type of the proximity check. */
+export type WMTProximityCheckType = "QR_CODE" | "DEEPLINK"
+
 /**
  * Object that is used to hold data about a proximity check.
  * Data shall be assigned to the operation when obtained.
+ *
+ * The SDK uses server-synchronized time during the operation authorization to compute the
+ * timestamps sent to the server, so consumers only need to create this object
+ * with `totp` and `type`.
  */
-export interface WMTUserOperationProximityCheck {
+export class WMTUserOperationProximityCheck {
+
     /** The actual Time-based one time password. */
-    totp: string
+    readonly totp: string
 
     /** Type of the Proximity check. */
-    type: "QR_CODE" | "DEEPLINK"
+    readonly type: WMTProximityCheckType
 
-    /** Timestamp when the operation was scanned (qrCode) or delivered to the device (deeplink). */
-    timestampReceived: Date
+    private readonly _timestampReceived: Date
+
+    /**
+     * @param totp The Time-based one time password.
+     * @param type Type of the proximity check.
+     */
+    constructor(totp: string, type: WMTProximityCheckType) {
+        this.totp = totp
+        this.type = type
+        this._timestampReceived = new Date()
+    }
+
+    /**
+     * Timestamp when the operation was scanned (qrCode) or delivered to the device (deeplink).
+     */
+    get timestampReceived(): Date {
+        return new Date(this._timestampReceived.getTime())
+    }
 }
