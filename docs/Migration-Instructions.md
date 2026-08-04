@@ -6,5 +6,6 @@ This page contains Mobile Token JS SDK migration instructions.
 When updating across multiple versions, you need to perform all migration steps additively.
 <!-- end -->
 
-- [Migration from version `beta` to `1.0.x`](Version-1.0.md)
+- [Migration from version `2.1.x` to `3.0.x`](Version-3.0.md)
 - [Migration from version `2.0.x` to `2.1.x`](Version-2.1.md)
+- [Migration from version `beta` to `1.0.x`](Version-1.0.md)
