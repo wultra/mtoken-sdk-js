@@ -1,6 +1,6 @@
 ---
-name: mtoken-sdk-js-code-review
-description: Review the Wultra Mobile Token JS SDK without weakening transaction, OIDC, or dual-platform behavior.
+name: code-review
+description: Review pull requests in the Wultra Mobile Token JS SDK repository. Use when reviewing TypeScript APIs, transaction signing, OIDC, native bridges, security, or release changes.
 ---
 
 # mtoken-sdk-js review
