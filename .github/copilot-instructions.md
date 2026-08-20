@@ -118,6 +118,7 @@ WultraMobileToken       → Main class, holds all service managers
 
 ## Conventions
 
+- **Releases:** On non-release branches, keep the SDK version at `0.0.1-dev`. Prepare package and changelog updates with `sh scripts/prepare-release.sh -v X.Y.Z`; use `--verify` to validate a release and `--prepare-dev` to restore development metadata afterward.
 - **Naming:** All public types prefixed with `WMT` (e.g., `WMTOperations`, `WMTInbox`, `WMTException`). Files match their primary export name.
 - **No trailing commas** in TypeScript (matches `.editorconfig` / project style).
 - **Peer dependency:** `react-native-powerauth-mobile-sdk` (^4.3.0) is a peer dependency — never bundle it.
