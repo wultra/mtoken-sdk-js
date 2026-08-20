@@ -5,7 +5,12 @@ description: Review pull requests in the Wultra Mobile Token JS SDK repository. 
 
 # mtoken-sdk-js review
 
-First verify the PR target, head, and current checkout. The routine target is `develop`. Default to **approve** and raise only a proven regression introduced in the PR: include `path:line`, concrete impact, and a correction. Do not offer formatting, style, or CI advice.
+Review only PR and repository content already available. Do not run or suggest
+commands, scripts, builds, tests, linters, formatters, validation tasks, or Git
+operations. Determine the PR target and head from available content only. The
+routine target is `develop`. Default to **approve** and raise only a proven
+regression introduced in the PR: include `path:line`, concrete impact, and a
+correction. Do not offer formatting, style, or CI advice.
 
 Never post, submit, or resolve GitHub content without explicit user approval. Prefix any postable text with `🤖`.
 
@@ -33,8 +38,17 @@ Push tokens, inbox contents, operation data, OTPs, credentials, authentication o
 
 ## Releases, docs, and evidence
 
-The authoritative build is `yarn build`/`gulp`; CI runs it from `.github/workflows/ci.yml`. On a release-to-`develop` transition, all declared development versions must be `0.0.1-dev`: root `package.json`, the generated Cordova template/plugin placeholders as produced by Gulp, and `src/WMTSDKVersion.ts` must use `%%SDK_VERSION%%` rather than a fixed release version.
+The tracked package-build definition is in `gulpfile.js`, with CI configuration
+in `.github/workflows/ci.yml`; read these files only as evidence. On a
+release-to-`develop` transition, all declared development versions must be
+`0.0.1-dev`: root `package.json`, the generated Cordova template/plugin
+placeholders defined by Gulp, and `src/WMTSDKVersion.ts` must use
+`%%SDK_VERSION%%` rather than a fixed release version.
 
 `.prepare-release.json` requires release entries in `docs/Changelog.md` and compatibility streams in `docs/Readme.md` and `docs/SDK-Integration.md`. Update those public documents when a release, public API, supported PowerAuth version, or integration behavior changes. Only flag grammar in changed public docs/JSDoc when the PR base is not a release branch; do not make private-code grammar findings.
 
-Integration tests run on-device through `exampleReactNative` against a live PowerAuth server; Cordova is exercised by `exampleCordova`. For a meaningful protocol or bridge change, require focused evidence that matches the affected platform rather than assuming generated archives validate it.
+Integration test sources are under `exampleReactNative` for React Native and
+`exampleCordova` for Cordova. For a meaningful protocol or bridge change,
+require focused evidence in the available content that matches the affected
+platform rather than assuming generated archives validate it. Tests may be
+inspected as evidence, but never suggested for execution.
