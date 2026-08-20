@@ -13,15 +13,6 @@ Defining it as a peer dependency ensures that only a single instance of the Powe
 - For **React Native**, install both `react-native-powerauth-mobile-sdk` and `react-native-mtoken-sdk` using `npm` or `yarn`.
 - For **Cordova**, add both `cordova-powerauth-mobile-sdk` and `cordova-mtoken-sdk` using the `cordova plugin add` command.
 
-### Compatible PowerAuth Mobile JS SDK Versions
-
-| mToken Version | PowerAuth JS SDK |
-|----------------|------------------|
-| `2.1.x`        | `^4.1.0`         |
-| `2.0.x`        | `^4.1.0`         |
-| `1.1.x`        | `^3.2.0`         |
-| `1.0.x`        | `^3.0.0`         |
-
 ## React Native Installation
 
 ### Supported Platforms
@@ -35,7 +26,7 @@ The library is available for the following __React Native (0.73+)__ platforms:
 
 #### 1. Install packages via npm
 ```sh
-# if now added yet, add powerauth mobile sdk first (compatible versions are on the top of this document)
+# if not added yet, add PowerAuth Mobile SDK first
 npm i react-native-powerauth-mobile-sdk --save
 npm i react-native-mtoken-sdk --save
 ```
@@ -76,7 +67,7 @@ The library is available for the following __Apache Cordova (>=12.0.0)__ platfor
 
 #### 1. Install plugins via the Cordova plugin installer
 ```sh
-# if now added yet, add powerauth mobile sdk first (compatible versions are on the top of this document)
+# if not added yet, add PowerAuth Mobile SDK first
 cordova plugin add cordova-powerauth-mobile-sdk
 cordova plugin add cordova-mtoken-sdk
 ```
