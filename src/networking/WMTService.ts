@@ -24,7 +24,8 @@ import { WMTUserAgent, WMTResponse } from './WMTNetworkingTypes'
 /** Shared setup and response validation for Mobile Token services. */
 export abstract class WMTService {
 
-    private readonly networking: WPNNetworking
+    /** Networking client used by this service. */
+    public readonly networking: WPNNetworking
     private defaultUserAgent?: Promise<string>
 
     /** @internal */
@@ -42,7 +43,7 @@ export abstract class WMTService {
     }
 
     /** Resolves the native User-Agent lazily, keeping SDK construction synchronous. */
-    protected async getNetworking(): Promise<import('react-native-powerauth-networking').WPNNetworking> {
+    protected async getNetworking(): Promise<WPNNetworking> {
         const userAgent = this.userAgent
         this.networking.userAgent = userAgent === WMTUserAgent.LIBRARY_DEFAULT
             ? await (this.defaultUserAgent ??= WMTPlatformUtils.getDefaultUserAgent())
