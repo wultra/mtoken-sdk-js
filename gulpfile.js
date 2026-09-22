@@ -106,6 +106,7 @@ const sdkVersion = require('./package.json').version
                     "import 'cordova-powerauth-mobile-sdk'\n"
                 )
             ) // replace react imports with cordova impoers
+            .pipe(replace(/react-native-powerauth-networking/g, "cordova-powerauth-networking"))
             .pipe(replace("%%SDK_VERSION%%", sdkVersion)) // replace version where needed
             .pipe(gulp.dest(CDV_tempDir));
 
@@ -122,7 +123,7 @@ const sdkVersion = require('./package.json').version
         build({
             entryPoints: [`${CDV_tempDir}/src/index.ts`],
             outfile: CDV_outFile,
-            external: ["cordova-powerauth-mobile-sdk"],
+            external: ["cordova-powerauth-mobile-sdk", "cordova-powerauth-networking"],
             bundle: true,
             format: "cjs",
             target: "ios13",
@@ -135,6 +136,8 @@ const sdkVersion = require('./package.json').version
         gulp
             .src(CDV_outFile)
             .pipe(replace(/.*require\("cordova-powerauth-mobile-sdk"\)*./g, ""))
+            // Resolve the published plugin module explicitly, without relying on global merge order.
+            .pipe(replace('require("cordova-powerauth-networking")', 'require("cordova-powerauth-networking.WultraPowerAuthNetworking")'))
             .pipe(gulp.dest(CDV_outFileDir));
 
     // create typings file
@@ -146,9 +149,11 @@ const sdkVersion = require('./package.json').version
                 `${CDV_tempDir}/src/WMT*.ts`,
                 `${CDV_tempDir}/src/*/**.ts`,
             ])
-            .pipe(ts({ declaration: true, emitDeclarationOnly: true }))
+            .pipe(ts({ declaration: true, emitDeclarationOnly: true, stripInternal: true }))
             .pipe(concat(`typings.d.ts`))
             .pipe(stripImportExport()) // strip off all import/export
+            // Keep the external Networking type resolvable in global Cordova declarations.
+            .pipe(replace(/\bWPNNetworking\b/g, 'import("cordova-powerauth-networking").WPNNetworking'))
             .pipe(
                 replace(/.*import.+cordova-powerauth-mobile-sdk *[^\n]*/g, "")
             )

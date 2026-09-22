@@ -1466,6 +1466,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cordova-powerauth-networking@npm:1.0.1":
+  version: 1.0.1
+  resolution: "cordova-powerauth-networking@npm:1.0.1"
+  checksum: 10c0/e849dd200034486aea1569dc1f4065516b20c9fa11cb8ccee8006fa4d7164f542eecd321844e69d5e42b449ad200600ffc629caab5434acc9d2c26a028a687c9
+  languageName: node
+  linkType: hard
+
 "core-util-is@npm:~1.0.0":
   version: 1.0.3
   resolution: "core-util-is@npm:1.0.3"
@@ -3835,6 +3842,7 @@ __metadata:
   dependencies:
     "@types/react": "npm:^18.2.44"
     cordova-powerauth-mobile-sdk: "npm:^4.3.0"
+    cordova-powerauth-networking: "npm:1.0.1"
     esbuild: "npm:^0.27.5"
     gulp: "npm:^5.0.0"
     gulp-concat: "npm:^2.6.1"
@@ -3844,6 +3852,7 @@ __metadata:
     react: "npm:18.2.0"
     react-native: "npm:0.87.1"
     react-native-powerauth-mobile-sdk: "npm:^4.3.0"
+    react-native-powerauth-networking: "npm:1.0.1"
     rimraf: "npm:^6.0.1"
     typescript: "npm:^5.2.2"
   peerDependencies:
@@ -3862,6 +3871,17 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 10c0/9f159d5fcb93e2f50abeefaab054c2b3872f6c23a6452c10f4bd0897a35cab3dd7f01ac021c6e8405ff8c6e47b34cf75d0aa59b2373f7b7e0968c26e3d0e05be
+  languageName: node
+  linkType: hard
+
+"react-native-powerauth-networking@npm:1.0.1":
+  version: 1.0.1
+  resolution: "react-native-powerauth-networking@npm:1.0.1"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+    react-native-powerauth-mobile-sdk: ^4.1.0
+  checksum: 10c0/b262f538e57f374cfda765fc74b6a7812549b9fb83bdff8c0f5bb7180a007fad8f2d47431782da366f53ab7fb3d595f01f6e27dfd011623ea1289090543a9ada
   languageName: node
   linkType: hard
 
