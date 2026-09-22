@@ -2,6 +2,12 @@
 
 This guide provides instructions for migration from **Mobile Token JS SDK** version `2.1.x` to version `3.0.x`.
 
+## Networking
+
+- `WMTNetworking`, `WMTJsonConfig`, and `WMTE2EEConfiguration` have been removed. For custom requests, use `WPNNetworking`, `WPNResponseConfig`, and `WPNE2EEConfiguration` from PowerAuth Networking JS.
+- Networking can throw `WPNException`. Mobile Token validation still uses `WMTException`, and server errors remain in `response.responseError`.
+- Configure HTTP logging through `WPNLoggerConfig`. `WMTLogger` only controls Mobile Token logs.
+
 ## Pre-Approval Screen API
 
 The singular `preApprovalScreen` property on `WMTUserOperationUIData` has been replaced by the plural `preApprovalScreens` array to support multi-screen pre-approval flows.

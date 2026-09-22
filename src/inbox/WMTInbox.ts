@@ -14,14 +14,16 @@
 // and limitations under the License.
 //
 
-import { WMTNetworking, type WMTRequestProcessor, type WMTResponse } from "../networking/WMTNetworking"
+import { WMTService } from "../networking/WMTService"
+import { WMTRequestProcessor, WMTResponse } from "../networking/WMTNetworkingTypes"
+import { WPNEndpoint, WPNResponseConfig } from 'react-native-powerauth-networking'
 import { type WMTInboxCount } from "./WMTInboxCount"
 import { type WMTInboxMessage } from "./WMTInboxMessage"
 import { type WMTInboxMessageDetail } from "./WMTInboxMessageDetail"
 import { PowerAuthAuthentication } from 'react-native-powerauth-mobile-sdk'
 
 /** Service that communicates with Inbox API that is managing user's inbox. */
-export class WMTInbox extends WMTNetworking {
+export class WMTInbox extends WMTService {
 
     // name of the parsed fields that are expected to be the Date type.
     private jsonDateFields = [ "timestampCreated" ]
@@ -33,14 +35,14 @@ export class WMTInbox extends WMTNetworking {
      * @returns Server response (with the unread count)
      */
     async getUnreadCount(requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<WMTInboxCount>> {
-        return await this.postSignedWithToken<WMTInboxCount>(
-            { },
-            PowerAuthAuthentication.possession(),
-            "/api/inbox/count",
-            "possession_universal",
-            true,
-            requestProcessor
+        const requestData = { }
+        const networking = await this.getNetworking()
+        const response = await networking.call(
+            WPNEndpoint.signedWithToken<typeof requestData, WMTInboxCount>("/api/inbox/count", "possession_universal"),
+            requestData, PowerAuthAuthentication.possession(), requestProcessor
         )
+        this.validateResponse(response, true)
+        return response
     }
 
     /**
@@ -53,15 +55,14 @@ export class WMTInbox extends WMTNetworking {
      * @returns Server response (with the list of messages)
      */
     async getMessageList(pageNumber: Number, pageSize: Number, onlyUnread: boolean, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<WMTInboxMessage[]>> {
-        return await this.postSignedWithToken<WMTInboxMessage[]>(
-            { requestObject: { page: pageNumber, size: pageSize, onlyUnread: onlyUnread } },
-            PowerAuthAuthentication.possession(),
-            "/api/inbox/message/list",
-            "possession_universal",
-            true,
-            requestProcessor,
-            { dateFields: this.jsonDateFields }
+        const requestData = { requestObject: { page: pageNumber, size: pageSize, onlyUnread: onlyUnread } }
+        const networking = await this.getNetworking()
+        const response = await networking.call(
+            WPNEndpoint.signedWithToken<typeof requestData, WMTInboxMessage[]>("/api/inbox/message/list", "possession_universal", new WPNResponseConfig(this.jsonDateFields)),
+            requestData, PowerAuthAuthentication.possession(), requestProcessor
         )
+        this.validateResponse(response, true)
+        return response
     }
 
     /**
@@ -72,15 +73,14 @@ export class WMTInbox extends WMTNetworking {
      * @returns Server response (with the message detail)
      */
     async getMessageDetail(messageId: string, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<WMTInboxMessageDetail>> {
-        return await this.postSignedWithToken<WMTInboxMessageDetail>(
-            { requestObject: { id: messageId } },
-            PowerAuthAuthentication.possession(),
-            "/api/inbox/message/detail",
-            "possession_universal",
-            true,
-            requestProcessor,
-            { dateFields: this.jsonDateFields }
+        const requestData = { requestObject: { id: messageId } }
+        const networking = await this.getNetworking()
+        const response = await networking.call(
+            WPNEndpoint.signedWithToken<typeof requestData, WMTInboxMessageDetail>("/api/inbox/message/detail", "possession_universal", new WPNResponseConfig(this.jsonDateFields)),
+            requestData, PowerAuthAuthentication.possession(), requestProcessor
         )
+        this.validateResponse(response, true)
+        return response
     }
 
     /**
@@ -91,14 +91,14 @@ export class WMTInbox extends WMTNetworking {
      * @returns  Server response
      */
     async markRead(messageId: string, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<void>> {
-        return await this.postSignedWithToken<void>(
-            { requestObject: { id: messageId } },
-            PowerAuthAuthentication.possession(),
-            "/api/inbox/message/read",
-            "possession_universal",
-            false,
-            requestProcessor
+        const requestData = { requestObject: { id: messageId } }
+        const networking = await this.getNetworking()
+        const response = await networking.call(
+            WPNEndpoint.signedWithToken<typeof requestData, void>("/api/inbox/message/read", "possession_universal"),
+            requestData, PowerAuthAuthentication.possession(), requestProcessor
         )
+        this.validateResponse(response, false)
+        return response
     }
 
     /**
@@ -108,13 +108,13 @@ export class WMTInbox extends WMTNetworking {
      * @returns  Server response
      */
     async markAllRead(requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<void>> {
-        return await this.postSignedWithToken<void>(
-            {},
-            PowerAuthAuthentication.possession(),
-            "/api/inbox/message/read-all",
-            "possession_universal",
-            false,
-            requestProcessor
+        const requestData = {}
+        const networking = await this.getNetworking()
+        const response = await networking.call(
+            WPNEndpoint.signedWithToken<typeof requestData, void>("/api/inbox/message/read-all", "possession_universal"),
+            requestData, PowerAuthAuthentication.possession(), requestProcessor
         )
+        this.validateResponse(response, false)
+        return response
     }
 }

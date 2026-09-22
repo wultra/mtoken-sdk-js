@@ -18,7 +18,7 @@ import { WMTOperations } from './operations/WMTOperations'
 import { PowerAuth } from 'react-native-powerauth-mobile-sdk'
 import { WMTPush } from './push/WMTPush'
 import { WMTInbox } from './inbox/WMTInbox'
-import { WMTUserAgent } from './networking/WMTNetworking'
+import { WMTUserAgent } from './networking/WMTNetworkingTypes'
 import { WMTLogger } from './WMTLogger'
 import { WMTOIDC } from './oidc/WMTOIDC'
 

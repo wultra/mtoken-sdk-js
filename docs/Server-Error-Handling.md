@@ -3,6 +3,10 @@
 When the request fails on the server, it can return a known error for you to interpret to the user and use to log it
 for better error reporting.
 
+Server errors are returned in `response.responseError`. Requests can also throw errors,
+including `WPNException` from PowerAuth Networking JS and `WMTException` for Mobile Token validation.
+Handle these in `catch`.
+
 ## Example error handling
 
 ```typescript

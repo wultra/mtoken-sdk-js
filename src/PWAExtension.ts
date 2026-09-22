@@ -1,6 +1,6 @@
 import { PowerAuth } from "react-native-powerauth-mobile-sdk"
 import { WultraMobileToken } from "./WultraMobileToken"
-import { WMTUserAgent } from "./networking/WMTNetworking"
+import { WMTUserAgent } from "./networking/WMTNetworkingTypes"
 
 declare module "react-native-powerauth-mobile-sdk" {
     export interface PowerAuth {
