@@ -54,12 +54,10 @@ export class WultraMobileToken {
      *                       will return operation texts in german (if available).
      * @param userAgent Optionally sets the User agent that will be used in a HTTP hader. 
      *                  Note that user-agent can be overriden by request processor in each API call.
-     * The base URL is resolved from the asynchronous PowerAuth configuration on each request.
-     * Configuration errors reject the request instead of throwing during construction.
+     * Requests resolve the base URL from PowerAuth configuration and reject if it is unavailable.
      */
     constructor(powerAuth: PowerAuth, acceptLanguage?: string, userAgent?: WMTUserAgent | string) {
 
-        // Networking resolves PowerAuth's native configuration when a request is dispatched.
         this.operations = new WMTOperations(powerAuth)
         this.push = new WMTPush(powerAuth)
         this.inbox = new WMTInbox(powerAuth)

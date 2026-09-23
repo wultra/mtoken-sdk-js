@@ -1,4 +1,4 @@
-# PowerAuth2 is a source pod; use source-built RN Core with RN 0.87.
+# Build React Native Core from source to link with the PowerAuth2 pod.
 ENV['RCT_USE_PREBUILT_RNCORE'] = '0'
 
 # Resolve react_native_pods.rb with node to allow for hoisting

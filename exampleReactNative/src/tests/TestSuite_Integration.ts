@@ -18,7 +18,7 @@ import { PowerAuth, PowerAuthAuthentication, PowerAuthSignatureKeyId, PowerAuthU
 import { Buffer } from 'buffer';
 import { TestSuite } from './TestSuite';
 import { IntegrationUtils } from './utils/IntegrationUtils';
-import { WultraMobileToken, WMTQROperationParser, WMTUserAgent, WMTSigningKey, WMTKnownRestApiError, WMTPushData, WMTAPNSEnvironment, WMTException, WMTUserOperationProximityCheck } from 'react-native-mtoken-sdk';
+import { WultraMobileToken, WMTOperations, WMTQROperationParser, WMTUserAgent, WMTSigningKey, WMTKnownRestApiError, WMTPushData, WMTAPNSEnvironment, WMTException, WMTUserOperationProximityCheck } from 'react-native-mtoken-sdk';
 
 export class TestSuite_Integration extends TestSuite {
 
@@ -50,6 +50,42 @@ export class TestSuite_Integration extends TestSuite {
 
     async testList() {
         await this.mtoken.operations.getOperations()
+    }
+
+    async testNetworkingConfigurationAndRequestProcessor() {
+        const operations = this.powerAuth.createWultraMobileToken("en", "mtoken-integration-test").operations
+
+        let requestProcessed = false
+        const response = await operations.getOperations(request => {
+            const headers = new Headers(request.headers)
+            this.assertEquals(headers.get("Accept-Language"), "en")
+            this.assertEquals(headers.get("User-Agent"), "mtoken-integration-test")
+            requestProcessed = true
+            return request
+        })
+
+        this.assertTrue(requestProcessed, "Request processor was not called")
+        this.assertEquals(response.status, "OK")
+
+        const configuration = await this.powerAuth.configuration
+        const directOperations = new WMTOperations(this.powerAuth, configuration.baseEndpointUrl)
+        const directResponse = await directOperations.getOperations()
+        this.assertEquals(directResponse.status, "OK")
+    }
+
+    async testUnconfiguredPowerAuthRejectsRequest() {
+        const powerAuth = new PowerAuth(`unconfigured-${Date.now()}`)
+        const mtoken = powerAuth.createWultraMobileToken()
+        this.assertTrue(mtoken instanceof WultraMobileToken, "Mobile Token construction should succeed")
+        let rejected = false
+
+        try {
+            await mtoken.operations.getOperations()
+        } catch {
+            rejected = true
+        }
+
+        this.assertTrue(rejected, "Request should fail without PowerAuth configuration")
     }
 
     async testApprovePayment() {
