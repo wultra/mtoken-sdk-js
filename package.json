@@ -38,18 +38,20 @@
     "react": "19.2.3",
     "react-native": "0.87.1",
     "react-native-powerauth-mobile-sdk": "https://github.com/wultra/react-native-powerauth-mobile-sdk/releases/download/5.0.0-beta-1/react-native-powerauth-mobile-sdk-5.0.0.tgz",
-    "react-native-powerauth-networking": "file:../networking-js/packages/lib-rn/react-native-powerauth-networking-v0.0.1-dev.tgz",
     "rimraf": "^6.0.1",
     "typescript": "^5.2.2"
   },
   "resolutions": {
-    "@types/react": "^19.2.0"
+    "@types/react": "^19.2.0",
+    "react-native-powerauth-networking": "file:../networking-js/packages/lib-rn/react-native-powerauth-networking-v0.0.1-dev.tgz"
   },
   "peerDependencies": {
     "react": "^19.2.3",
     "react-native": ">=0.87.0",
-    "react-native-powerauth-mobile-sdk": "5.0.0",
-    "react-native-powerauth-networking": "0.0.1-dev"
+    "react-native-powerauth-mobile-sdk": "5.0.0"
   },
-  "packageManager": "yarn@4.3.1+sha512.af78262d7d125afbfeed740602ace8c5e4405cd7f4735c08feb327286b2fdb2390fbca01589bfd1f50b1240548b74806767f5a063c94b67e431aabd0d86f7774"
+  "packageManager": "yarn@4.3.1+sha512.af78262d7d125afbfeed740602ace8c5e4405cd7f4735c08feb327286b2fdb2390fbca01589bfd1f50b1240548b74806767f5a063c94b67e431aabd0d86f7774",
+  "dependencies": {
+    "react-native-powerauth-networking": "0.0.1-dev"
+  }
 }
