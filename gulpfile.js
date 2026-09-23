@@ -136,7 +136,7 @@ const sdkVersion = require('./package.json').version
         gulp
             .src(CDV_outFile)
             .pipe(replace(/.*require\("cordova-powerauth-mobile-sdk"\)*./g, ""))
-            // Resolve the published plugin module explicitly, without relying on global merge order.
+            // Use the Cordova plugin module ID for networking.
             .pipe(replace('require("cordova-powerauth-networking")', 'require("cordova-powerauth-networking.WultraPowerAuthNetworking")'))
             .pipe(gulp.dest(CDV_outFileDir));
 
@@ -152,7 +152,7 @@ const sdkVersion = require('./package.json').version
             .pipe(ts({ declaration: true, emitDeclarationOnly: true, stripInternal: true }))
             .pipe(concat(`typings.d.ts`))
             .pipe(stripImportExport()) // strip off all import/export
-            // Keep the external Networking type resolvable in global Cordova declarations.
+            // Qualify networking types in generated Cordova declarations.
             .pipe(replace(/\bWPNNetworking\b/g, 'import("cordova-powerauth-networking").WPNNetworking'))
             .pipe(
                 replace(/.*import.+cordova-powerauth-mobile-sdk *[^\n]*/g, "")

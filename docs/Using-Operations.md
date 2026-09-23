@@ -213,7 +213,7 @@ Import `PowerAuthSignatureKeyId` from your PowerAuth package and `Buffer` from `
 async function onQROperationScanned(scannedCode: string): Promise<WMTQROperation> {
     // retrieve parsed operation
     const qrOperation = WMTQROperationParser.parse(scannedCode) // this method can throw an error
-    // Verify using PowerAuth 5.0.0. Protocol 4 QR codes use a personalized MAC key.
+    // Select the verification key encoded in the QR signature.
     const keyId = qrOperation.signature.signingKey === WMTSigningKey.MAC_PERSONALIZED
         ? PowerAuthSignatureKeyId.MAC_PERSONALIZED
         : qrOperation.signature.signingKey === WMTSigningKey.MASTER

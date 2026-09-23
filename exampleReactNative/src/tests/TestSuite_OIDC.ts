@@ -73,6 +73,24 @@ export class TestSuite_OIDC extends TestSuite {
         }
     }
 
+    async testGetConfigPreservesEncryptedRequest() {
+        const providerId = this.oidcProps?.providerId?.trim() || this.oidcProps?.providerIdPkce?.trim()
+        if (!providerId) {
+            this.skip("OIDC provider not configured")
+        }
+
+        let encryptedBodySeen = false
+        const response = await this.oidc.getConfig(providerId, request => {
+            this.assertTrue(request.body instanceof Uint8Array, "Encrypted request body must be binary")
+            encryptedBodySeen = true
+            return request
+        })
+
+        this.assertTrue(encryptedBodySeen, "Request processor was not called")
+        this.assertEquals(response.status, "OK")
+        this.assertNotNull(response.responseObject, "OIDC configuration is missing")
+    }
+
     async testGetConfigPKCESucceed() {
         const providerIdPkce = this.oidcProps?.providerIdPkce?.trim()
         if (!providerIdPkce) {

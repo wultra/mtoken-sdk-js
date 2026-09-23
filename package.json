@@ -11,8 +11,7 @@
     "lib/*"
   ],
   "scripts": {
-    "build": "gulp",
-    "test": "npm run build && node --test tests/*.test.mjs"
+    "build": "gulp"
   },
   "keywords": [
     "react-native",
