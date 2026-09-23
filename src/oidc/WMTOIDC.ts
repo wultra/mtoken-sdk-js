@@ -30,7 +30,7 @@ export class WMTOIDC extends WMTService {
     /**
      * Retrieves configuration based on predefined providerId.
      * 
-     * Encrypted with the ECIES application scope.
+     * Encrypted with the PowerAuth application scope.
      * 
      * @param providerId is the identification of the configuration record, used as a key for the configuration.
      * @param requestProcessor is an optional request processor for customizing the HTTP request.
