@@ -55,7 +55,6 @@ export class IntegrationUtils {
         const cfg = new PowerAuthConfiguration(this.sdkConfig, this.enrollmentUrl)
         const pa = new PowerAuth(activationName)
         await pa.configure(cfg)
-        console.log(`PowerAuth algorithm: ${await pa.currentAlgorithm}`)
         return pa
     }
 
