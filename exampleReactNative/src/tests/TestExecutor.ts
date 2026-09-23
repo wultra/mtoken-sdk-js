@@ -39,7 +39,7 @@ export class TestExecutor {
         this.suites.push(new TestSuite_OIDC())
     }
 
-    async runAllTests(): Promise<{ totalTests: number, succeededTests: number }> {
+    async runAllTests(): Promise<{ totalTests: number, succeededTests: number, skippedTests: number }> {
         console.log("")
         console.log("#######################")
         console.log("#    RUNNING TESTS")
@@ -47,17 +47,19 @@ export class TestExecutor {
 
         let totalTests = 0
         let succeededTests = 0
+        let skippedTests = 0
 
         for (const suite of this.suites) {
             totalTests += suite.testCount
             succeededTests += await suite.runAllTests()
+            skippedTests += suite.skippedTests
         }
 
         console.log("")
         console.log("####################################################")
-        console.log(`#    ALL TESTS FINISHED. ${succeededTests}/${totalTests} SUCCEEDED.`)
+        console.log(`#    ALL TESTS FINISHED. ${succeededTests}/${totalTests - skippedTests} SUCCEEDED. ${skippedTests} SKIPPED.`)
         console.log("####################################################")
-        return { totalTests: totalTests, succeededTests: succeededTests }
+        return { totalTests: totalTests, succeededTests: succeededTests, skippedTests: skippedTests }
     }
 
     stopAllTests() {

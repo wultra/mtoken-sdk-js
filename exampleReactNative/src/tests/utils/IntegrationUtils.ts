@@ -17,6 +17,7 @@
 import { PowerAuth, PowerAuthActivation, PowerAuthAuthentication, PowerAuthConfiguration } from "react-native-powerauth-mobile-sdk"
 import { WultraMobileToken } from "react-native-mtoken-sdk"
 import { IntegrationCredentials } from "./IntegrationCredentials"
+import { Buffer } from "buffer"
 
 export class IntegrationUtils {
     
@@ -54,6 +55,7 @@ export class IntegrationUtils {
         const cfg = new PowerAuthConfiguration(this.sdkConfig, this.enrollmentUrl)
         const pa = new PowerAuth(activationName)
         await pa.configure(cfg)
+        console.log(`PowerAuth algorithm: ${await pa.currentAlgorithm}`)
         return pa
     }
 
@@ -68,7 +70,7 @@ export class IntegrationUtils {
 
         // REMOVE LOCAL INSTANCE IF PRESENT
 
-        pa.removeActivationLocal()
+        await pa.removeActivationLocal()
 
         // CREATE ACTIVATION ON THE SERVER
 
@@ -104,7 +106,7 @@ export class IntegrationUtils {
     async removeRegistration(activationId: string | null = null) {
         const id = activationId ?? this.registrationId
         if (id.length > 0) {
-            this.makeCall("", `${this.cloudServerUrl}/v2/registrations/${id}`, "DELETE")
+            await this.makeCall("", `${this.cloudServerUrl}/v2/registrations/${id}`, "DELETE")
         }
     }
 
@@ -204,7 +206,7 @@ export class IntegrationUtils {
         const request: RequestInit = {
             body: payload,
             headers: {
-                "authorization": `Basic ${btoa(creds)}`,
+                "authorization": `Basic ${Buffer.from(creds, 'utf8').toString('base64')}`,
                 "content-type": this.jsonMediaType
             },
             method: method
