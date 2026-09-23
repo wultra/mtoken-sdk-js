@@ -31,7 +31,7 @@ export abstract class WMTService {
     /** @internal */
     userAgent: WMTUserAgent | string = WMTUserAgent.LIBRARY_DEFAULT
 
-    constructor(protected readonly pa: PowerAuth, baseURL: string) {
+    constructor(protected readonly pa: PowerAuth, baseURL?: string) {
         this.networking = new WPNNetworking(pa, baseURL, "en", WPNUserAgent.SYSTEM_DEFAULT)
     }
 
