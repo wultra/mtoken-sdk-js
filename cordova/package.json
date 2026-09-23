@@ -11,10 +11,10 @@
     "plugin.xml"
   ],
   "peerDependencies": {
-    "cordova-powerauth-mobile-sdk": "^4.3.0"
+    "cordova-powerauth-mobile-sdk": "5.0.0"
   },
   "dependencies": {
-    "cordova-powerauth-networking": "1.0.1"
+    "cordova-powerauth-networking": "0.0.1-dev"
   },
   "keywords": [
     "cordova",
@@ -29,5 +29,5 @@
   "homepage": "https://www.wultra.com/mobile-security-suite",
   "license": "Apache 2.0",
   "licenseFilename": "LICENSE",
-  "readmeFilename": "README.md" 
+  "readmeFilename": "README.md"
 }
