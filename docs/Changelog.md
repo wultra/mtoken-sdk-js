@@ -1,11 +1,10 @@
 # Changelog
 
 ## TBA
-- Added protocol 4 personalized MAC signatures to offline QR parsing
-- Integrated PQA networking-js with PowerAuth Mobile JS SDK 5.0.0 for React Native and Cordova
-- Service URLs now resolve asynchronously on each request; configuration errors reject the request
-- Offline authorization now uses `offlineAuthenticationCode`
-- Encrypted request processors receive binary `Uint8Array` bodies
+- Minimal required version for `PowerAuth Mobile JS SDK` raised to `5.0.0`
+  - for more information, see [migration guide](Version-3.0.md)
+- Minimal required versions of React and React Native raised to `19.2.3` and `0.87.0`
+- Updated offline QR authorization for PowerAuth protocol 4 ([documentation](Using-Operations.md#processing-scanned-qr-operation))
 - Removed `WMTNetworking`, `WMTJsonConfig`, and `WMTE2EEConfiguration`
 - Networking errors now use `WPNException` and HTTP logging uses `WPNLoggerConfig`
 - Implemented OIDC activation
