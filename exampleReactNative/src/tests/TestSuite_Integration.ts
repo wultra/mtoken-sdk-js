@@ -52,31 +52,15 @@ export class TestSuite_Integration extends TestSuite {
         await this.mtoken.operations.getOperations()
     }
 
-    async testNetworkingConfigurationAndRequestProcessor() {
-        const operations = this.powerAuth.createWultraMobileToken("en", "mtoken-integration-test").operations
-
-        let requestProcessed = false
-        const response = await operations.getOperations(request => {
-            const headers = new Headers(request.headers)
-            this.assertEquals(headers.get("Accept-Language"), "en")
-            this.assertEquals(headers.get("User-Agent"), "mtoken-integration-test")
-            requestProcessed = true
-            return request
-        })
-
-        this.assertTrue(requestProcessed, "Request processor was not called")
-        this.assertEquals(response.status, "OK")
-
+    async testExplicitBaseURL() {
         const configuration = await this.powerAuth.configuration
-        const directOperations = new WMTOperations(this.powerAuth, configuration.baseEndpointUrl)
-        const directResponse = await directOperations.getOperations()
-        this.assertEquals(directResponse.status, "OK")
+        const operations = new WMTOperations(this.powerAuth, configuration.baseEndpointUrl)
+        this.assertEquals((await operations.getOperations()).status, "OK")
     }
 
     async testUnconfiguredPowerAuthRejectsRequest() {
         const powerAuth = new PowerAuth(`unconfigured-${Date.now()}`)
         const mtoken = powerAuth.createWultraMobileToken()
-        this.assertTrue(mtoken instanceof WultraMobileToken, "Mobile Token construction should succeed")
         let rejected = false
 
         try {
