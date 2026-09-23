@@ -1,3 +1,6 @@
+# PowerAuth2 is a source pod; use source-built RN Core with RN 0.87.
+ENV['RCT_USE_PREBUILT_RNCORE'] = '0'
+
 # Resolve react_native_pods.rb with node to allow for hoisting
 require Pod::Executable.execute_command('node', ['-p',
   'require.resolve(
