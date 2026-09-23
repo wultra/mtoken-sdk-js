@@ -9,7 +9,7 @@
         "ios": "npx cordova run ios",
         "pods": "pushd \"platforms/ios\"; pod install; popd",
         "rebuildPlugin": "pushd .. && gulp cdv && popd",
-        "installPlugin": "npx cordova plugin add ../build/cdv",
+        "installPlugin": "npx cordova plugin add ../node_modules/cordova-powerauth-mobile-sdk && npx cordova plugin add ../node_modules/cordova-powerauth-networking && npx cordova plugin add ../build/cdv",
         "reinstallPlugin": "(npx cordova plugin remove cordova-mtoken-sdk || true) && npm run rebuildPlugin && npm run installPlugin",
         "build": "node node_modules/gulp/bin/gulp.js",
         "buildAndroid": "npm run build && cordova build android",
@@ -28,6 +28,8 @@
         "cordova-android": "^13.0.0",
         "cordova-ios": "^7.1.1",
         "cordova-mtoken-sdk": "file:../build/cdv",
+        "cordova-powerauth-mobile-sdk": "file:../node_modules/cordova-powerauth-mobile-sdk",
+        "cordova-powerauth-networking": "file:../node_modules/cordova-powerauth-networking",
         "dotenv": "^16.4.5",
         "esbuild": "^0.23.1",
         "gulp": "^5.0.0",
@@ -41,6 +43,7 @@
         ],
         "plugins": {
             "cordova-powerauth-mobile-sdk": {},
+            "cordova-powerauth-networking": {},
             "cordova-mtoken-sdk": {}
         }
     }
