@@ -224,7 +224,7 @@ export class WMTOperations extends WMTService {
      * @returns 
      */
     async authorizeOffline(operation: WMTQROperation, authentication: PowerAuthAuthentication, uriId: string = "/operation/authorize/offline"): Promise<string> {
-        return await this.pa.offlineSignature(authentication, uriId, operation.nonce, QROperationUtil.dataForOfflineSigning(operation))
+        return await this.pa.offlineAuthenticationCode(authentication, uriId, operation.nonce, QROperationUtil.dataForOfflineSigning(operation))
     }
 
     /**

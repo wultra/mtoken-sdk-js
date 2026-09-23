@@ -14,7 +14,7 @@
 // and limitations under the License.
 //
 
-import { WMTSigningKeyUtil, type WMTQROperation, type WMTQROperationSignature, type WMTQROperationData, WMTQROperationDataVersionUtil, type WMTQROperationDataField, WMTQROperationDataFieldType, type WMTQROperationFlags, WMTDateField, WMTNoteField, WMTTextField, WMTAmountField, WMTAccountField, WMTFallbackField, WMTReferenceField, WMTAnyAccountField } from "./WMTQROperation"
+import { WMTSigningKey, WMTSigningKeyUtil, type WMTQROperation, type WMTQROperationSignature, type WMTQROperationData, WMTQROperationDataVersionUtil, type WMTQROperationDataField, WMTQROperationDataFieldType, type WMTQROperationFlags, WMTDateField, WMTNoteField, WMTTextField, WMTAmountField, WMTAccountField, WMTFallbackField, WMTReferenceField, WMTAnyAccountField } from "./WMTQROperation"
 import { WMTException } from "../WMTException"
 import { Buffer } from "buffer"
 import { WMTLogger } from "../WMTLogger"
@@ -120,7 +120,10 @@ export class WMTQROperationParser {
         }
         const signatureBase64 = signaturePayload.substring(1)
         const signatureByteArray = Buffer.from(signatureBase64, 'base64')
-        if (signatureByteArray.length < 64 || signatureByteArray.length > 255) {
+        const validLength = signingKey === WMTSigningKey.MAC_PERSONALIZED
+            ? signatureByteArray.length === 32
+            : signatureByteArray.length >= 64 && signatureByteArray.length <= 255
+        if (!validLength) {
             throw WMTLogger.errorAndException("Invalid offline operation signature data")
         }
         return {
