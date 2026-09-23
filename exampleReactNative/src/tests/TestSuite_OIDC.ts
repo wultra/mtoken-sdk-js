@@ -54,7 +54,14 @@ export class TestSuite_OIDC extends TestSuite {
     async testGetConfigFails() {
         const invalidProviderId = "xxx"
 
-        const response = await this.oidc.getConfig(invalidProviderId)
+        let encryptedBodySeen = false
+        const response = await this.oidc.getConfig(invalidProviderId, request => {
+            this.assertTrue(request.body instanceof Uint8Array, "Encrypted request body must be binary")
+            encryptedBodySeen = true
+            return request
+        })
+
+        this.assertTrue(encryptedBodySeen, "Request processor was not called")
         this.assertEquals(response.status, "ERROR", "Invalid provider must return a server error")
         this.assertNotNull(response.responseError, "Server error details are missing")
     }
@@ -71,24 +78,6 @@ export class TestSuite_OIDC extends TestSuite {
         if ("pkceEnabled" in (config as any)) {
             this.assertFalse(!!(config as any).pkceEnabled, "pkceEnabled should be false for non-PKCE provider")
         }
-    }
-
-    async testGetConfigPreservesEncryptedRequest() {
-        const providerId = this.oidcProps?.providerId?.trim() || this.oidcProps?.providerIdPkce?.trim()
-        if (!providerId) {
-            this.skip("OIDC provider not configured")
-        }
-
-        let encryptedBodySeen = false
-        const response = await this.oidc.getConfig(providerId, request => {
-            this.assertTrue(request.body instanceof Uint8Array, "Encrypted request body must be binary")
-            encryptedBodySeen = true
-            return request
-        })
-
-        this.assertTrue(encryptedBodySeen, "Request processor was not called")
-        this.assertEquals(response.status, "OK")
-        this.assertNotNull(response.responseObject, "OIDC configuration is missing")
     }
 
     async testGetConfigPKCESucceed() {

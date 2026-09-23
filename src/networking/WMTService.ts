@@ -42,7 +42,7 @@ export abstract class WMTService {
         WMTLogger.info(`Accept language set to ${language}.`)
     }
 
-    /** Resolves the User-Agent before a request is sent. */
+    /** Resolves the native User-Agent lazily, keeping SDK construction synchronous. */
     protected async getNetworking(): Promise<WPNNetworking> {
         const userAgent = this.userAgent
         this.networking.userAgent = userAgent === WMTUserAgent.LIBRARY_DEFAULT
