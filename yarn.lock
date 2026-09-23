@@ -783,20 +783,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/prop-types@npm:*":
-  version: 15.7.15
-  resolution: "@types/prop-types@npm:15.7.15"
-  checksum: 10c0/b59aad1ad19bf1733cf524fd4e618196c6c7690f48ee70a327eb450a42aab8e8a063fbe59ca0a5701aebe2d92d582292c0fb845ea57474f6a15f6994b0e260b2
-  languageName: node
-  linkType: hard
-
-"@types/react@npm:^18.2.44":
-  version: 18.3.28
-  resolution: "@types/react@npm:18.3.28"
+"@types/react@npm:^19.2.0":
+  version: 19.3.0
+  resolution: "@types/react@npm:19.3.0"
   dependencies:
-    "@types/prop-types": "npm:*"
     csstype: "npm:^3.2.2"
-  checksum: 10c0/683e19cd12b5c691215529af2e32b5ffbaccae3bf0ba93bfafa0e460e8dfee18423afed568be2b8eadf4b837c3749dd296a4f64e2d79f68fa66962c05f5af661
+  checksum: 10c0/fbcabf303f935ca9f36ed2dcf81751cf84744098c5a683c8a62a0fa7edd31714b48d5c46b12fd0014f7f2dfe4d9ec6de428a850748eec719a70294e51029551b
   languageName: node
   linkType: hard
 
@@ -1459,17 +1451,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cordova-powerauth-mobile-sdk@npm:^4.3.0":
-  version: 4.3.0
-  resolution: "cordova-powerauth-mobile-sdk@npm:4.3.0"
-  checksum: 10c0/3e3730fb3516d5c989fb77ce29d76e85c1d78f2760c0fb14cc3971caff177fb7fa69e67e9f75ee650c75922d3472e823391c90dc951f1a21f6fead25384d610a
+"cordova-powerauth-mobile-sdk@https://github.com/wultra/react-native-powerauth-mobile-sdk/releases/download/5.0.0-beta-1/cordova-powerauth-mobile-sdk-5.0.0.tgz":
+  version: 5.0.0
+  resolution: "cordova-powerauth-mobile-sdk@https://github.com/wultra/react-native-powerauth-mobile-sdk/releases/download/5.0.0-beta-1/cordova-powerauth-mobile-sdk-5.0.0.tgz"
+  checksum: 10c0/dfac7a4f574a738345c850884ead8a5604374594d1b3ff5b792ebbfeb14dfb1ea4cce755f618d5a9dd14964a5073537117ff927dafb5b20d205c113e59c21e27
   languageName: node
   linkType: hard
 
-"cordova-powerauth-networking@npm:1.0.1":
-  version: 1.0.1
-  resolution: "cordova-powerauth-networking@npm:1.0.1"
-  checksum: 10c0/e849dd200034486aea1569dc1f4065516b20c9fa11cb8ccee8006fa4d7164f542eecd321844e69d5e42b449ad200600ffc629caab5434acc9d2c26a028a687c9
+"cordova-powerauth-networking@file:../networking-js/packages/lib-cordova/cordova-powerauth-networking-v0.0.1-dev.tgz::locator=react-native-mtoken-sdk%40workspace%3A.":
+  version: 0.0.1-dev
+  resolution: "cordova-powerauth-networking@file:../networking-js/packages/lib-cordova/cordova-powerauth-networking-v0.0.1-dev.tgz#../networking-js/packages/lib-cordova/cordova-powerauth-networking-v0.0.1-dev.tgz::hash=b078b8&locator=react-native-mtoken-sdk%40workspace%3A."
+  checksum: 10c0/3c2095e41da6a432c8f83244db98c4dbc5f30d4fd89a93f575e6123a3d338f73305fce13a867f9acfe5e0d9f871fe0c1a1b8271c244cdaf16f95f9da03f3342f
   languageName: node
   linkType: hard
 
@@ -2927,7 +2919,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"loose-envify@npm:^1.0.0, loose-envify@npm:^1.1.0":
+"loose-envify@npm:^1.0.0":
   version: 1.4.0
   resolution: "loose-envify@npm:1.4.0"
   dependencies:
@@ -3840,48 +3832,49 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "react-native-mtoken-sdk@workspace:."
   dependencies:
-    "@types/react": "npm:^18.2.44"
-    cordova-powerauth-mobile-sdk: "npm:^4.3.0"
-    cordova-powerauth-networking: "npm:1.0.1"
+    "@types/react": "npm:^19.2.0"
+    cordova-powerauth-mobile-sdk: "https://github.com/wultra/react-native-powerauth-mobile-sdk/releases/download/5.0.0-beta-1/cordova-powerauth-mobile-sdk-5.0.0.tgz"
+    cordova-powerauth-networking: "file:../networking-js/packages/lib-cordova/cordova-powerauth-networking-v0.0.1-dev.tgz"
     esbuild: "npm:^0.27.5"
     gulp: "npm:^5.0.0"
     gulp-concat: "npm:^2.6.1"
     gulp-replace: "npm:^1.1.4"
     gulp-strip-import-export: "npm:^1.0.0"
     gulp-typescript: "npm:^6.0.0-alpha.1"
-    react: "npm:18.2.0"
+    react: "npm:19.2.3"
     react-native: "npm:0.87.1"
-    react-native-powerauth-mobile-sdk: "npm:^4.3.0"
-    react-native-powerauth-networking: "npm:1.0.1"
+    react-native-powerauth-mobile-sdk: "https://github.com/wultra/react-native-powerauth-mobile-sdk/releases/download/5.0.0-beta-1/react-native-powerauth-mobile-sdk-5.0.0.tgz"
+    react-native-powerauth-networking: "file:../networking-js/packages/lib-rn/react-native-powerauth-networking-v0.0.1-dev.tgz"
     rimraf: "npm:^6.0.1"
     typescript: "npm:^5.2.2"
   peerDependencies:
-    react: "*"
-    react-native: "*"
-    react-native-powerauth-mobile-sdk: ^4.3.0
+    react: ^19.2.3
+    react-native: ">=0.87.0"
+    react-native-powerauth-mobile-sdk: 5.0.0
+    react-native-powerauth-networking: 0.0.1-dev
   languageName: unknown
   linkType: soft
 
-"react-native-powerauth-mobile-sdk@npm:^4.3.0":
-  version: 4.3.0
-  resolution: "react-native-powerauth-mobile-sdk@npm:4.3.0"
+"react-native-powerauth-mobile-sdk@https://github.com/wultra/react-native-powerauth-mobile-sdk/releases/download/5.0.0-beta-1/react-native-powerauth-mobile-sdk-5.0.0.tgz":
+  version: 5.0.0
+  resolution: "react-native-powerauth-mobile-sdk@https://github.com/wultra/react-native-powerauth-mobile-sdk/releases/download/5.0.0-beta-1/react-native-powerauth-mobile-sdk-5.0.0.tgz"
   dependencies:
     node-fetch: "npm:>=2.6.1"
   peerDependencies:
-    react: "*"
-    react-native: "*"
-  checksum: 10c0/9f159d5fcb93e2f50abeefaab054c2b3872f6c23a6452c10f4bd0897a35cab3dd7f01ac021c6e8405ff8c6e47b34cf75d0aa59b2373f7b7e0968c26e3d0e05be
+    react: ^19.2.3
+    react-native: ">=0.87.0"
+  checksum: 10c0/d348c8ddfeda6a51647943429f97b9c9c108a0f4c073682a252635e9d8ea60dc134eb47828d40e3b9ce8c3a42bd5a543429a3b6399cf2cb23132101a4cc7d8b8
   languageName: node
   linkType: hard
 
-"react-native-powerauth-networking@npm:1.0.1":
-  version: 1.0.1
-  resolution: "react-native-powerauth-networking@npm:1.0.1"
+"react-native-powerauth-networking@file:../networking-js/packages/lib-rn/react-native-powerauth-networking-v0.0.1-dev.tgz::locator=react-native-mtoken-sdk%40workspace%3A.":
+  version: 0.0.1-dev
+  resolution: "react-native-powerauth-networking@file:../networking-js/packages/lib-rn/react-native-powerauth-networking-v0.0.1-dev.tgz#../networking-js/packages/lib-rn/react-native-powerauth-networking-v0.0.1-dev.tgz::hash=4e7a63&locator=react-native-mtoken-sdk%40workspace%3A."
   peerDependencies:
-    react: "*"
-    react-native: "*"
-    react-native-powerauth-mobile-sdk: ^4.1.0
-  checksum: 10c0/b262f538e57f374cfda765fc74b6a7812549b9fb83bdff8c0f5bb7180a007fad8f2d47431782da366f53ab7fb3d595f01f6e27dfd011623ea1289090543a9ada
+    react: ^19.2.3
+    react-native: ">=0.87.0"
+    react-native-powerauth-mobile-sdk: 5.0.0
+  checksum: 10c0/7340c79d8f2e88999e4c9fe5f3d233ec21e8e7e3c676a72bec6914bd17a31241dacbf1a2a53ca0df7eab7c9fc46c9be384bc781e8ea2d4aaf885d8c05c1bb9f5
   languageName: node
   linkType: hard
 
@@ -3938,12 +3931,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:18.2.0":
-  version: 18.2.0
-  resolution: "react@npm:18.2.0"
-  dependencies:
-    loose-envify: "npm:^1.1.0"
-  checksum: 10c0/b562d9b569b0cb315e44b48099f7712283d93df36b19a39a67c254c6686479d3980b7f013dc931f4a5a3ae7645eae6386b4aa5eea933baa54ecd0f9acb0902b8
+"react@npm:19.2.3":
+  version: 19.2.3
+  resolution: "react@npm:19.2.3"
+  checksum: 10c0/094220b3ba3a76c1b668f972ace1dd15509b157aead1b40391d1c8e657e720c201d9719537375eff08f5e0514748c0319063392a6f000e31303aafc4471f1436
   languageName: node
   linkType: hard
 
