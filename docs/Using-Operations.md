@@ -207,16 +207,23 @@ In case the user is not online, you can use off-line authorizations. In this ope
 
 ### Processing Scanned QR Operation
 
+Import `PowerAuthSignatureKeyId` from your PowerAuth package and `Buffer` from `buffer` for UTF-8 to Base64 conversion.
+
 ```typescript
 async function onQROperationScanned(scannedCode: string): Promise<WMTQROperation> {
     // retrieve parsed operation
     const qrOperation = WMTQROperationParser.parse(scannedCode) // this method can throw an error
-    // verify the signature against the powerauth instance
-    const verified = await this.powerAuth.verifyServerSignedData(qrOperation.signedData, qrOperation.signature.signatureString, qrOperation.signature.signingKey == WMTSigningKey.MASTER)
-    if (!verified) {
-        throw "Invalid offline operation"
-    }
-    return operation
+    // Verify using PowerAuth 5.0.0. Protocol 4 QR codes use a personalized MAC key.
+    const keyId = qrOperation.signature.signingKey === WMTSigningKey.MAC_PERSONALIZED
+        ? PowerAuthSignatureKeyId.MAC_PERSONALIZED
+        : qrOperation.signature.signingKey === WMTSigningKey.MASTER
+            ? PowerAuthSignatureKeyId.MASTER_EC : PowerAuthSignatureKeyId.SERVER_EC
+    await this.powerAuth.verifyDigitalSignature(
+        qrOperation.signature.signatureString,
+        Buffer.from(qrOperation.signedData, 'utf8').toString('base64'),
+        keyId
+    ) // Rejects if the signature is invalid.
+    return qrOperation
 }
 ```
 

@@ -9,7 +9,7 @@ TypeScript SDK for out-of-band operation approval (approve/reject pending operat
 The build system uses **gulp** to produce two separate packages from the shared `src/`. The root uses **Yarn 4** with `nodeLinker: node-modules` (configured in `.yarnrc.yml`). The example app uses **npm**.
 
 ```bash
-# Install root dependencies (Yarn 4, Node 18+)
+# Install root dependencies (Yarn 4, Node 22.14+)
 yarn install
 
 # Build both RN and Cordova packages
@@ -117,7 +117,7 @@ Each service owns a published PowerAuth Networking client and calls `networking.
 - **Releases:** On non-release branches, keep the SDK version at `0.0.1-dev`. Prepare package and changelog updates with `sh scripts/prepare-release.sh -v X.Y.Z`; use `--verify` to validate a release and `--prepare-dev` to restore development metadata afterward.
 - **Naming:** All public types prefixed with `WMT` (e.g., `WMTOperations`, `WMTInbox`, `WMTException`). Files match their primary export name.
 - **No trailing commas** in TypeScript (matches `.editorconfig` / project style).
-- **Peer dependency:** `react-native-powerauth-mobile-sdk` (^4.3.0) is a peer dependency — never bundle it.
+- **Peer dependency:** `react-native-powerauth-mobile-sdk` (5.0.0) is a peer dependency — never bundle it.
 - **`%%SDK_VERSION%%`:** Use this placeholder in source code for the SDK version string. It gets replaced during gulp build.
 - **Cordova compatibility:** Lines marked with `@cordova-remove` comment are stripped during Cordova build. Don't use RN-specific APIs without considering the Cordova path.
 - **License header:** All source files must include the Apache 2.0 license header.

@@ -4,7 +4,9 @@ Apache Cordova test app for the Wultra Mobile Token JS SDK. Runs the integration
 
 ## Prerequisites
 
-- Node.js ≥ 18
+The Android build requires API 36 and Kotlin 2.1.20.
+
+- Node.js ≥ 22.14
 - Xcode (for iOS) or Android Studio (for Android)
 - CocoaPods (for iOS)
 - Root SDK dependencies installed (`yarn install` in the repo root)
@@ -73,7 +75,7 @@ The Cordova example has its own `gulpfile.js` that bundles the test app:
 ## Troubleshooting
 
 - **`Unsupported class file major version`** — Your Java version is newer than the Gradle version in `config.xml` supports. Either update `GradleVersion`/`AndroidGradlePluginVersion` in `config.xml` or set `JAVA_HOME` to an older JDK (e.g., `export JAVA_HOME=$(/usr/libexec/java_home -v 17)`).
-- **`PowerAuth is not defined` / `deviceready` never fires** — The `cordova-powerauth-mobile-sdk` plugin is missing. This can happen when the Android platform is added after plugins were installed. Fix: `npx cordova plugin remove cordova-mtoken-sdk && npx cordova plugin add cordova-powerauth-mobile-sdk && npx cordova plugin add ../build/cdv`, then rebuild.
+- **`PowerAuth is not defined` / `deviceready` never fires** — The `cordova-powerauth-mobile-sdk` plugin is missing. This can happen when the Android platform is added after plugins were installed. Fix: `npm run reinstallPlugin`, then rebuild.
 - **App stuck on "Loading javascript..."** — Usually caused by a missing plugin (see above). Check `adb logcat` for JS errors.
 
 ## Available Scripts
