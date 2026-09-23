@@ -54,22 +54,17 @@ export class WultraMobileToken {
      *                       will return operation texts in german (if available).
      * @param userAgent Optionally sets the User agent that will be used in a HTTP hader. 
      *                  Note that user-agent can be overriden by request processor in each API call.
-     * @throws Can throw when a null or invalid `baseEndpointUrl` is set in the `PowerAuth` instance.
+     * The base URL is resolved from the asynchronous PowerAuth configuration on each request.
+     * Configuration errors reject the request instead of throwing during construction.
      */
     constructor(powerAuth: PowerAuth, acceptLanguage?: string, userAgent?: WPNUserAgent | string) {
 
-        // Retrieve the base URL and instantiate mtoken services.
-        let baseURL = powerAuth.configuration?.baseEndpointUrl
-
-        if (baseURL == null) {
-            throw new Error("Null base URL recieved from the PowerAuth instance.")
-        }
-
+        // Networking resolves PowerAuth's native configuration when a request is dispatched.
         let agent = userAgent ?? WPNUserAgent.LIBRARY_DEFAULT
-        this.operations = new WMTOperations(powerAuth, baseURL, agent)
-        this.push = new WMTPush(powerAuth, baseURL, agent)
-        this.inbox = new WMTInbox(powerAuth, baseURL, agent)
-        this.oidc = new WMTOIDC(powerAuth, baseURL, agent)
+        this.operations = new WMTOperations(powerAuth, undefined, agent)
+        this.push = new WMTPush(powerAuth, undefined, agent)
+        this.inbox = new WMTInbox(powerAuth, undefined, agent)
+        this.oidc = new WMTOIDC(powerAuth, undefined, agent)
 
         // Set the accept language properties.
         let lang = acceptLanguage ?? "en"
@@ -79,7 +74,6 @@ export class WultraMobileToken {
         this.oidc.acceptLanguage = lang
 
         WMTLogger.debug("Mobile Token object created with:")
-        WMTLogger.debug(" - baseURL: " + baseURL)
         WMTLogger.debug(" - acceptLanguage:" + lang)
         WMTLogger.debug(" - userAgent: " + agent)
     }
