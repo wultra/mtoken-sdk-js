@@ -54,21 +54,14 @@ export class WultraMobileToken {
      *                       will return operation texts in german (if available).
      * @param userAgent Optionally sets the User agent that will be used in a HTTP hader. 
      *                  Note that user-agent can be overriden by request processor in each API call.
-     * @throws Can throw when a null or invalid `baseEndpointUrl` is set in the `PowerAuth` instance.
+     * Requests resolve the base URL from PowerAuth configuration and reject if it is unavailable.
      */
     constructor(powerAuth: PowerAuth, acceptLanguage?: string, userAgent?: WMTUserAgent | string) {
 
-        // Retrieve the base URL and instantiate mtoken services.
-        let baseURL = powerAuth.configuration?.baseEndpointUrl
-
-        if (baseURL == null) {
-            throw new Error("Null base URL recieved from the PowerAuth instance.")
-        }
-
-        this.operations = new WMTOperations(powerAuth, baseURL)
-        this.push = new WMTPush(powerAuth, baseURL)
-        this.inbox = new WMTInbox(powerAuth, baseURL)
-        this.oidc = new WMTOIDC(powerAuth, baseURL)
+        this.operations = new WMTOperations(powerAuth)
+        this.push = new WMTPush(powerAuth)
+        this.inbox = new WMTInbox(powerAuth)
+        this.oidc = new WMTOIDC(powerAuth)
 
         // Set the accept language properties.
         let lang = acceptLanguage ?? "en"
@@ -85,7 +78,6 @@ export class WultraMobileToken {
         this.oidc.userAgent = agent
 
         WMTLogger.debug("Mobile Token object created with:")
-        WMTLogger.debug(" - baseURL: " + baseURL)
         WMTLogger.debug(" - acceptLanguage:" + lang)
         WMTLogger.debug(" - userAgent: " + agent)
     }

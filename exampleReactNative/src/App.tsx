@@ -27,7 +27,7 @@ export default function App() {
     testExecutor.stopAllTests()
     setIsRunning(true)
     const result = await testExecutor.runAllTests()
-    Alert.alert(`Test result: ${result.succeededTests}/ ${result.totalTests} succeeded`)
+    Alert.alert(`Test result: ${result.succeededTests}/${result.totalTests - result.skippedTests} succeeded; ${result.skippedTests} skipped`)
     setIsRunning(false)
   }
 

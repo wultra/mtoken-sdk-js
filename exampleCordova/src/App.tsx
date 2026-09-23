@@ -38,7 +38,7 @@ function onDeviceReady() {
     contentEl?.classList.add('testsrunning')
     const testExecutor = new TestExecutor()
     const result = await testExecutor.runAllTests()
-    alert(`Test result: ${result.succeededTests}/ ${result.totalTests} succeeded`)
+    alert(`Test result: ${result.succeededTests}/${result.totalTests - result.skippedTests} succeeded; ${result.skippedTests} skipped`)
     contentEl?.classList.remove('testsrunning')
   }
 

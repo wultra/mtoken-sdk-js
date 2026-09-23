@@ -54,23 +54,22 @@ export class TestSuite_OIDC extends TestSuite {
     async testGetConfigFails() {
         const invalidProviderId = "xxx"
 
-        try {
-            await this.oidc.getConfig(invalidProviderId)
-            this.fail(`Expected getConfig() to fail for invalid providerId "${invalidProviderId}", but it succeeded`)
-        } catch (e: any) {
-            if (e && typeof e === "object" && "responseError" in e) {
-                this.assertNotNull((e as any).responseError, "Expected responseError to be present")
-            } else {
-                this.assertTrue(true)
-            }
-        }
+        let encryptedBodySeen = false
+        const response = await this.oidc.getConfig(invalidProviderId, request => {
+            this.assertTrue(request.body instanceof Uint8Array, "Encrypted request body must be binary")
+            encryptedBodySeen = true
+            return request
+        })
+
+        this.assertTrue(encryptedBodySeen, "Request processor was not called")
+        this.assertEquals(response.status, "ERROR", "Invalid provider must return a server error")
+        this.assertNotNull(response.responseError, "Server error details are missing")
     }
 
     async testGetConfigSucceed() {
         const providerId = this.oidcProps?.providerId?.trim()
         if (!providerId) {
-            console.log("providerId not provided -> skipping testGetConfigSucceed")
-            return
+            this.skip("providerId not configured")
         }
 
         const config = await this.fetchConfigOrFail(this.oidc, providerId)
@@ -84,8 +83,7 @@ export class TestSuite_OIDC extends TestSuite {
     async testGetConfigPKCESucceed() {
         const providerIdPkce = this.oidcProps?.providerIdPkce?.trim()
         if (!providerIdPkce) {
-            console.log("providerIdPkce not provided -> skipping testGetConfigPKCESucceed")
-            return
+            this.skip("providerIdPkce not configured")
         }
 
         const config = await this.fetchConfigOrFail(this.oidc, providerIdPkce)
@@ -99,8 +97,7 @@ export class TestSuite_OIDC extends TestSuite {
     async testOIDCPreparesAuthorizationData() {
         const providerIdPkce = this.oidcProps?.providerIdPkce?.trim()
         if (!providerIdPkce) {
-            console.log("providerIdPkce not provided -> skipping testOIDCPreparesAuthorizationData")
-            return
+            this.skip("providerIdPkce not configured")
         }
 
         const config = await this.fetchConfigOrFail(this.oidc, providerIdPkce)

@@ -76,6 +76,19 @@ export class TestSuite_QRParser extends TestSuite {
         this.assertEquals(f3.text, "hello world")
     }
 
+    testMacPersonalizedSignature() {
+        const code = new TestQRData().makeData()
+        const prefix = code.substring(0, code.lastIndexOf('\n') + 1)
+        const signature = Buffer.alloc(32, 1).toString('base64')
+        const operation = WMTQROperationParser.parse(prefix + '2' + signature)
+        this.assertEquals(operation.signature.signingKey, WMTSigningKey.MAC_PERSONALIZED)
+        this.assertEquals(operation.signature.signatureString, signature)
+        this.assertEquals(operation.signedData, prefix + '2')
+        for (const length of [0, 31, 33, 64, 255]) {
+            this.assertThrow(() => WMTQROperationParser.parse(prefix + '2' + Buffer.alloc(length).toString('base64')))
+        }
+    }
+
     testForwardCompatibility() {
         const qrcode = new TestQRData()
         qrcode.operationData = "B2*Xtest"

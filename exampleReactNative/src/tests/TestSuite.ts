@@ -20,6 +20,7 @@ export class TestSuite {
     suiteName: string
 
     private isStopped = true
+    skippedTests = 0
 
     constructor() {
 
@@ -66,6 +67,7 @@ export class TestSuite {
 
         this.isStopped = false
         let successCount = 0
+        this.skippedTests = 0
 
         console.log("")
         console.log(`-----------------------`)
@@ -97,7 +99,12 @@ export class TestSuite {
                 successCount++
                 success = true
             } catch(e) {
-                console.error(`- FAIL: Test ${test}: ${JSON.stringify(e)}`)
+                if (e instanceof SkippedTest) {
+                    this.skippedTests++
+                    console.log(`- SKIP: Test ${test}: ${e.message}`)
+                } else {
+                    console.error(`- FAIL: Test ${test}: ${JSON.stringify(e)}`)
+                }
                 success = false
             }
             try {
@@ -114,7 +121,7 @@ export class TestSuite {
         }
 
         console.log("")
-        console.log(`# TEST SUITE "${this.suiteName}" FINISHED WITH ${successCount}/${this.testFcs.length} SUCCESS.`)
+        console.log(`# TEST SUITE "${this.suiteName}" FINISHED WITH ${successCount}/${this.testFcs.length - this.skippedTests} SUCCESS (${this.skippedTests} skipped).`)
         return successCount
     }
 
@@ -163,12 +170,18 @@ export class TestSuite {
         }
     }
 
+    protected skip(reason: string): never {
+        throw new SkippedTest(reason)
+    }
+
     protected fail(message: string = "Test failed") {
         throw new Error(`Assertion failed: ${message}`)
     }
 
     // run method regardles of synchronousnes
     private async runAmbigiousMethod(method: string, ...params: any[]) {
-        await Promise.resolve((this as any)[method]())
+        await Promise.resolve((this as any)[method](...params))
     }
 }
+
+class SkippedTest extends Error {}

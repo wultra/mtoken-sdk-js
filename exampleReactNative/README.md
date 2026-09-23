@@ -4,7 +4,9 @@ React Native test app for the Wultra Mobile Token JS SDK. Runs integration tests
 
 ## Prerequisites
 
-- Node.js ≥ 18
+This example uses React Native 0.87 and PowerAuth 5.0.0.
+
+- Node.js ≥ 22.14
 - [React Native environment](https://reactnative.dev/docs/environment-setup) set up (Xcode, CocoaPods, Android Studio)
 - Root SDK dependencies installed (`yarn install` in the repo root)
 
@@ -32,7 +34,6 @@ gulp
 # 2. Install dependencies and the SDK package
 cd exampleReactNative
 npm install
-npm r react-native-mtoken-sdk
 npm i ../build/react-native/react-native-mtoken-sdk-0.0.1-dev.tgz
 
 # 3. Install CocoaPods (use system pod, not bundle exec)
