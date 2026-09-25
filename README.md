@@ -43,7 +43,7 @@ yarn install
 yarn build             # both SDK packages
 yarn build:rn          # React Native only
 yarn build:cdv         # Cordova only
-yarn typecheck         # shared TypeScript source
+yarn typecheck         # SDK and React Native example
 yarn startReact        # Metro for exampleReactNative
 ```
 

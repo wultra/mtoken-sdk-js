@@ -24,7 +24,9 @@
     "packReactNative": "node scripts/build.mjs rn --pack",
     "packCordova": "node scripts/build.mjs cdv --pack",
     "packAll": "node scripts/build.mjs all --pack",
-    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "typecheck:sdk": "tsc --noEmit -p tsconfig.json",
+    "typecheck:example": "yarn workspace exampleReactNative typecheck",
+    "typecheck": "yarn typecheck:sdk && yarn typecheck:example",
     "startReact": "yarn workspace exampleReactNative start",
     "runReactIos": "yarn workspace exampleReactNative ios",
     "runReactAndroid": "yarn workspace exampleReactNative android",
@@ -44,6 +46,8 @@
     "typescript": "^5.2.2"
   },
   "resolutions": {
-    "@types/react": "^19.2.0"
+    "@types/react": "^19.2.0",
+    "react": "19.2.3",
+    "react-native": "0.87.1"
   }
 }
