@@ -4,11 +4,12 @@
     "_customBuildscript": "If needed, in the library object, set \"buildscript\": \"your-custom-build-command\" command if your build command is different than 'npm i && npm run build'",
     "library": {
         "name": "mtoken-sdk-js",
-        "type": "npm",
+        "type": "yarn",
         "artifacts": [
-            "build/cdv/cordova-mtoken-sdk-%VERSION%.tgz",
-            "build/react-native/react-native-mtoken-sdk-%VERSION%.tgz"
-        ]
+            "packages/lib-cdv/build/cordova-mtoken-sdk-%VERSION%.tgz",
+            "packages/lib-rn/build/react-native-mtoken-sdk-%VERSION%.tgz"
+        ],
+        "buildscript": "corepack enable && yarn install && yarn packAll"
     },
     "scriptVersion": 2,
     "devVersion": "0.0.1-dev",
@@ -16,6 +17,20 @@
         {
             "description": "Main package definition file.",
             "path": "package.json",
+            "type": "version_replace",
+            "match": "\"version\": \"%VERSION%\",\n",
+            "devChange": true
+        },
+        {
+            "description": "Cordova workspace version.",
+            "path": "packages/lib-cdv/package.json",
+            "type": "version_replace",
+            "match": "\"version\": \"%VERSION%\",\n",
+            "devChange": true
+        },
+        {
+            "description": "React Native workspace version.",
+            "path": "packages/lib-rn/package.json",
             "type": "version_replace",
             "match": "\"version\": \"%VERSION%\",\n",
             "devChange": true
