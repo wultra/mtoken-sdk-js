@@ -24,7 +24,9 @@
     "packReactNative": "node scripts/build.mjs rn --pack",
     "packCordova": "node scripts/build.mjs cdv --pack",
     "packAll": "node scripts/build.mjs all --pack",
-    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "typecheck:sdk": "tsc --noEmit -p tsconfig.json",
+    "typecheck:example": "yarn workspace exampleReactNative typecheck",
+    "typecheck": "yarn typecheck:sdk && yarn typecheck:example",
     "startReact": "yarn workspace exampleReactNative start",
     "runReactIos": "yarn workspace exampleReactNative ios",
     "runReactAndroid": "yarn workspace exampleReactNative android",
@@ -38,12 +40,14 @@
     "cordova-powerauth-networking": "file:../networking-js/packages/lib-cordova/cordova-powerauth-networking-v0.0.1-dev.tgz",
     "esbuild": "^0.27.5",
     "react": "19.2.3",
-    "react-native": "0.87.1",
+    "react-native": "0.87.0",
     "react-native-powerauth-mobile-sdk": "https://github.com/wultra/react-native-powerauth-mobile-sdk/releases/download/5.0.0-beta-1/react-native-powerauth-mobile-sdk-5.0.0.tgz",
     "typescript": "^5.2.2"
   },
   "resolutions": {
     "@types/react": "^19.2.0",
+    "react": "19.2.3",
+    "react-native": "0.87.0",
     "react-native-powerauth-networking": "file:../networking-js/packages/lib-rn/react-native-powerauth-networking-v0.0.1-dev.tgz"
   },
   "dependencies": {

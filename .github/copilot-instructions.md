@@ -13,7 +13,7 @@ yarn install
 yarn build             # both SDK packages
 yarn build:rn          # React Native package
 yarn build:cdv         # Cordova package
-yarn typecheck         # shared TypeScript source
+yarn typecheck         # SDK and React Native example
 yarn packAll           # build and create release tarballs
 ```
 

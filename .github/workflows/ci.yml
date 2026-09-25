@@ -29,11 +29,11 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
+      - name: Typecheck SDK and React Native example before building
+        run: yarn typecheck
+
       - name: Build package
         run: yarn build
-
-      - name: Typecheck shared source
-        run: yarn typecheck
 
       - name: Pack both release artifacts
         run: yarn packAll

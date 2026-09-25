@@ -1,6 +1,10 @@
 {
   "extends": "@react-native/typescript-config",
   "compilerOptions": {
-    "module": "ESNext"
+    "module": "ESNext",
+    "types": ["jest", "node"],
+    "paths": {
+      "react-native-mtoken-sdk": ["../packages/lib-shared/js/index.ts"]
+    }
   }
 }
