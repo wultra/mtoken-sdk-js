@@ -4,93 +4,38 @@
 
 TypeScript SDK for out-of-band operation approval (approve/reject pending operations via PowerAuth transaction signing). Built on top of [PowerAuth Mobile JS SDK](https://github.com/wultra/react-native-powerauth-mobile-sdk). Supports **React Native** and **Apache Cordova** from a single TypeScript source.
 
-## Build
+## Build and examples
 
-The build system uses **gulp** to produce two separate packages from the shared `src/`. The root uses **Yarn 4** with `nodeLinker: node-modules` (configured in `.yarnrc.yml`). The example app uses **npm**.
-
-```bash
-# Install root dependencies (Yarn 4, Node 22.14+)
-yarn install
-
-# Build both RN and Cordova packages
-gulp                # or: yarn build
-gulp rn             # React Native only
-gulp cdv            # Cordova only
-```
-
-Output goes to `build/react-native/` and `build/cdv/` (each with its own `package.json` and `.tgz`).
-
-### What the build does
-
-1. Copies `src/` to a temp dir, replaces `%%SDK_VERSION%%` placeholders with the version from `package.json`
-2. **React Native:** compiles TS → `build/react-native/lib/`, packs `.tgz`
-3. **Cordova:** replaces RN imports with Cordova equivalents, patches `cordova/src/` overrides (e.g., `PWAExtension.ts`, `WMTPlatformUtils.ts`), bundles into a single CJS file via esbuild, generates `typings.d.ts`, packs `.tgz`
-
-### Running the exampleReactNative iOS app
-
-The example app installs the SDK from the gulp-built `.tgz` (not a workspace symlink). **Do not use `npx tsc`** to compile `lib/` locally — `PWAExtension.ts` has `export {}` which `tsc` drops, causing Metro to tree-shake the file and `createWultraMobileToken()` to never register.
+The repository uses Yarn 4 workspaces with `nodeLinker: node-modules`. The shared TypeScript source is in `packages/lib-shared/js`; platform-specific Cordova overrides are in `packages/lib-cdv/src`. `scripts/build.mjs` stages the same published file layout as the pre-migration packages.
 
 ```bash
-# 1. Root — install deps and build SDK
-cd /path/to/mtoken-sdk-js
 yarn install
-gulp
-
-# 2. Example app — install deps and SDK from .tgz (uses npm, not yarn)
-cd exampleReactNative
-npm install
-npm r react-native-mtoken-sdk
-npm i ../build/react-native/react-native-mtoken-sdk-0.0.1-dev.tgz
-
-# 3. iOS pods (use system CocoaPods, not bundler — avoids Ruby 3.4 gem issues)
-cd ios
-pod install
-cd ..
-
-# 4. Start Metro bundler
-npx react-native start --reset-cache
-
-# 5. Build & run from Xcode (⌘R)
-#    Open: exampleReactNative/ios/exampleReactNative.xcworkspace
+yarn build             # both SDK packages
+yarn build:rn          # React Native package
+yarn build:cdv         # Cordova package
+yarn typecheck         # SDK and React Native example
+yarn packAll           # build and create release tarballs
 ```
 
-After changes to `src/`, repeat steps 1-2 (`gulp` + `npm i …tgz`) and reload Metro (or ⌘R in Xcode).
+Build the `0.0.1-dev` PowerAuth Networking tarballs in a sibling `networking-js` checkout before installing dependencies. The example apps are Yarn workspaces. React Native Metro loads `packages/lib-shared/js` directly and the start/run commands stage the version module in `.build/rn/src`; SDK edits appear after reload without a tarball reinstall. Cordova plugin installation rebuilds the Mobile Token SDK and refreshes its PowerAuth and Networking dependencies. The Cordova example uses `scripts/build-cordova-example.mjs` to bundle the shared on-device suites. Configure credentials in `exampleReactNative/src/tests/utils/credentials-private.json` and run both examples on iOS and Android as described in their READMEs.
 
-### Running the exampleCordova iOS app
-
-```bash
-# 1. Root — build Cordova package
-cd /path/to/mtoken-sdk-js
-yarn install
-gulp cdv
-
-# 2. Cordova example — install deps, plugin, build and run
-cd exampleCordova
-npm install
-npm run freshIos          # reinstalls plugin, builds, and runs on iOS
-```
-
-Or step by step: `npm run reinstallPlugin` → `npm run buildIos` → `npm run ios`.
-
-### Running tests
-
-Tests are integration tests that run on-device against a live PowerAuth server. They execute automatically at app launch. Configure credentials in `exampleReactNative/src/tests/utils/credentials-private.json` before running.
+The platform package manifests supply published package metadata. The build stages a copy of each manifest with paths adjusted to the packed layout. Keep the published entry points, declarations, Cordova globals, and dependency contracts compatible with prior releases. `yarn build` does not pack by default.
 
 ## Architecture
 
 ### Dual-platform from single source
 
 ```
-src/                    → Shared TypeScript source (React Native imports)
-cordova/src/            → Cordova-specific overrides (replaces files during build)
-gulpfile.js             → Build orchestration for both platforms
+packages/lib-shared/js/  → Shared TypeScript source (React Native imports)
+packages/lib-cdv/src/    → Cordova-specific overrides
+scripts/build.mjs        → Build and package staging
 ```
 
-The Cordova build replaces all `react-native-powerauth-mobile-sdk` imports with `cordova-powerauth-mobile-sdk` and patches platform-specific files from `cordova/src/`.
+The Cordova build replaces React Native PowerAuth imports with Cordova equivalents and applies platform overrides from `packages/lib-cdv/src/`.
 
 ### SDK structure
 
-Entry point: `src/index.ts` → re-exports everything via `export * from`.
+Entry point: `packages/lib-shared/js/index.ts` → re-exports everything via `export * from`.
 
 ```
 WultraMobileToken       → Main class, holds all service managers
@@ -118,7 +63,7 @@ Each service owns a published PowerAuth Networking client and calls `networking.
 - **Naming:** All public types prefixed with `WMT` (e.g., `WMTOperations`, `WMTInbox`, `WMTException`). Files match their primary export name.
 - **No trailing commas** in TypeScript (matches `.editorconfig` / project style).
 - **Peer dependency:** `react-native-powerauth-mobile-sdk` (5.0.0) is a peer dependency — never bundle it.
-- **`%%SDK_VERSION%%`:** Use this placeholder in source code for the SDK version string. It gets replaced during gulp build.
+- **`%%SDK_VERSION%%`:** Use this placeholder in source code for the SDK version string. The build stages a versioned copy; Metro resolves the staged version module.
 - **Cordova compatibility:** Lines marked with `@cordova-remove` comment are stripped during Cordova build. Don't use RN-specific APIs without considering the Cordova path.
 - **License header:** All source files must include the Apache 2.0 license header.
 - **Module format:** TypeScript compiles to ES6 modules (`"module": "ES6"` in tsconfig).

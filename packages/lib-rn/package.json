@@ -1,0 +1,43 @@
+{
+  "name": "react-native-mtoken-sdk",
+  "version": "0.0.1-dev",
+  "description": "PowerAuth based Mobile Token SDK for React Native",
+  "source": "src/index.ts",
+  "main": "build/lib/index.js",
+  "types": "build/lib/index.d.ts",
+  "files": [
+    "README.md",
+    "LICENSE",
+    "lib/*"
+  ],
+  "scripts": {
+    "stage": "node ../../scripts/build.mjs rn --stage",
+    "build": "node ../../scripts/build.mjs rn",
+    "pack:tgz": "node ../../scripts/build.mjs rn --pack"
+  },
+  "keywords": [
+    "react-native",
+    "ios",
+    "android"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wultra/mtoken-sdk-js.git"
+  },
+  "author": "Wultra <support@wultra.com> (https://wultra.com)",
+  "license": "Apache-2.0",
+  "homepage": "https://www.wultra.com/mobile-security-suite",
+  "peerDependencies": {
+    "react": "^19.2.3",
+    "react-native": ">=0.87.0",
+    "react-native-powerauth-mobile-sdk": "5.0.0"
+  },
+  "devDependencies": {
+    "react": "19.2.3",
+    "react-native": "0.87.0",
+    "react-native-powerauth-mobile-sdk": "https://github.com/wultra/react-native-powerauth-mobile-sdk/releases/download/5.0.0-beta-1/react-native-powerauth-mobile-sdk-5.0.0.tgz"
+  },
+  "dependencies": {
+    "react-native-powerauth-networking": "0.0.1-dev"
+  }
+}

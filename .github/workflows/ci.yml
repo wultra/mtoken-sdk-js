@@ -15,8 +15,25 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - name: Build Networking SDK dependencies
+        run: |
+          git clone https://github.com/wultra/networking-js.git ../networking-js
+          git -C ../networking-js checkout eaa4c4b815d74c986aa83344ffdca77dee9e7561
+          (cd ../networking-js && corepack enable && yarn install --frozen-lockfile && yarn packAll)
+
       - name: Setup
         uses: ./.github/actions/setup
 
+      - name: Typecheck SDK and React Native example before building
+        run: yarn typecheck
+
       - name: Build package
         run: yarn build
+
+      - name: Pack both release artifacts
+        run: yarn packAll

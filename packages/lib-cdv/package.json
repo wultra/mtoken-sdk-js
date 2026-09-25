@@ -1,8 +1,8 @@
 {
   "name": "cordova-mtoken-sdk",
-  "version": "%%SDK_VERSION%%",
+  "version": "0.0.1-dev",
   "description": "PowerAuth based Mobile Token SDK for Cordova (iOS and Android)",
-  "types": "typings.d.ts",
+  "types": "build/typings.d.ts",
   "files": [
     "README.md",
     "LICENSE",
@@ -27,5 +27,9 @@
   "homepage": "https://www.wultra.com/mobile-security-suite",
   "license": "Apache 2.0",
   "licenseFilename": "LICENSE",
-  "readmeFilename": "README.md"
+  "readmeFilename": "README.md",
+  "scripts": {
+    "build": "node ../../scripts/build.mjs cdv",
+    "pack:tgz": "node ../../scripts/build.mjs cdv --pack"
+  }
 }
