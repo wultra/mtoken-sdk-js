@@ -13,5 +13,5 @@
     "stripInternal": true
   },
   "exclude": [ "node_modules" ],
-  "include": [ "src/**/*.ts" ]
+  "include": [ "packages/lib-shared/js/**/*.ts" ]
 }

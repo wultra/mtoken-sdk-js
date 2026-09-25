@@ -34,6 +34,29 @@ To understand the Wultra Mobile Token SDK purpose on a business level better, yo
 
 The documentation is available at the [Wultra Developer Portal](https://developers.wultra.com/components/mtoken-sdk-js/) or inside the [docs](docs) folder.
 
+## Developing this repository
+
+This repository uses Yarn 4 workspaces. `packages/lib-shared/js` contains the shared SDK source; `packages/lib-rn` and `packages/lib-cdv` own the platform packages. Both examples are workspaces and use the same root install.
+
+```bash
+yarn install
+yarn build             # both SDK packages
+yarn build:rn          # React Native only
+yarn build:cdv         # Cordova only
+yarn typecheck         # shared TypeScript source
+yarn startReact        # Metro for exampleReactNative
+```
+
+Metro reads the shared TypeScript source directly. The React Native example stages the SDK version when it starts; edit the SDK and reload without repacking or reinstalling it. The Cordova example rebuilds the SDK when installing or refreshing its plugins.
+
+Package creation is separate from the development loop:
+
+```bash
+yarn packAll
+```
+
+The `0.0.1-dev` PowerAuth Networking dependencies come from a sibling `networking-js` checkout. Build both tarballs there with `yarn packAll` before running `yarn install` here. See the [React Native example](exampleReactNative/README.md) and [Cordova example](exampleCordova/README.md) for device test commands.
+
 ## License
 
 All sources are licensed using the Apache 2.0 license. You can use them with no restrictions. If you are using this library, please let us know. We will be happy to share and promote your project.
