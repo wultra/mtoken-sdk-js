@@ -16,6 +16,7 @@
 
 import { WMTDefaultUserAgent } from "./utils/WMTDefaultUserAgent"
 
+/* @internal */
 export class WMTPlatformUtils {
 
     static getPlatform():  "ios" | "android" {
