@@ -1,6 +1,6 @@
 # Cordova example and device tests
 
-This Yarn workspace runs the same `TestExecutor` suites as the React Native example on actual Cordova iOS and Android apps. The SDK plugin is installed from `packages/lib-cdv/build`.
+This Yarn workspace runs the same `TestExecutor` suites as the React Native example on actual Cordova iOS and Android apps. The SDK plugin is installed from `packages/lib-cordova/build`.
 
 ## Setup
 

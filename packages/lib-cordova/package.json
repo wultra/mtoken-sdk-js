@@ -25,7 +25,7 @@
   "licenseFilename": "LICENSE",
   "readmeFilename": "README.md",
   "scripts": {
-    "build": "node ../../scripts/build.mjs cdv",
-    "pack:tgz": "node ../../scripts/build.mjs cdv --pack"
+    "build": "node ../../scripts/build.mjs cordova",
+    "pack:tgz": "node ../../scripts/build.mjs cordova --pack"
   }
 }

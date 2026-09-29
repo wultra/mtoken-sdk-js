@@ -16,6 +16,8 @@
 - Improved proximity check time handling (breaking: `WMTUserOperationProximityCheck` is now a class; timestamps are adjusted to server-synchronized time automatically during authorization)
 - Added PreApproval Screens & PreApprovalScreensRecorder support ([documentation](Using-Operations.md#pre-approval-screens))
 - Added `reject(operation, reason)` overload that includes `operation.mobileTokenData` in the request for passing customer-specific data
+- Deep imports (for example `react-native-mtoken-sdk/lib/...`) are no longer supported, import everything from `react-native-mtoken-sdk`
+- All public SDK classes are now available as globals in Cordova (for example `WMTOIDC` and `WMTOIDCUtils`)
 
 ## 2.1.0
 - Added `mobileTokenData` to authorize request for passing customer-specific data ([documentation](Using-Operations.md#Passing-Additional-Mobile-Token-Data))

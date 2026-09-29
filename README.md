@@ -36,7 +36,7 @@ The documentation is available at the [Wultra Developer Portal](https://develope
 
 ## Developing this repository
 
-This repository uses Yarn 4 workspaces. `packages/lib-shared/js` contains the shared SDK source; `packages/lib-rn` and `packages/lib-cdv` own the platform packages. Both examples are workspaces and use the same root install.
+This repository uses Yarn 4 workspaces. `packages/lib-shared/js` contains the shared SDK source; `packages/lib-rn` and `packages/lib-cordova` own the platform packages. `scripts/build.mjs` stages the platform sources and runs Rollup (`rollup.config.js`) to bundle the JavaScript and declarations. Both examples are workspaces and use the same root install.
 
 ```bash
 yarn install
@@ -49,10 +49,11 @@ yarn startReact        # Metro for exampleReactNative
 
 Metro reads the shared TypeScript source directly. The React Native example stages the SDK version when it starts; edit the SDK and reload without repacking or reinstalling it. The Cordova example rebuilds the SDK when installing or refreshing its plugins.
 
-Package creation is separate from the development loop:
+Package creation is separate from the development loop. `yarn packAll` builds both tarballs and verifies them with `scripts/verify-packages.mjs`:
 
 ```bash
 yarn packAll
+yarn verify:packages   # verify existing tarballs again
 ```
 
 See the [React Native example](exampleReactNative/README.md) and [Cordova example](exampleCordova/README.md) for device test commands.

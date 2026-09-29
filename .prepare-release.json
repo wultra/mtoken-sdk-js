@@ -6,7 +6,7 @@
         "name": "mtoken-sdk-js",
         "type": "yarn",
         "artifacts": [
-            "packages/lib-cdv/build/cordova-mtoken-sdk-%VERSION%.tgz",
+            "packages/lib-cordova/build/cordova-mtoken-sdk-%VERSION%.tgz",
             "packages/lib-rn/build/react-native-mtoken-sdk-%VERSION%.tgz"
         ],
         "buildscript": "corepack enable && yarn install && yarn packAll"
@@ -23,7 +23,7 @@
         },
         {
             "description": "Cordova workspace version.",
-            "path": "packages/lib-cdv/package.json",
+            "path": "packages/lib-cordova/package.json",
             "type": "version_replace",
             "match": "\"version\": \"%VERSION%\",\n",
             "devChange": true
