@@ -3,7 +3,8 @@ const path = require('path');
 
 const root = path.resolve(__dirname, '..');
 const sharedSource = path.join(root, 'packages/lib-shared/js');
-const versionSource = path.join(root, '.build/rn/src/WMTSDKVersion.ts');
+const stagedSource = path.join(root, 'packages/lib-rn/build/src');
+const versionSource = path.join(stagedSource, 'WMTSDKVersion.ts');
 const appModules = path.join(__dirname, 'node_modules');
 const rootModules = path.join(root, 'node_modules');
 const escapeRegex = value => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -12,7 +13,7 @@ const singletons = ['react', 'react-native',
 
 /** Metro loads editable SDK source from the workspace. */
 const config = {
-  watchFolders: [sharedSource, path.join(root, '.build/rn/src'),
+  watchFolders: [sharedSource, stagedSource,
     path.join(root, 'packages/lib-rn'), rootModules],
   resolver: {
     unstable_enableSymlinks: true,
