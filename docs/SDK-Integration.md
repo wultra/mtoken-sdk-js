@@ -13,6 +13,8 @@ Defining it as a peer dependency ensures that only a single instance of the Powe
 - For **React Native**, install both `react-native-powerauth-mobile-sdk` and `react-native-mtoken-sdk` using `npm` or `yarn`.
 - For **Cordova**, add both `cordova-powerauth-mobile-sdk` and `cordova-mtoken-sdk` using the `cordova plugin add` command.
 
+The PowerAuth Networking JS SDK (`react-native-powerauth-networking` or `cordova-powerauth-networking`) is a regular dependency of the mToken SDK and is installed automatically. On Cordova, `cordova-mtoken-sdk` also declares `cordova-powerauth-mobile-sdk` as a plugin dependency, so a compatible PowerAuth plugin is installed if missing, and the installation fails if an incompatible version is already installed.
+
 ## React Native Installation
 
 ### Supported Platforms

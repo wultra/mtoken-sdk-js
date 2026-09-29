@@ -353,6 +353,44 @@ export class TestSuite_Integration extends TestSuite {
         this.assertEquals(headers!!.get("user-agent"), undefined)
     }
 
+    async testUserAgentOnNetworkingClient() {
+
+        const expectedDefaultUserAgentProductName = "MobileTokenJS"
+        let headers: Headers
+        const capture = (request: RequestInit) => {
+            headers = request.headers as Headers
+            return request
+        }
+
+        // Custom user agent is available on the networking client right after construction
+        let tempMtoken = this.powerAuth.createWultraMobileToken(undefined, "construct-agent")
+        this.assertEquals(tempMtoken.operations.networking.userAgent, "construct-agent", "custom user-agent should be set in the constructor")
+
+        // Library default is applied to the networking client and matches the sent header
+        tempMtoken = this.powerAuth.createWultraMobileToken()
+        await tempMtoken.operations.getOperations(capture)
+        const defaultUserAgent = headers!!.get("user-agent")!!
+        this.assertTrue(defaultUserAgent.startsWith(expectedDefaultUserAgentProductName), `user-agent should start with ${expectedDefaultUserAgentProductName}`)
+        this.assertEquals(tempMtoken.operations.networking.userAgent, defaultUserAgent, "networking client should report the sent user-agent")
+
+        // Value set by the app on the networking client is kept by SDK calls
+        tempMtoken.operations.networking.userAgent = "app-agent"
+        const resp = await tempMtoken.operations.getOperations(capture)
+        this.assertEquals(resp.status, "OK", "request with app user-agent should succeed")
+        this.assertEquals(headers!!.get("user-agent"), "app-agent", "app user-agent should be sent")
+        this.assertEquals(tempMtoken.operations.networking.userAgent, "app-agent", "app user-agent should not be overwritten")
+
+        // Other services are not affected
+        await tempMtoken.inbox.getUnreadCount(capture)
+        this.assertEquals(headers!!.get("user-agent"), defaultUserAgent, "other services should keep the default user-agent")
+
+        // Value set by the app before the library default is resolved is kept
+        tempMtoken = this.powerAuth.createWultraMobileToken()
+        tempMtoken.inbox.networking.userAgent = "early-agent"
+        await tempMtoken.inbox.getUnreadCount(capture)
+        this.assertEquals(headers!!.get("user-agent"), "early-agent", "early app user-agent should be sent")
+    }
+
     async testAcceptLanguage() {
 
         const en = "en"

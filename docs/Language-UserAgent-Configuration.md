@@ -30,6 +30,8 @@ You can specify the user-agent in the `WultraMobileToken` constructor or `create
 
 User-agent can be overridden on the per-call basis in the `requestProcessor` parameter for each API call of the SDK.
 
+Each service (`operations`, `push`, `inbox`, `oidc`) exposes its PowerAuth Networking client as `networking`. The user agent can also be changed there at runtime, for example `mtoken.operations.networking.userAgent = "MyApp/1.0"`. The SDK does not overwrite such a value.
+
 ### Default User Agent
 
 The default value will look like: `MobileTokenJS/1.0.0 com.mycompany.myapp/1.5.2 (Apple; iOS/18.0; iPhone 14,3)`.

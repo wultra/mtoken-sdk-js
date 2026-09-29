@@ -26,13 +26,30 @@ export abstract class WMTService {
 
     /** Networking client used by this service. */
     public readonly networking: WPNNetworking
-    private defaultUserAgent?: Promise<string>
+    private defaultUserAgent?: Promise<void>
 
-    /** @internal */
-    userAgent: WMTUserAgent | string = WMTUserAgent.LIBRARY_DEFAULT
-
-    constructor(protected readonly pa: PowerAuth, baseURL: string) {
-        this.networking = new WPNNetworking(pa, baseURL, "en", WPNUserAgent.SYSTEM_DEFAULT)
+    /**
+     * @param pa PowerAuth instance.
+     * @param baseURL Base URL of the server.
+     * @param userAgent User-Agent for this service's requests. Defaults to `WMTUserAgent.LIBRARY_DEFAULT`.
+     */
+    constructor(protected readonly pa: PowerAuth, baseURL: string, userAgent: WMTUserAgent | string = WMTUserAgent.LIBRARY_DEFAULT) {
+        if (userAgent !== WMTUserAgent.LIBRARY_DEFAULT) {
+            this.networking = new WPNNetworking(pa, baseURL, "en", userAgent)
+            return
+        }
+        // The library default is resolved asynchronously from the environment info. Until it is resolved,
+        // the system default is used. The resolved value is applied once and never replaces a value set by the app.
+        const placeholder = WPNUserAgent.SYSTEM_DEFAULT
+        this.networking = new WPNNetworking(pa, baseURL, "en", placeholder)
+        this.defaultUserAgent = WMTPlatformUtils.getDefaultUserAgent().then(
+            (resolved) => {
+                if (this.networking.userAgent === placeholder) {
+                    this.networking.userAgent = resolved
+                }
+            },
+            (error) => WMTLogger.error(`Failed to resolve the default User-Agent: ${error}`)
+        )
     }
 
     /** Language used for this service's requests. Defaults to "en". */
@@ -42,12 +59,9 @@ export abstract class WMTService {
         WMTLogger.info(`Accept language set to ${language}.`)
     }
 
-    /** Resolves the native User-Agent lazily, keeping SDK construction synchronous. */
+    /** Returns the networking client once the library default User-Agent (if used) is resolved. */
     protected async getNetworking(): Promise<WPNNetworking> {
-        const userAgent = this.userAgent
-        this.networking.userAgent = userAgent === WMTUserAgent.LIBRARY_DEFAULT
-            ? await (this.defaultUserAgent ??= WMTPlatformUtils.getDefaultUserAgent())
-            : userAgent
+        await this.defaultUserAgent
         return this.networking
     }
 
