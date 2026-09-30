@@ -19,10 +19,10 @@ The PowerAuth Networking JS SDK (`react-native-powerauth-networking` or `cordova
 
 ### Supported Platforms
 
-The library is available for the following __React Native (0.73+)__ platforms:
+The library is available for the following __React Native (0.87+)__ platforms:
 
-- __Android 5.0 (API 21)__ and newer
-- __iOS 13.4__ and newer
+- __Android 7.0 (API 24)__ and newer
+- __iOS 15.1__ and newer
 
 ### How To Install
 
@@ -63,7 +63,7 @@ function createMtokenInstance() {
 The library is available for the following __Apache Cordova (>=12.0.0)__ platforms:
 
 - __Android 7.0 (API 24)__ and newer (cordova-android version >=12.0.0)
-- __iOS 11.0__ and newer (cordova-ios version >=7.0.0)
+- __iOS 13.0__ and newer (cordova-ios version >=7.0.0)
 
 ### How To Install
 
