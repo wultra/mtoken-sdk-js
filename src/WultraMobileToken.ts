@@ -18,7 +18,7 @@ import { WMTOperations } from './operations/WMTOperations'
 import { PowerAuth } from 'react-native-powerauth-mobile-sdk'
 import { WMTPush } from './push/WMTPush'
 import { WMTInbox } from './inbox/WMTInbox'
-import { WMTUserAgent } from './networking/WMTNetworking'
+import { WMTUserAgent } from './networking/WMTNetworkingTypes'
 import { WMTLogger } from './WMTLogger'
 import { WMTOIDC } from './oidc/WMTOIDC'
 
@@ -65,10 +65,11 @@ export class WultraMobileToken {
             throw new Error("Null base URL recieved from the PowerAuth instance.")
         }
 
-        this.operations = new WMTOperations(powerAuth, baseURL)
-        this.push = new WMTPush(powerAuth, baseURL)
-        this.inbox = new WMTInbox(powerAuth, baseURL)
-        this.oidc = new WMTOIDC(powerAuth, baseURL)
+        let agent = userAgent ?? WMTUserAgent.LIBRARY_DEFAULT
+        this.operations = new WMTOperations(powerAuth, baseURL, agent)
+        this.push = new WMTPush(powerAuth, baseURL, agent)
+        this.inbox = new WMTInbox(powerAuth, baseURL, agent)
+        this.oidc = new WMTOIDC(powerAuth, baseURL, agent)
 
         // Set the accept language properties.
         let lang = acceptLanguage ?? "en"
@@ -76,13 +77,6 @@ export class WultraMobileToken {
         this.push.acceptLanguage = lang
         this.inbox.acceptLanguage = lang
         this.oidc.acceptLanguage = lang
-
-        // Set the user agent properties.
-        let agent = userAgent ?? WMTUserAgent.LIBRARY_DEFAULT
-        this.operations.userAgent = agent
-        this.push.userAgent = agent
-        this.inbox.userAgent = agent
-        this.oidc.userAgent = agent
 
         WMTLogger.debug("Mobile Token object created with:")
         WMTLogger.debug(" - baseURL: " + baseURL)

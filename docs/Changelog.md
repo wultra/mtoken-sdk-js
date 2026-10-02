@@ -1,6 +1,8 @@
 # Changelog
 
 ## TBA
+- Removed `WMTNetworking`, `WMTJsonConfig`, and `WMTE2EEConfiguration`
+- Networking errors now use `WPNException` and HTTP logging uses `WPNLoggerConfig`
 - Implemented OIDC activation
 - Improved proximity check time handling (breaking: `WMTUserOperationProximityCheck` is now a class; timestamps are adjusted to server-synchronized time automatically during authorization)
 - Added PreApproval Screens & PreApprovalScreensRecorder support ([documentation](Using-Operations.md#pre-approval-screens))

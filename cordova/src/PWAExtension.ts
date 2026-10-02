@@ -1,5 +1,5 @@
 import { WultraMobileToken } from "./WultraMobileToken"
-import { WMTUserAgent } from "./networking/WMTNetworking"
+import { WMTUserAgent } from "./networking/WMTNetworkingTypes"
 
 export interface PowerAuth {
 

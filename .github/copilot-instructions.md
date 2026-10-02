@@ -104,17 +104,13 @@ WultraMobileToken       → Main class, holds all service managers
 
 ### Networking
 
-`WMTNetworking` is the base class for all service managers. It uses:
-- Native `fetch()` for HTTP
-- PowerAuth SDK for request signing (transaction signatures, token-based auth)
-- Optional E2EE (end-to-end encryption) via `PowerAuthDecryptor`
-- Configurable `Accept-Language` and `User-Agent` headers
+Each service owns a published PowerAuth Networking client and calls `networking.call()` with `WPNEndpoint` definitions. The internal `WMTService` base provides setup, User-Agent resolution, and response validation. Networking failures propagate as `WPNException`; Mobile Token validation uses `WMTException`. HTTP logging uses `WPNLoggerConfig`.
 
 ### Key types
 
 - `WMTResponse<T>` — standard API response wrapper (`status: "OK" | "ERROR"`)
 - `WMTResponseError` — server error with `code` (see `WMTKnownRestApiError`) and `message`
-- `WMTException` — SDK-level exception thrown on API or validation errors
+- `WMTException` — Mobile Token validation error; Networking can also throw `WPNException`
 
 ## Conventions
 

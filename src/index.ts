@@ -52,7 +52,7 @@ export * from './oidc/WMTPKCECodes'
 
 // NETWORKING
 export * from './networking/WMTKnownRestApiError'
-export * from './networking/WMTNetworking'
+export * from './networking/WMTNetworkingTypes'
 
 // INTERNAL
 export * from './WMTPlatformUtils'

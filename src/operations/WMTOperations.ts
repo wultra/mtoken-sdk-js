@@ -14,7 +14,9 @@
 // and limitations under the License.
 //
 
-import { WMTNetworking, type WMTRequestProcessor, type WMTResponse } from "../networking/WMTNetworking"
+import { WMTService } from "../networking/WMTService"
+import { WMTRequestProcessor, WMTResponse } from "../networking/WMTNetworkingTypes"
+import { WPNEndpoint, WPNResponseConfig } from 'react-native-powerauth-networking'
 import { type WMTUserOperation } from "./WMTUserOperation"
 import { type WMTOnlineOperation } from "./WMTOnlineOperation"
 import { PowerAuthAuthentication } from 'react-native-powerauth-mobile-sdk'
@@ -34,7 +36,7 @@ import type { WMTPreApprovalElementListItem } from './WMTPreApprovalElement'
 export type WMTRejectionReason = "INCORRECT_DATA" | "UNEXPECTED_OPERATION" | "UNKNOWN" | "PREAPPROVAL" | (string & {})
 
 /** Operation handling.  */
-export class WMTOperations extends WMTNetworking {
+export class WMTOperations extends WMTService {
 
     private jsonDateFields = [ "operationExpires", "operationCreated", "timestampReceived" ]
 
@@ -45,15 +47,13 @@ export class WMTOperations extends WMTNetworking {
     * @returns Server response (with list of operations).
     */
     async getOperations(requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<WMTUserOperation[]>> {
-        const response = await this.postSignedWithToken<WMTUserOperation[]>(
-            {},
-            PowerAuthAuthentication.possession(),
-            "/api/auth/token/app/operation/list",
-            "possession_universal",
-            true,
-            requestProcessor,
-            { dateFields: this.jsonDateFields }
+        const requestData = {}
+        const networking = await this.getNetworking()
+        const response = await networking.call(
+            WPNEndpoint.signedWithToken<typeof requestData, WMTUserOperation[]>("/api/auth/token/app/operation/list", "possession_universal", new WPNResponseConfig(this.jsonDateFields)),
+            requestData, PowerAuthAuthentication.possession(), requestProcessor
         )
+        this.validateResponse(response, true)
         return WMTOperations.normalizeOperationsResponse(response)
     }
 
@@ -65,15 +65,13 @@ export class WMTOperations extends WMTNetworking {
      * @returns Server response (with operation detail)
      */
     async getDetail(operationId: string, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<WMTUserOperation>> {
-        const response = await this.postSignedWithToken<WMTUserOperation>(
-            { requestObject: { id: operationId } },
-            PowerAuthAuthentication.possession(),
-            "/api/auth/token/app/operation/detail",
-            "possession_universal",
-            true,
-            requestProcessor,
-            { dateFields: this.jsonDateFields }
+        const requestData = { requestObject: { id: operationId } }
+        const networking = await this.getNetworking()
+        const response = await networking.call(
+            WPNEndpoint.signedWithToken<typeof requestData, WMTUserOperation>("/api/auth/token/app/operation/detail", "possession_universal", new WPNResponseConfig(this.jsonDateFields)),
+            requestData, PowerAuthAuthentication.possession(), requestProcessor
         )
+        this.validateResponse(response, true)
         return WMTOperations.normalizeOperationResponse(response)
     }
 
@@ -85,15 +83,13 @@ export class WMTOperations extends WMTNetworking {
      * @returns Server response (with the list of operations).
      */
     async getHistory(authentication: PowerAuthAuthentication, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<WMTUserOperation[]>> {
-        const response = await this.postSigned<WMTUserOperation[]>(
-            {},
-            authentication,
-            "/api/auth/token/app/operation/history",
-            "/operation/history",
-            true,
-            requestProcessor,
-            { dateFields: this.jsonDateFields }
+        const requestData = {}
+        const networking = await this.getNetworking()
+        const response = await networking.call(
+            WPNEndpoint.signed<typeof requestData, WMTUserOperation[]>("/api/auth/token/app/operation/history", "/operation/history", new WPNResponseConfig(this.jsonDateFields)),
+            requestData, authentication, requestProcessor
         )
+        this.validateResponse(response, true)
         return WMTOperations.normalizeOperationsResponse(response)
     }
 
@@ -117,14 +113,14 @@ export class WMTOperations extends WMTNetworking {
             await this.ensureTimeSynchronized()
             proximityRequest = await this.buildProximityCheckRequestData(proximityCheck)
         }
-        return await this.postSigned<void>(
-            { requestObject: { id: operation.id, data: operation.data, proximityCheck: proximityRequest, mobileTokenData: operation.mobileTokenData } },
-            authentication,
-            "/api/auth/token/app/operation/authorize",
-            "/operation/authorize",
-            false,
-            requestProcessor
+        const requestData = { requestObject: { id: operation.id, data: operation.data, proximityCheck: proximityRequest, mobileTokenData: operation.mobileTokenData } }
+        const networking = await this.getNetworking()
+        const response = await networking.call(
+            WPNEndpoint.signed<typeof requestData, void>("/api/auth/token/app/operation/authorize", "/operation/authorize"),
+            requestData, authentication, requestProcessor
         )
+        this.validateResponse(response, false)
+        return response
     }
 
     /**
@@ -205,14 +201,14 @@ export class WMTOperations extends WMTNetworking {
         if (mobileTokenData) {
             requestObject.mobileTokenData = mobileTokenData
         }
-        return await this.postSigned<void>(
-            { requestObject },
-            PowerAuthAuthentication.possession(),
-            "/api/auth/token/app/operation/cancel",
-            "/operation/cancel",
-            false,
-            requestProcessor
+        const requestData = { requestObject }
+        const networking = await this.getNetworking()
+        const response = await networking.call(
+            WPNEndpoint.signed<typeof requestData, void>("/api/auth/token/app/operation/cancel", "/operation/cancel"),
+            requestData, PowerAuthAuthentication.possession(), requestProcessor
         )
+        this.validateResponse(response, false)
+        return response
     }
 
     /**
@@ -239,15 +235,13 @@ export class WMTOperations extends WMTNetworking {
      * @returns Server response (with operation detail)
      */
     async claim(operationId: string, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<WMTUserOperation>> {
-        const response = await this.postSignedWithToken<WMTUserOperation>(
-            { requestObject: { id: operationId } },
-            PowerAuthAuthentication.possession(),
-            "/api/auth/token/app/operation/detail/claim",
-            "possession_universal",
-            true,
-            requestProcessor,
-            { dateFields: this.jsonDateFields }
+        const requestData = { requestObject: { id: operationId } }
+        const networking = await this.getNetworking()
+        const response = await networking.call(
+            WPNEndpoint.signedWithToken<typeof requestData, WMTUserOperation>("/api/auth/token/app/operation/detail/claim", "possession_universal", new WPNResponseConfig(this.jsonDateFields)),
+            requestData, PowerAuthAuthentication.possession(), requestProcessor
         )
+        this.validateResponse(response, true)
         return WMTOperations.normalizeOperationResponse(response)
     }
 
