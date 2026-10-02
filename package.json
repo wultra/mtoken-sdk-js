@@ -38,7 +38,7 @@
     "react-native": "0.87.1",
     "react-native-powerauth-mobile-sdk": "^4.3.0",
     "rimraf": "^6.0.1",
-    "typescript": "^5.2.2"
+    "typescript": "^6.0.3"
   },
   "resolutions": {
     "@types/react": "^18.2.44"
