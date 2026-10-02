@@ -14,10 +14,11 @@
 // and limitations under the License.
 //
 
-import { PowerAuth, PowerAuthAuthentication, PowerAuthUtils } from 'react-native-powerauth-mobile-sdk';
+import { PowerAuth, PowerAuthAuthentication, PowerAuthSignatureKeyId, PowerAuthUtils } from 'react-native-powerauth-mobile-sdk';
+import { Buffer } from 'buffer';
 import { TestSuite } from './TestSuite';
 import { IntegrationUtils } from './utils/IntegrationUtils';
-import { WultraMobileToken, WMTQROperationParser, WMTUserAgent, WMTSigningKey, WMTKnownRestApiError, WMTPushData, WMTAPNSEnvironment, WMTException, WMTUserOperationProximityCheck } from 'react-native-mtoken-sdk';
+import { WultraMobileToken, WMTOperations, WMTQROperationParser, WMTUserAgent, WMTSigningKey, WMTKnownRestApiError, WMTPushData, WMTAPNSEnvironment, WMTException, WMTUserOperationProximityCheck } from 'react-native-mtoken-sdk';
 
 export class TestSuite_Integration extends TestSuite {
 
@@ -49,6 +50,26 @@ export class TestSuite_Integration extends TestSuite {
 
     async testList() {
         await this.mtoken.operations.getOperations()
+    }
+
+    async testExplicitBaseURL() {
+        const configuration = await this.powerAuth.configuration
+        const operations = new WMTOperations(this.powerAuth, configuration.baseEndpointUrl)
+        this.assertEquals((await operations.getOperations()).status, "OK")
+    }
+
+    async testUnconfiguredPowerAuthRejectsRequest() {
+        const powerAuth = new PowerAuth(`unconfigured-${Date.now()}`)
+        const mtoken = powerAuth.createWultraMobileToken()
+        let rejected = false
+
+        try {
+            await mtoken.operations.getOperations()
+        } catch {
+            rejected = true
+        }
+
+        this.assertTrue(rejected, "Request should fail without PowerAuth configuration")
     }
 
     async testApprovePayment() {
@@ -167,9 +188,15 @@ export class TestSuite_Integration extends TestSuite {
         const qrOperation = WMTQROperationParser.parse(qrData.operationQrCodeData)
 
         // verify the data
-        const verified = await this.powerAuth.verifyServerSignedData(qrOperation.signedData, qrOperation.signature.signatureString, qrOperation.signature.signingKey == WMTSigningKey.MASTER)
-
-        this.assertTrue(verified, "QR operation did not verify")
+        const keyId = qrOperation.signature.signingKey === WMTSigningKey.MAC_PERSONALIZED
+            ? PowerAuthSignatureKeyId.MAC_PERSONALIZED
+            : qrOperation.signature.signingKey === WMTSigningKey.MASTER
+                ? PowerAuthSignatureKeyId.MASTER_EC : PowerAuthSignatureKeyId.SERVER_EC
+        await this.powerAuth.verifyDigitalSignature(
+            qrOperation.signature.signatureString,
+            Buffer.from(qrOperation.signedData, 'utf8').toString('base64'),
+            keyId
+        )
 
         // get the OTP with the "offline" signing
         const auth = PowerAuthAuthentication.password(this.pin)

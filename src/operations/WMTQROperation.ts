@@ -41,7 +41,7 @@ export interface WMTQROperation {
     /** Data for signature validation. */
     signedData: string
     
-    /** ECDSA signature calculated from `signedData`. String is in Base64 format. */
+    /** Signature calculated from `signedData`. */
     signature: WMTQROperationSignature
     
     /**
@@ -213,7 +213,7 @@ export class WMTFallbackField implements WMTQROperationDataField {
 /** Model class for offline QR operation signature. */
 export interface WMTQROperationSignature {
 
-    /** Defines which key has been used for ECDSA signature calculation. */
+    /** Defines which key has been used for signature calculation. */
     signingKey: WMTSigningKey
 
     /** Raw signature data. */
@@ -223,25 +223,34 @@ export interface WMTQROperationSignature {
     signatureString: string
 }
 
-/** Defines which key was used for ECDSA signature calculation. */
+/** Defines which key was used for signature calculation. */
 export enum WMTSigningKey {
     /** Master server key was used for ECDSA signature calculation. */
     MASTER,
 
     /** Personalized server's private key was used for ECDSA signature calculation. */
-    PERSONALIZED
+    PERSONALIZED,
+
+    /** Personalized MAC key was used for KMAC-256 signature calculation (protocol 4). */
+    MAC_PERSONALIZED
 }
 
 export class WMTSigningKeyUtil {
 
     public static typeValue(signingKey: WMTSigningKey): string {
-        return signingKey == WMTSigningKey.MASTER ? "0" : "1"
+        switch (signingKey) {
+            case WMTSigningKey.MASTER: return "0"
+            case WMTSigningKey.PERSONALIZED: return "1"
+            case WMTSigningKey.MAC_PERSONALIZED: return "2"
+            default: throw new Error("Invalid offline operation signature key")
+        }
     }
 
     public static fromTypeValue(typeValue: string): WMTSigningKey | undefined {
         switch (typeValue) {
             case "0": return WMTSigningKey.MASTER
             case "1": return WMTSigningKey.PERSONALIZED
+            case "2": return WMTSigningKey.MAC_PERSONALIZED
             default: return undefined
         }
     }

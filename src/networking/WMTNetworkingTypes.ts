@@ -29,7 +29,10 @@ export interface WMTResponseError {
     message: string
 }
 
-/** Customizes an outgoing HTTP request. */
+/**
+ * Customizes an outgoing HTTP request. Prefer modifying headers only.
+ * Encrypted request bodies are Uint8Array values and must be preserved without JSON encoding.
+ */
 export type WMTRequestProcessor = (request: RequestInit) => RequestInit
 
 /** Automatic values that will be used for User-Agent HTTP header. */

@@ -30,10 +30,10 @@ export abstract class WMTService {
 
     /**
      * @param pa PowerAuth instance.
-     * @param baseURL Base URL of the server.
+     * @param baseURL Optional base URL of the server. When omitted, it is resolved from the PowerAuth configuration.
      * @param userAgent User-Agent for this service's requests. Defaults to `WMTUserAgent.LIBRARY_DEFAULT`.
      */
-    constructor(protected readonly pa: PowerAuth, baseURL: string, userAgent: WMTUserAgent | string = WMTUserAgent.LIBRARY_DEFAULT) {
+    constructor(protected readonly pa: PowerAuth, baseURL?: string, userAgent: WMTUserAgent | string = WMTUserAgent.LIBRARY_DEFAULT) {
         if (userAgent !== WMTUserAgent.LIBRARY_DEFAULT) {
             this.networking = new WPNNetworking(pa, baseURL, "en", userAgent)
             return
