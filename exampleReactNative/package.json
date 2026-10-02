@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "react": "18.3.1",
-    "react-native": "0.76.1",
+    "react-native": "0.87.1",
     "react-native-device-info": "^14.0.0",
     "react-native-mtoken-sdk": "file:../build/react-native/react-native-mtoken-sdk-0.0.1-dev.tgz",
     "react-native-powerauth-mobile-sdk": "^4.1.0"
@@ -27,7 +27,7 @@
     "@react-native-community/cli-platform-ios": "15.0.0",
     "@react-native/babel-preset": "0.76.1",
     "@react-native/eslint-config": "0.76.1",
-    "@react-native/metro-config": "0.76.1",
+    "@react-native/metro-config": "0.87.1",
     "@react-native/typescript-config": "0.76.1",
     "@types/react": "^18.2.6",
     "@types/react-test-renderer": "^18.0.0",
