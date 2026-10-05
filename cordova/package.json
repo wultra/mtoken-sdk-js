@@ -12,7 +12,7 @@
   ],
   "peerDependencies": {
     "cordova-powerauth-mobile-sdk": "5.0.0",
-    "cordova-powerauth-networking": "0.0.1-dev"
+    "cordova-powerauth-networking": "2.0.0"
   },
   "keywords": [
     "cordova",
