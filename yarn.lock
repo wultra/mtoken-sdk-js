@@ -3850,8 +3850,8 @@ __metadata:
   peerDependencies:
     react: ^19.2.3
     react-native: ">=0.87.0"
-    react-native-powerauth-mobile-sdk: 5.0.0
-    react-native-powerauth-networking: 2.0.0
+    react-native-powerauth-mobile-sdk: ^5.0.0
+    react-native-powerauth-networking: ^2.0.0
   languageName: unknown
   linkType: soft
 
