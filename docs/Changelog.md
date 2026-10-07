@@ -1,6 +1,7 @@
 # Changelog
 
 ## TBA
+- `PowerAuth Networking JS SDK` is now a required peer dependency, and you need to add it manually alongside the `mtoken-sdk-js` on React Native
 - Removed `WMTNetworking`, `WMTJsonConfig`, and `WMTE2EEConfiguration`
 - Networking errors now use `WPNException` and HTTP logging uses `WPNLoggerConfig`
 - Implemented OIDC activation

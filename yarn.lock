@@ -3859,6 +3859,7 @@ __metadata:
     react: "*"
     react-native: "*"
     react-native-powerauth-mobile-sdk: ^4.3.0
+    react-native-powerauth-networking: ^1.0.1
   languageName: unknown
   linkType: soft
 
