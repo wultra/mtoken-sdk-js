@@ -34,7 +34,7 @@ Each service (`operations`, `push`, `inbox`, `oidc`) exposes its PowerAuth Netwo
 
 ### Default User Agent
 
-The default value will look like: `MobileTokenJS/1.0.0 com.mycompany.myapp/1.5.2 (Apple; iOS/18.0; iPhone 14,3)`.
+The default value is provided by PowerAuth Networking and will look like: `PowerAuthNetworkingJS/1.0.0 com.mycompany.myapp/1.5.2 (Apple; iOS/18.0; iPhone 14,3)`.
 
 ## Example
 

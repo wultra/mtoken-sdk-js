@@ -152,8 +152,8 @@ const sdkVersion = require('./package.json').version
             .pipe(ts({ declaration: true, emitDeclarationOnly: true, stripInternal: true }))
             .pipe(concat(`typings.d.ts`))
             .pipe(stripImportExport()) // strip off all import/export
-            // Keep the external Networking type resolvable in global Cordova declarations.
-            .pipe(replace(/\bWPNNetworking\b/g, 'import("cordova-powerauth-networking").WPNNetworking'))
+            // Keep the external Networking types resolvable in global Cordova declarations.
+            .pipe(replace(/\b(WPN[A-Za-z]+)\b(?!\.)/g, 'import("cordova-powerauth-networking").$1'))
             .pipe(
                 replace(/.*import.+cordova-powerauth-mobile-sdk *[^\n]*/g, "")
             )
@@ -167,8 +167,6 @@ const sdkVersion = require('./package.json').version
         "WMTLoggerVerbosity",
         "WMTException",
         "WMTInbox",
-        "WMTKnownRestApiError",
-        "WMTUserAgent",
         "WMTOperations",
         "WMTPACUtils",
         "WMTQROperationParser",

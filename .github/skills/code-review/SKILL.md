@@ -28,7 +28,7 @@ The PowerAuth mobile SDK is a peer/runtime dependency (`react-native-powerauth-m
 
 ## Security and async review
 
-Trace backend changes through `src/networking/WMTNetworking.ts`. It serializes request JSON, signs with PowerAuth, optionally uses application-scope E2EE, calls `fetch`, decrypts a successful encrypted response, and maps the `WMTResponse<T>`/`WMTResponseError` contract. Flag only proven changes that lose signing, alter the signed plaintext, omit/replace an encryption header, decrypt with the wrong data, broaden sensitive logging, or change error/result semantics.
+Trace backend changes through `src/networking/WMTService.ts` and the service `WPNEndpoint` definitions. PowerAuth Networking JS serializes request JSON, signs with PowerAuth, optionally uses application-scope E2EE, calls `fetch`, decrypts a successful encrypted response, and maps the `WPNResponse<T>`/`WPNResponseError` contract. Flag only proven changes that lose signing, alter the signed plaintext, omit/replace an encryption header, decrypt with the wrong data, broaden sensitive logging, or change error/result semantics.
 
 For operations in `src/operations/WMTOperations.ts`, preserve operation IDs, signature URI IDs, mobile-token data, and required MFA (`PowerAuthAuthentication`) when approving or rejecting. Treat QR parsing (`WMTQROperationParser.ts`) and PAC/OIDC helpers as untrusted-input boundaries: malformed Base64, fields, callback URL, or state must remain rejected rather than accepted or logged as sensitive data.
 

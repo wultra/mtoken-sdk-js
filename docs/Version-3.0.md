@@ -6,6 +6,8 @@ This guide provides instructions for migration from **Mobile Token JS SDK** vers
 
 - PowerAuth Networking JS is a new required peer dependency. On React Native, add `react-native-powerauth-networking` to your app. On Cordova, `cordova-powerauth-networking` is installed automatically as a plugin dependency.
 - `WMTNetworking`, `WMTJsonConfig`, and `WMTE2EEConfiguration` have been removed. For custom requests, use `WPNNetworking`, `WPNResponseConfig`, and `WPNE2EEConfiguration` from PowerAuth Networking JS.
+- `WMTResponse`, `WMTResponseError`, `WMTRequestProcessor`, `WMTKnownRestApiError`, and `WMTUserAgent` have been removed. Use `WPNResponse`, `WPNResponseError`, `WPNRequestProcessor`, `WPNKnownRestApiError`, and `WPNUserAgent` from PowerAuth Networking JS instead. Existing members and values are unchanged; `WPNKnownRestApiError` additionally contains `ActivationCodeFailed`.
+- The default User-Agent is now provided by PowerAuth Networking and starts with `PowerAuthNetworkingJS/` instead of `MobileTokenJS/`. `WMTPlatformUtils.getDefaultUserAgent()` has been removed.
 - Networking can throw `WPNException`. Mobile Token validation still uses `WMTException`, and server errors remain in `response.responseError`.
 - Configure HTTP logging through `WPNLoggerConfig`. `WMTLogger` only controls Mobile Token logs.
 

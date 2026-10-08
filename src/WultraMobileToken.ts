@@ -18,7 +18,7 @@ import { WMTOperations } from './operations/WMTOperations'
 import { PowerAuth } from 'react-native-powerauth-mobile-sdk'
 import { WMTPush } from './push/WMTPush'
 import { WMTInbox } from './inbox/WMTInbox'
-import { WMTUserAgent } from './networking/WMTNetworkingTypes'
+import { WPNUserAgent } from 'react-native-powerauth-networking'
 import { WMTLogger } from './WMTLogger'
 import { WMTOIDC } from './oidc/WMTOIDC'
 
@@ -56,7 +56,7 @@ export class WultraMobileToken {
      *                  Note that user-agent can be overriden by request processor in each API call.
      * @throws Can throw when a null or invalid `baseEndpointUrl` is set in the `PowerAuth` instance.
      */
-    constructor(powerAuth: PowerAuth, acceptLanguage?: string, userAgent?: WMTUserAgent | string) {
+    constructor(powerAuth: PowerAuth, acceptLanguage?: string, userAgent?: WPNUserAgent | string) {
 
         // Retrieve the base URL and instantiate mtoken services.
         let baseURL = powerAuth.configuration?.baseEndpointUrl
@@ -65,7 +65,7 @@ export class WultraMobileToken {
             throw new Error("Null base URL recieved from the PowerAuth instance.")
         }
 
-        let agent = userAgent ?? WMTUserAgent.LIBRARY_DEFAULT
+        let agent = userAgent ?? WPNUserAgent.LIBRARY_DEFAULT
         this.operations = new WMTOperations(powerAuth, baseURL, agent)
         this.push = new WMTPush(powerAuth, baseURL, agent)
         this.inbox = new WMTInbox(powerAuth, baseURL, agent)

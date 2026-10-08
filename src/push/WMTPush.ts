@@ -15,8 +15,7 @@
 //
 
 import { WMTService } from "../networking/WMTService"
-import { WMTRequestProcessor, WMTResponse } from "../networking/WMTNetworkingTypes"
-import { WPNEndpoint } from 'react-native-powerauth-networking'
+import { WPNEndpoint, WPNRequestProcessor, WPNResponse } from 'react-native-powerauth-networking'
 import { PowerAuthAuthentication } from 'react-native-powerauth-mobile-sdk'
 
 /** Push handling */
@@ -43,11 +42,10 @@ export class WMTPush extends WMTService {
    * await mtoken.push.register(pushData)
    * ```
    */
-  async register(data: WMTPushData, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<void>> {
+  async register(data: WMTPushData, requestProcessor?: WPNRequestProcessor): Promise<WPNResponse<void>> {
 
     const requestData = { requestObject: data.requestObject }
-    const networking = await this.getNetworking()
-    const response = await networking.call(
+    const response = await this.networking.call(
       WPNEndpoint.signedWithToken<typeof requestData, void>("/api/push/device/register/token", "possession_universal"),
       requestData, PowerAuthAuthentication.possession(), requestProcessor
     )

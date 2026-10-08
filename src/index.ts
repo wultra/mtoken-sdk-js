@@ -50,10 +50,6 @@ export * from './oidc/WMTOIDCUtils'
 export * from './oidc/WMTOIDCAuthorizationRequest'
 export * from './oidc/WMTPKCECodes'
 
-// NETWORKING
-export * from './networking/WMTKnownRestApiError'
-export * from './networking/WMTNetworkingTypes'
-
 // INTERNAL
 export * from './WMTPlatformUtils'
 export * from './WMTSDKVersion'

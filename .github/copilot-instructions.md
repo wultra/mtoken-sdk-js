@@ -104,12 +104,12 @@ WultraMobileToken       → Main class, holds all service managers
 
 ### Networking
 
-Each service owns a published PowerAuth Networking client and calls `networking.call()` with `WPNEndpoint` definitions. The internal `WMTService` base provides setup, User-Agent resolution, and response validation. Networking failures propagate as `WPNException`; Mobile Token validation uses `WMTException`. HTTP logging uses `WPNLoggerConfig`.
+Each service owns a published PowerAuth Networking client and calls `networking.call()` with `WPNEndpoint` definitions. The internal `WMTService` base provides setup and response validation. Networking failures propagate as `WPNException`; Mobile Token validation uses `WMTException`. HTTP logging uses `WPNLoggerConfig`.
 
 ### Key types
 
-- `WMTResponse<T>` — standard API response wrapper (`status: "OK" | "ERROR"`)
-- `WMTResponseError` — server error with `code` (see `WMTKnownRestApiError`) and `message`
+- `WPNResponse<T>` (PowerAuth Networking) — standard API response wrapper (`status: "OK" | "ERROR"`)
+- `WPNResponseError` (PowerAuth Networking) — server error with `code` (see `WPNKnownRestApiError`) and `message`
 - `WMTException` — Mobile Token validation error; Networking can also throw `WPNException`
 
 ## Conventions

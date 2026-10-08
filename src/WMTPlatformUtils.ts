@@ -15,16 +15,11 @@
 //
 
 import { Platform } from "react-native"
-import { WMTDefaultUserAgent } from "./utils/WMTDefaultUserAgent"
 
 /* @internal */
 export class WMTPlatformUtils {
 
     static getPlatform():  "ios" | "android" {
         return Platform.OS == "ios" ? "ios" : "android"
-    }
-
-    static async getDefaultUserAgent(): Promise<string> {
-        return WMTDefaultUserAgent.get()
     }
 }

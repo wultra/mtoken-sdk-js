@@ -17,7 +17,8 @@
 import { PowerAuth, PowerAuthAuthentication, PowerAuthUtils } from 'react-native-powerauth-mobile-sdk';
 import { TestSuite } from './TestSuite';
 import { IntegrationUtils } from './utils/IntegrationUtils';
-import { WultraMobileToken, WMTQROperationParser, WMTUserAgent, WMTSigningKey, WMTKnownRestApiError, WMTPushData, WMTAPNSEnvironment, WMTException, WMTUserOperationProximityCheck } from 'react-native-mtoken-sdk';
+import { WPNUserAgent, WPNKnownRestApiError } from 'react-native-powerauth-networking';
+import { WultraMobileToken, WMTQROperationParser, WMTSigningKey, WMTPushData, WMTAPNSEnvironment, WMTException, WMTUserOperationProximityCheck } from 'react-native-mtoken-sdk';
 
 export class TestSuite_Integration extends TestSuite {
 
@@ -115,7 +116,7 @@ export class TestSuite_Integration extends TestSuite {
 
         // repeated authorization should result in error
         const respRepeated = await this.mtoken.operations.authorize(operation, auth)
-        this.assertEquals(respRepeated.responseError?.code, WMTKnownRestApiError.OperationAlreadyFinished, "Missing response object after successful auth")
+        this.assertEquals(respRepeated.responseError?.code, WPNKnownRestApiError.OperationAlreadyFinished, "Missing response object after successful auth")
         this.assertEquals(respRepeated.status, "ERROR", "Status should be ERROR after error")
     }
 
@@ -309,7 +310,7 @@ export class TestSuite_Integration extends TestSuite {
     async testTestUserAgents() {
 
         let tempMtoken: WultraMobileToken
-        const expectedDefaultUserAgentProductName = "MobileTokenJS"
+        const expectedDefaultUserAgentProductName = "PowerAuthNetworkingJS"
         const testUserAgent = "test-agent"
         const envInfo = await PowerAuthUtils.getEnvironmentInfo();
 
@@ -344,7 +345,7 @@ export class TestSuite_Integration extends TestSuite {
 
         // Test system default (should be undefined in the request)
 
-        tempMtoken = this.powerAuth.createWultraMobileToken(undefined, WMTUserAgent.SYSTEM_DEFAULT)
+        tempMtoken = this.powerAuth.createWultraMobileToken(undefined, WPNUserAgent.SYSTEM_DEFAULT)
 
         await tempMtoken.operations.getOperations( request => {
             headers = request.headers as Headers
@@ -355,7 +356,7 @@ export class TestSuite_Integration extends TestSuite {
 
     async testUserAgentOnNetworkingClient() {
 
-        const expectedDefaultUserAgentProductName = "MobileTokenJS"
+        const expectedDefaultUserAgentProductName = "PowerAuthNetworkingJS"
         let headers: Headers
         const capture = (request: RequestInit) => {
             headers = request.headers as Headers
@@ -371,7 +372,7 @@ export class TestSuite_Integration extends TestSuite {
         await tempMtoken.operations.getOperations(capture)
         const defaultUserAgent = headers!!.get("user-agent")!!
         this.assertTrue(defaultUserAgent.startsWith(expectedDefaultUserAgentProductName), `user-agent should start with ${expectedDefaultUserAgentProductName}`)
-        this.assertEquals(tempMtoken.operations.networking.userAgent, defaultUserAgent, "networking client should report the sent user-agent")
+        this.assertEquals(tempMtoken.operations.networking.userAgent, WPNUserAgent.LIBRARY_DEFAULT, "library default should be resolved by the networking client")
 
         // Value set by the app on the networking client is kept by SDK calls
         tempMtoken.operations.networking.userAgent = "app-agent"

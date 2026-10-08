@@ -15,8 +15,7 @@
 //
 
 import { WMTService } from "../networking/WMTService"
-import { WMTRequestProcessor, WMTResponse } from "../networking/WMTNetworkingTypes"
-import { WPNEndpoint, WPNResponseConfig } from 'react-native-powerauth-networking'
+import { WPNEndpoint, WPNRequestProcessor, WPNResponse, WPNResponseConfig } from 'react-native-powerauth-networking'
 import { type WMTUserOperation } from "./WMTUserOperation"
 import { type WMTOnlineOperation } from "./WMTOnlineOperation"
 import { PowerAuthAuthentication } from 'react-native-powerauth-mobile-sdk'
@@ -46,10 +45,9 @@ export class WMTOperations extends WMTService {
     * @param requestProcessor You may modify the request via this processor. It's highly recommended to only modify HTTP headers.
     * @returns Server response (with list of operations).
     */
-    async getOperations(requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<WMTUserOperation[]>> {
+    async getOperations(requestProcessor?: WPNRequestProcessor): Promise<WPNResponse<WMTUserOperation[]>> {
         const requestData = {}
-        const networking = await this.getNetworking()
-        const response = await networking.call(
+        const response = await this.networking.call(
             WPNEndpoint.signedWithToken<typeof requestData, WMTUserOperation[]>("/api/auth/token/app/operation/list", "possession_universal", new WPNResponseConfig(this.jsonDateFields)),
             requestData, PowerAuthAuthentication.possession(), requestProcessor
         )
@@ -64,10 +62,9 @@ export class WMTOperations extends WMTService {
      * @param requestProcessor You may modify the request via this processor. It's highly recommended to only modify HTTP headers.
      * @returns Server response (with operation detail)
      */
-    async getDetail(operationId: string, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<WMTUserOperation>> {
+    async getDetail(operationId: string, requestProcessor?: WPNRequestProcessor): Promise<WPNResponse<WMTUserOperation>> {
         const requestData = { requestObject: { id: operationId } }
-        const networking = await this.getNetworking()
-        const response = await networking.call(
+        const response = await this.networking.call(
             WPNEndpoint.signedWithToken<typeof requestData, WMTUserOperation>("/api/auth/token/app/operation/detail", "possession_universal", new WPNResponseConfig(this.jsonDateFields)),
             requestData, PowerAuthAuthentication.possession(), requestProcessor
         )
@@ -82,10 +79,9 @@ export class WMTOperations extends WMTService {
      * @param requestProcessor You may modify the request via this processor. It's highly recommended to only modify HTTP headers.
      * @returns Server response (with the list of operations).
      */
-    async getHistory(authentication: PowerAuthAuthentication, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<WMTUserOperation[]>> {
+    async getHistory(authentication: PowerAuthAuthentication, requestProcessor?: WPNRequestProcessor): Promise<WPNResponse<WMTUserOperation[]>> {
         const requestData = {}
-        const networking = await this.getNetworking()
-        const response = await networking.call(
+        const response = await this.networking.call(
             WPNEndpoint.signed<typeof requestData, WMTUserOperation[]>("/api/auth/token/app/operation/history", "/operation/history", new WPNResponseConfig(this.jsonDateFields)),
             requestData, authentication, requestProcessor
         )
@@ -105,7 +101,7 @@ export class WMTOperations extends WMTService {
      * @param requestProcessor You may modify the request via this processor. It's highly recommended to only modify HTTP headers.
      * @returns Server response
      */
-    async authorize(operation: WMTOnlineOperation, authentication: PowerAuthAuthentication, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<void>> {
+    async authorize(operation: WMTOnlineOperation, authentication: PowerAuthAuthentication, requestProcessor?: WPNRequestProcessor): Promise<WPNResponse<void>> {
         const proximityCheck = operation.proximityCheck
         let proximityRequest: { otp: string; type: WMTProximityCheckType; timestampReceived: Date; timestampSent: Date } |
               undefined = undefined
@@ -114,8 +110,7 @@ export class WMTOperations extends WMTService {
             proximityRequest = await this.buildProximityCheckRequestData(proximityCheck)
         }
         const requestData = { requestObject: { id: operation.id, data: operation.data, proximityCheck: proximityRequest, mobileTokenData: operation.mobileTokenData } }
-        const networking = await this.getNetworking()
-        const response = await networking.call(
+        const response = await this.networking.call(
             WPNEndpoint.signed<typeof requestData, void>("/api/auth/token/app/operation/authorize", "/operation/authorize"),
             requestData, authentication, requestProcessor
         )
@@ -184,7 +179,7 @@ export class WMTOperations extends WMTService {
      * @param requestProcessor You may modify the request via this processor. It's highly recommended to only modify HTTP headers.
      * @returns Server response
      */
-    async reject(operationId: string, reason: WMTRejectionReason, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<void>>
+    async reject(operationId: string, reason: WMTRejectionReason, requestProcessor?: WPNRequestProcessor): Promise<WPNResponse<void>>
     /**
      * Reject operation with a reason.
      *
@@ -193,8 +188,8 @@ export class WMTOperations extends WMTService {
      * @param requestProcessor You may modify the request via this processor. It's highly recommended to only modify HTTP headers.
      * @returns Server response
      */
-    async reject(operation: WMTOnlineOperation, reason: WMTRejectionReason, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<void>>
-    async reject(operationOrId: string | WMTOnlineOperation, reason: WMTRejectionReason, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<void>> {
+    async reject(operation: WMTOnlineOperation, reason: WMTRejectionReason, requestProcessor?: WPNRequestProcessor): Promise<WPNResponse<void>>
+    async reject(operationOrId: string | WMTOnlineOperation, reason: WMTRejectionReason, requestProcessor?: WPNRequestProcessor): Promise<WPNResponse<void>> {
         const id = typeof operationOrId === "string" ? operationOrId : operationOrId.id
         const mobileTokenData = typeof operationOrId === "string" ? undefined : operationOrId.mobileTokenData
         const requestObject: Record<string, unknown> = { id, reason }
@@ -202,8 +197,7 @@ export class WMTOperations extends WMTService {
             requestObject.mobileTokenData = mobileTokenData
         }
         const requestData = { requestObject }
-        const networking = await this.getNetworking()
-        const response = await networking.call(
+        const response = await this.networking.call(
             WPNEndpoint.signed<typeof requestData, void>("/api/auth/token/app/operation/cancel", "/operation/cancel"),
             requestData, PowerAuthAuthentication.possession(), requestProcessor
         )
@@ -234,10 +228,9 @@ export class WMTOperations extends WMTService {
      * @param requestProcessor You may modify the request via this processor. It's highly recommended to only modify HTTP headers.
      * @returns Server response (with operation detail)
      */
-    async claim(operationId: string, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<WMTUserOperation>> {
+    async claim(operationId: string, requestProcessor?: WPNRequestProcessor): Promise<WPNResponse<WMTUserOperation>> {
         const requestData = { requestObject: { id: operationId } }
-        const networking = await this.getNetworking()
-        const response = await networking.call(
+        const response = await this.networking.call(
             WPNEndpoint.signedWithToken<typeof requestData, WMTUserOperation>("/api/auth/token/app/operation/detail/claim", "possession_universal", new WPNResponseConfig(this.jsonDateFields)),
             requestData, PowerAuthAuthentication.possession(), requestProcessor
         )
@@ -252,7 +245,7 @@ export class WMTOperations extends WMTService {
      * Maps a legacy singular `preApprovalScreen` into the `preApprovalScreens`
      * array and converts legacy `items`/`approvalType` into `elements`/`controls`.
      */
-    private static normalizeOperationResponse(response: WMTResponse<WMTUserOperation>): WMTResponse<WMTUserOperation> {
+    private static normalizeOperationResponse(response: WPNResponse<WMTUserOperation>): WPNResponse<WMTUserOperation> {
         if (response.responseObject) {
             WMTOperations.normalizeOperation(response.responseObject)
         }
@@ -262,7 +255,7 @@ export class WMTOperations extends WMTService {
     /**
      * Decodes legacy pre-approval payloads in a list-of-operations response.
      */
-    private static normalizeOperationsResponse(response: WMTResponse<WMTUserOperation[]>): WMTResponse<WMTUserOperation[]> {
+    private static normalizeOperationsResponse(response: WPNResponse<WMTUserOperation[]>): WPNResponse<WMTUserOperation[]> {
         if (response.responseObject) {
             for (const operation of response.responseObject) {
                 WMTOperations.normalizeOperation(operation)

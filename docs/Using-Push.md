@@ -33,7 +33,7 @@ const push = mtoken.push
 
 `WMTPush` has only one method:
 
-- `async register(data: WMTPushData, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<void>>` - Registers the PowerAuth activation for push notifications on the PowerAuth backend.
+- `async register(data: WMTPushData, requestProcessor?: WPNRequestProcessor): Promise<WPNResponse<void>>` - Registers the PowerAuth activation for push notifications on the PowerAuth backend.
     - `data`: Push platform and token retrieved from the device.
 
 ## Registering to Push Notifications Example

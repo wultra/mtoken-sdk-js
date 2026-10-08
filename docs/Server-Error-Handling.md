@@ -9,7 +9,11 @@ Handle these in `catch`.
 
 ## Example error handling
 
+In React Native, import `WPNKnownRestApiError` from `react-native-powerauth-networking`. In Cordova, it is available as a global provided by the `cordova-powerauth-networking` plugin.
+
 ```typescript
+import { WPNKnownRestApiError } from "react-native-powerauth-networking" // React Native only
+
 // Approve operation with a password
 async function approve(operation: WMTOnlineOperation, password: string) {
     try {
@@ -18,7 +22,7 @@ async function approve(operation: WMTOnlineOperation, password: string) {
         if (response.status == "OK") {
             // operation authorized
         } else {
-            if (response.responseError?.code == WMTKnownRestApiError.OperationAlreadyFinished) {
+            if (response.responseError?.code == WPNKnownRestApiError.OperationAlreadyFinished) {
                 // the operation was already approved)
             } else {
                 // other handling
