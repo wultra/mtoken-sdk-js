@@ -87,6 +87,19 @@ export class TestSuite_QRParser extends TestSuite {
         for (const length of [0, 31, 33, 64, 255]) {
             this.assertThrow(() => WMTQROperationParser.parse(prefix + '2' + Buffer.alloc(length).toString('base64')))
         }
+        const signatureWithSymbols = '+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/s='
+        this.assertEquals(WMTQROperationParser.parse(prefix + '2' + signatureWithSymbols).signature.signatureString, signatureWithSymbols)
+        // each decodes to 32 bytes but is not canonical Base64
+        const malformedSignatures = [
+            '+/v7+/v7+/!v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/s=',
+            '+/v7+/v7+/ v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/s=',
+            '+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/s',
+            '-_v7-_v7-_v7-_v7-_v7-_v7-_v7-_v7-_v7-_v7-_s=',
+            '+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/t='
+        ]
+        for (const malformed of malformedSignatures) {
+            this.assertThrow(() => WMTQROperationParser.parse(prefix + '2' + malformed))
+        }
     }
 
     testForwardCompatibility() {

@@ -120,6 +120,10 @@ export class WMTQROperationParser {
         }
         const signatureBase64 = signaturePayload.substring(1)
         const signatureByteArray = Buffer.from(signatureBase64, 'base64')
+        // Buffer silently skips invalid characters, so require canonical Base64 by round-tripping.
+        if (signatureByteArray.toString('base64') !== signatureBase64) {
+            throw WMTLogger.errorAndException("Invalid offline operation signature encoding")
+        }
         const validLength = signingKey === WMTSigningKey.MAC_PERSONALIZED
             ? signatureByteArray.length === 32
             : signatureByteArray.length >= 64 && signatureByteArray.length <= 255

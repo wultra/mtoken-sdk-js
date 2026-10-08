@@ -16,7 +16,7 @@
         </edit-config>
     </platform>
 
-    <preference name="deployment-target" value="13.0" />
+    <preference name="deployment-target" value="15.0" />
 
     <preference name="scheme" value="app" />
     <preference name="hostname" value="localhost" />

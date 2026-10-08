@@ -2,6 +2,11 @@
 
 This guide provides instructions for migration from **Mobile Token JS SDK** version `2.1.x` to version `3.0.x`.
 
+## Supported Platforms
+
+- React Native 0.87+ and iOS 15.1+ are required on React Native.
+- iOS 15.0+ is required on Cordova. The plugin sets the `deployment-target` preference to `15.0`. If your `config.xml` sets a lower value, raise it.
+
 ## Networking
 
 - PowerAuth Networking JS is a new required peer dependency. On React Native, add `react-native-powerauth-networking` to your app. On Cordova, `cordova-powerauth-networking` is installed automatically as a plugin dependency.
