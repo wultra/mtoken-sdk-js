@@ -299,25 +299,25 @@ All available methods and attributes of `WMTOperations` API are:
 
 > Each call has a `requestProcessor` parameter - an option to modify the request.
 
-- `async getOperations(requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<WMTUserOperation[]>>` - Retrieves pending operations from the server.
-- `async getDetail(operationId: string, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<WMTUserOperation>>` - Retrieves operation detail based on operation ID.
+- `async getOperations(requestProcessor?: WPNRequestProcessor): Promise<WPNResponse<WMTUserOperation[]>>` - Retrieves pending operations from the server.
+- `async getDetail(operationId: string, requestProcessor?: WPNRequestProcessor): Promise<WPNResponse<WMTUserOperation>>` - Retrieves operation detail based on operation ID.
   - `operationId` - ID of the operation to retrieve.
-- `async getHistory(authentication: PowerAuthAuthentication, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<WMTUserOperation[]>>` - Retrieves operation history.
+- `async getHistory(authentication: PowerAuthAuthentication, requestProcessor?: WPNRequestProcessor): Promise<WPNResponse<WMTUserOperation[]>>` - Retrieves operation history.
   - `authentication` - PowerAuth authentication object for signing.
-- `async authorize(operation: WMTOnlineOperation, authentication: PowerAuthAuthentication, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<void>>` - Authorize provided operation.
+- `async authorize(operation: WMTOnlineOperation, authentication: PowerAuthAuthentication, requestProcessor?: WPNRequestProcessor): Promise<WPNResponse<void>>` - Authorize provided operation.
   - `operation` - An operation to approve, retrieved from `getOperations` call or [created locally](#creating-a-custom-operation).
   - `authentication` - PowerAuth authentication object for operation signing.
-- `async reject(operationId: string, reason: WMTRejectionReason, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<void>>` - Reject operation by ID.
+- `async reject(operationId: string, reason: WMTRejectionReason, requestProcessor?: WPNRequestProcessor): Promise<WPNResponse<void>>` - Reject operation by ID.
   - `operationId` - ID of the operation to reject.
   - `reason` - Rejection reason.
-- `async reject(operation: WMTOnlineOperation, reason: WMTRejectionReason, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<void>>` - Reject operation.
+- `async reject(operation: WMTOnlineOperation, reason: WMTRejectionReason, requestProcessor?: WPNRequestProcessor): Promise<WPNResponse<void>>` - Reject operation.
   - `operation` - Operation to reject (from `getOperations` or created locally).
   - `reason` - Rejection reason.
 - `async authorizeOffline(operation: WMTQROperation, authentication: PowerAuthAuthentication, uriId: string = "/operation/authorize/offline"): Promise<string>` - Sign offline (QR) operation.
   - `operation` - Offline operation retrieved via the `QROperationParser.parse` method (or otherwise).
   - `authentication` - PowerAuth authentication object for operation signing.
   - `uriId` - Custom signature URI ID of the operation. Use the URI ID under which the operation was created on the server. The default value is `/operation/authorize/offline`.
-- `async claim(operationId: string, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<WMTUserOperation>>` - Assigns the 'non-personalized' operation to the user.
+- `async claim(operationId: string, requestProcessor?: WPNRequestProcessor): Promise<WPNResponse<WMTUserOperation>>` - Assigns the 'non-personalized' operation to the user.
   - `operationId` - ID of the operation.
 
 ## WMTUserOperation

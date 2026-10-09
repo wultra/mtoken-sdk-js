@@ -14,7 +14,8 @@
 // and limitations under the License.
 //
 
-import { WMTE2EEConfiguration, WMTNetworking, WMTRequestProcessor, WMTResponse } from "../networking/WMTNetworking";
+import { WMTService } from "../networking/WMTService"
+import { WPNEndpoint, WPNRequestProcessor, WPNResponse, WPNE2EEConfiguration } from 'react-native-powerauth-networking'
 import { WMTOIDCAuthorizationRequest } from "./WMTOIDCAuthorizationRequest";
 import { WMTOIDCConfig } from "./WMTOIDCConfig";
 import { WMTOIDCUtils } from "./WMTOIDCUtils";
@@ -23,7 +24,7 @@ import { PowerAuth, PowerAuthActivation } from "react-native-powerauth-mobile-sd
 import { WMTLogger } from "../WMTLogger";
 
 /** OIDC handling */
-export class WMTOIDC extends WMTNetworking {
+export class WMTOIDC extends WMTService {
     
     /**
      * Retrieves configuration based on predefined providerId.
@@ -34,16 +35,14 @@ export class WMTOIDC extends WMTNetworking {
      * @param requestProcessor is an optional request processor for customizing the HTTP request.
      * @returns Server response (with {@link WMTOIDCConfig})
      */
-    async getConfig(providerId: string, requestProcessor?: WMTRequestProcessor): Promise<WMTResponse<WMTOIDCConfig>> {
-        return await this.post<WMTOIDCConfig>(
-            JSON.stringify({ providerId }),
-            "/api/config/oidc",
-            true,
-            new Headers(),
-            requestProcessor,
-            undefined,
-            WMTE2EEConfiguration.applicationScope
+    async getConfig(providerId: string, requestProcessor?: WPNRequestProcessor): Promise<WPNResponse<WMTOIDCConfig>> {
+        const requestData = { providerId }
+        const response = await this.networking.call(
+            WPNEndpoint.unsigned<typeof requestData, WMTOIDCConfig>("/api/config/oidc", undefined, WPNE2EEConfiguration.APPLICATION_SCOPE),
+            requestData, undefined, requestProcessor
         )
+        this.validateResponse(response, true)
+        return response
     }
 
     /**

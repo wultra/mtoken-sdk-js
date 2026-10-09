@@ -17,7 +17,8 @@
 import { PowerAuth, PowerAuthAuthentication, PowerAuthUtils } from 'react-native-powerauth-mobile-sdk';
 import { TestSuite } from './TestSuite';
 import { IntegrationUtils } from './utils/IntegrationUtils';
-import { WultraMobileToken, WMTQROperationParser, WMTUserAgent, WMTSigningKey, WMTKnownRestApiError, WMTPushData, WMTAPNSEnvironment, WMTException, WMTUserOperationProximityCheck } from 'react-native-mtoken-sdk';
+import { WPNUserAgent, WPNKnownRestApiError } from 'react-native-powerauth-networking';
+import { WultraMobileToken, WMTQROperationParser, WMTSigningKey, WMTPushData, WMTAPNSEnvironment, WMTException, WMTUserOperationProximityCheck } from 'react-native-mtoken-sdk';
 
 export class TestSuite_Integration extends TestSuite {
 
@@ -115,7 +116,7 @@ export class TestSuite_Integration extends TestSuite {
 
         // repeated authorization should result in error
         const respRepeated = await this.mtoken.operations.authorize(operation, auth)
-        this.assertEquals(respRepeated.responseError?.code, WMTKnownRestApiError.OperationAlreadyFinished, "Missing response object after successful auth")
+        this.assertEquals(respRepeated.responseError?.code, WPNKnownRestApiError.OperationAlreadyFinished, "Missing response object after successful auth")
         this.assertEquals(respRepeated.status, "ERROR", "Status should be ERROR after error")
     }
 
@@ -309,7 +310,7 @@ export class TestSuite_Integration extends TestSuite {
     async testTestUserAgents() {
 
         let tempMtoken: WultraMobileToken
-        const expectedDefaultUserAgentProductName = "MobileTokenJS"
+        const expectedDefaultUserAgentProductName = "PowerAuthNetworkingJS"
         const testUserAgent = "test-agent"
         const envInfo = await PowerAuthUtils.getEnvironmentInfo();
 
@@ -344,13 +345,51 @@ export class TestSuite_Integration extends TestSuite {
 
         // Test system default (should be undefined in the request)
 
-        tempMtoken = this.powerAuth.createWultraMobileToken(undefined, WMTUserAgent.SYSTEM_DEFAULT)
+        tempMtoken = this.powerAuth.createWultraMobileToken(undefined, WPNUserAgent.SYSTEM_DEFAULT)
 
         await tempMtoken.operations.getOperations( request => {
             headers = request.headers as Headers
             return request
         })
         this.assertEquals(headers!!.get("user-agent"), undefined)
+    }
+
+    async testUserAgentOnNetworkingClient() {
+
+        const expectedDefaultUserAgentProductName = "PowerAuthNetworkingJS"
+        let headers: Headers
+        const capture = (request: RequestInit) => {
+            headers = request.headers as Headers
+            return request
+        }
+
+        // Custom user agent is available on the networking client right after construction
+        let tempMtoken = this.powerAuth.createWultraMobileToken(undefined, "construct-agent")
+        this.assertEquals(tempMtoken.operations.networking.userAgent, "construct-agent", "custom user-agent should be set in the constructor")
+
+        // Library default is applied to the networking client and matches the sent header
+        tempMtoken = this.powerAuth.createWultraMobileToken()
+        await tempMtoken.operations.getOperations(capture)
+        const defaultUserAgent = headers!!.get("user-agent")!!
+        this.assertTrue(defaultUserAgent.startsWith(expectedDefaultUserAgentProductName), `user-agent should start with ${expectedDefaultUserAgentProductName}`)
+        this.assertEquals(tempMtoken.operations.networking.userAgent, WPNUserAgent.LIBRARY_DEFAULT, "library default should be resolved by the networking client")
+
+        // Value set by the app on the networking client is kept by SDK calls
+        tempMtoken.operations.networking.userAgent = "app-agent"
+        const resp = await tempMtoken.operations.getOperations(capture)
+        this.assertEquals(resp.status, "OK", "request with app user-agent should succeed")
+        this.assertEquals(headers!!.get("user-agent"), "app-agent", "app user-agent should be sent")
+        this.assertEquals(tempMtoken.operations.networking.userAgent, "app-agent", "app user-agent should not be overwritten")
+
+        // Other services are not affected
+        await tempMtoken.inbox.getUnreadCount(capture)
+        this.assertEquals(headers!!.get("user-agent"), defaultUserAgent, "other services should keep the default user-agent")
+
+        // Value set by the app before the library default is resolved is kept
+        tempMtoken = this.powerAuth.createWultraMobileToken()
+        tempMtoken.inbox.networking.userAgent = "early-agent"
+        await tempMtoken.inbox.getUnreadCount(capture)
+        this.assertEquals(headers!!.get("user-agent"), "early-agent", "early app user-agent should be sent")
     }
 
     async testAcceptLanguage() {

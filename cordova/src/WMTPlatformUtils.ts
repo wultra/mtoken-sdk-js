@@ -14,17 +14,12 @@
 // and limitations under the License.
 //
 
-import { WMTDefaultUserAgent } from "./utils/WMTDefaultUserAgent"
 
 export class WMTPlatformUtils {
 
     static getPlatform():  "ios" | "android" {
         // @ts-expect-error
         return cordova.platformId === "ios" ? "ios" : "android";
-    }
-
-    static async getDefaultUserAgent(): Promise<string> {
-        return WMTDefaultUserAgent.get()
     }
 
 }

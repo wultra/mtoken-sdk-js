@@ -4,7 +4,7 @@ React Native test app for the Wultra Mobile Token JS SDK. Runs integration tests
 
 ## Prerequisites
 
-- Node.js ≥ 18
+- Node.js ≥ 22.11 (required by React Native 0.87)
 - [React Native environment](https://reactnative.dev/docs/environment-setup) set up (Xcode, CocoaPods, Android Studio)
 - Root SDK dependencies installed (`yarn install` in the repo root)
 

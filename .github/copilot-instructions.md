@@ -104,24 +104,20 @@ WultraMobileToken       → Main class, holds all service managers
 
 ### Networking
 
-`WMTNetworking` is the base class for all service managers. It uses:
-- Native `fetch()` for HTTP
-- PowerAuth SDK for request signing (transaction signatures, token-based auth)
-- Optional E2EE (end-to-end encryption) via `PowerAuthDecryptor`
-- Configurable `Accept-Language` and `User-Agent` headers
+Each service owns a published PowerAuth Networking client and calls `networking.call()` with `WPNEndpoint` definitions. The internal `WMTService` base provides setup and response validation. Networking failures propagate as `WPNException`; Mobile Token validation uses `WMTException`. HTTP logging uses `WPNLoggerConfig`.
 
 ### Key types
 
-- `WMTResponse<T>` — standard API response wrapper (`status: "OK" | "ERROR"`)
-- `WMTResponseError` — server error with `code` (see `WMTKnownRestApiError`) and `message`
-- `WMTException` — SDK-level exception thrown on API or validation errors
+- `WPNResponse<T>` (PowerAuth Networking) — standard API response wrapper (`status: "OK" | "ERROR"`)
+- `WPNResponseError` (PowerAuth Networking) — server error with `code` (see `WPNKnownRestApiError`) and `message`
+- `WMTException` — Mobile Token validation error; Networking can also throw `WPNException`
 
 ## Conventions
 
 - **Releases:** On non-release branches, keep the SDK version at `0.0.1-dev`. Prepare package and changelog updates with `sh scripts/prepare-release.sh -v X.Y.Z`; use `--verify` to validate a release and `--prepare-dev` to restore development metadata afterward.
 - **Naming:** All public types prefixed with `WMT` (e.g., `WMTOperations`, `WMTInbox`, `WMTException`). Files match their primary export name.
 - **No trailing commas** in TypeScript (matches `.editorconfig` / project style).
-- **Peer dependency:** `react-native-powerauth-mobile-sdk` (^4.3.0) is a peer dependency — never bundle it.
+- **Peer dependencies:** `react-native-powerauth-mobile-sdk` (^4.3.0) and `react-native-powerauth-networking` (^1.0.1) are peer dependencies — never bundle them.
 - **`%%SDK_VERSION%%`:** Use this placeholder in source code for the SDK version string. It gets replaced during gulp build.
 - **Cordova compatibility:** Lines marked with `@cordova-remove` comment are stripped during Cordova build. Don't use RN-specific APIs without considering the Cordova path.
 - **License header:** All source files must include the Apache 2.0 license header.

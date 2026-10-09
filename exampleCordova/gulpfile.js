@@ -48,6 +48,7 @@ const copyTestFiles = () =>
         .src([`${rnTestAppDir}/src/tests/**/**.ts`], { base: rnTestAppDir })
         .pipe(replace(/import {[a-zA-Z }\n,]+from.*react-native-powerauth-mobile-sdk.*/g, ''))
         .pipe(replace(/import {[a-zA-Z }\n,]+from.*react-native-mtoken-sdk.*/g, ''))
+        .pipe(replace(/import {[a-zA-Z }\n,]+from.*react-native-powerauth-networking.*/g, ''))
         //.pipe(stripImportExport())
         .pipe(gulp.dest(tempDir));
 

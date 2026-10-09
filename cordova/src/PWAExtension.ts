@@ -1,5 +1,5 @@
 import { WultraMobileToken } from "./WultraMobileToken"
-import { WMTUserAgent } from "./networking/WMTNetworking"
+import { WPNUserAgent } from "cordova-powerauth-networking"
 
 export interface PowerAuth {
 
@@ -20,7 +20,7 @@ export interface PowerAuth {
      */
     createWultraMobileToken(
         acceptLanguage?: string,
-        userAgent?: WMTUserAgent | string
+        userAgent?: WPNUserAgent | string
     ): WultraMobileToken
 }
 
@@ -48,7 +48,7 @@ declare var PowerAuth: PowerAuthConstructor;
  */
 PowerAuth.prototype.createWultraMobileToken = function (
     acceptLanguage?: string,
-    userAgent?: WMTUserAgent | string
+    userAgent?: WPNUserAgent | string
 ) {
     return new WultraMobileToken(this, acceptLanguage, userAgent)
 }

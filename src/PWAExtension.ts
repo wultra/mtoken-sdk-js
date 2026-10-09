@@ -1,6 +1,6 @@
 import { PowerAuth } from "react-native-powerauth-mobile-sdk"
 import { WultraMobileToken } from "./WultraMobileToken"
-import { WMTUserAgent } from "./networking/WMTNetworking"
+import { WPNUserAgent } from "react-native-powerauth-networking"
 
 declare module "react-native-powerauth-mobile-sdk" {
     export interface PowerAuth {
@@ -22,7 +22,7 @@ declare module "react-native-powerauth-mobile-sdk" {
          */
         createWultraMobileToken(
             acceptLanguage?: string,
-            userAgent?: WMTUserAgent | string
+            userAgent?: WPNUserAgent | string
         ): WultraMobileToken
     }
 }
@@ -44,7 +44,7 @@ declare module "react-native-powerauth-mobile-sdk" {
  */
 PowerAuth.prototype.createWultraMobileToken = function (
     acceptLanguage?: string,
-    userAgent?: WMTUserAgent | string
+    userAgent?: WPNUserAgent | string
 ) {
     return new WultraMobileToken(this, acceptLanguage, userAgent)
 }

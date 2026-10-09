@@ -1,6 +1,11 @@
 # Changelog
 
 ## TBA
+- `PowerAuth Networking JS SDK` is now a required peer dependency, and you need to add it manually alongside the `mtoken-sdk-js` on React Native
+- Removed `WMTNetworking`, `WMTJsonConfig`, and `WMTE2EEConfiguration`
+- Networking errors now use `WPNException` and HTTP logging uses `WPNLoggerConfig`
+- Removed `WMTResponse`, `WMTResponseError`, `WMTRequestProcessor`, `WMTKnownRestApiError`, and `WMTUserAgent` in favor of `WPNResponse`, `WPNResponseError`, `WPNRequestProcessor`, `WPNKnownRestApiError`, and `WPNUserAgent` from PowerAuth Networking JS
+- The default User-Agent is now provided by PowerAuth Networking (`PowerAuthNetworkingJS/...` instead of `MobileTokenJS/...`), and `WMTPlatformUtils.getDefaultUserAgent` was removed
 - Implemented OIDC activation
 - Improved proximity check time handling (breaking: `WMTUserOperationProximityCheck` is now a class; timestamps are adjusted to server-synchronized time automatically during authorization)
 - Added PreApproval Screens & PreApprovalScreensRecorder support ([documentation](Using-Operations.md#pre-approval-screens))

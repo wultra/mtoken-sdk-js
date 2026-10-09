@@ -1,17 +1,17 @@
 # SDK Integration
 
-- [PowerAuth JS SDK Dependency](#powerauth-js-sdk-dependency)
+- [PowerAuth JS SDK Dependencies](#powerauth-js-sdk-dependencies)
 - [Installation for React Native](#react-native-installation)
 - [Installation for Cordova](#cordova-installation)
 
-## PowerAuth JS SDK Dependency
+## PowerAuth JS SDK Dependencies
 
-The PowerAuth JS SDK is a required peer dependency for the mToken SDK. You must install it in a compatible version. 
+The PowerAuth Mobile JS SDK and the PowerAuth Networking JS SDK are required peer dependencies for the mToken SDK. You must install them in a compatible version.
 
-Defining it as a peer dependency ensures that only a single instance of the PowerAuth SDK is used in your project, preventing issues with multiple npm clones.
+Defining them as peer dependencies ensures that only a single instance of each SDK is used in your project, preventing issues with multiple npm clones (for example, `WPNLoggerConfig` settings not applied or `instanceof WPNException` checks failing).
 
-- For **React Native**, install both `react-native-powerauth-mobile-sdk` and `react-native-mtoken-sdk` using `npm` or `yarn`.
-- For **Cordova**, add both `cordova-powerauth-mobile-sdk` and `cordova-mtoken-sdk` using the `cordova plugin add` command.
+- For **React Native**, install `react-native-powerauth-mobile-sdk`, `react-native-powerauth-networking`, and `react-native-mtoken-sdk` using `npm` or `yarn`.
+- For **Cordova**, add both `cordova-powerauth-mobile-sdk` and `cordova-mtoken-sdk` using the `cordova plugin add` command. `cordova-mtoken-sdk` declares `cordova-powerauth-mobile-sdk` and `cordova-powerauth-networking` as plugin dependencies, so compatible plugins are installed if missing, and the installation fails if an incompatible version is already installed.
 
 ## React Native Installation
 
@@ -26,8 +26,9 @@ The library is available for the following __React Native (0.73+)__ platforms:
 
 #### 1. Install packages via npm
 ```sh
-# if not added yet, add PowerAuth Mobile SDK first
+# if not added yet, add PowerAuth Mobile SDK and PowerAuth Networking SDK first
 npm i react-native-powerauth-mobile-sdk --save
+npm i react-native-powerauth-networking --save
 npm i react-native-mtoken-sdk --save
 ```
 

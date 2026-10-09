@@ -14,8 +14,8 @@
 // and limitations under the License.
 //
 
+import { WPNResponse } from 'react-native-powerauth-networking';
 import {
-    WMTResponse,
     WMTUserOperation,
     WMTOperations,
     WMTMobileTokenDataBuilder,
@@ -97,7 +97,7 @@ export class TestSuite_PreApprovalScreens extends TestSuite {
             }]
         }`
 
-        const response = JSON.parse(json) as WMTResponse<WMTUserOperation[]>
+        const response = JSON.parse(json) as WPNResponse<WMTUserOperation[]>
         this.assertEquals("OK", response.status)
 
         const operation = response.responseObject!![0]
@@ -183,7 +183,7 @@ export class TestSuite_PreApprovalScreens extends TestSuite {
             }]
         }`
 
-        const response = JSON.parse(json) as WMTResponse<WMTUserOperation[]>
+        const response = JSON.parse(json) as WPNResponse<WMTUserOperation[]>
         const operation = response.responseObject!![0]
 
         // Apply normalization (same as getOperations path)
@@ -238,7 +238,7 @@ export class TestSuite_PreApprovalScreens extends TestSuite {
             }]
         }`
 
-        const response = JSON.parse(json) as WMTResponse<WMTUserOperation[]>
+        const response = JSON.parse(json) as WPNResponse<WMTUserOperation[]>
         const operation = response.responseObject!![0]
 
         // Apply normalization
@@ -265,7 +265,7 @@ export class TestSuite_PreApprovalScreens extends TestSuite {
             }]
         }`
 
-        const response = JSON.parse(json) as WMTResponse<WMTUserOperation[]>
+        const response = JSON.parse(json) as WPNResponse<WMTUserOperation[]>
         const operation = response.responseObject!![0]
         this.assertNull(operation.ui)
     }
@@ -298,7 +298,7 @@ export class TestSuite_PreApprovalScreens extends TestSuite {
             }]
         }`
 
-        const response = JSON.parse(json) as WMTResponse<WMTUserOperation[]>
+        const response = JSON.parse(json) as WPNResponse<WMTUserOperation[]>
         const operation = response.responseObject!![0]
         WMTOperations.normalizeOperation(operation)
 
@@ -340,7 +340,7 @@ export class TestSuite_PreApprovalScreens extends TestSuite {
             }]
         }`
 
-        const response = JSON.parse(json) as WMTResponse<WMTUserOperation[]>
+        const response = JSON.parse(json) as WPNResponse<WMTUserOperation[]>
         const screen = response.responseObject!![0].ui!!.preApprovalScreens!![0]
         this.assertEquals("INFO", screen.type)
         this.assertEquals("Simple Info", screen.heading)
@@ -372,7 +372,7 @@ export class TestSuite_PreApprovalScreens extends TestSuite {
             }]
         }`
 
-        const response = JSON.parse(json) as WMTResponse<WMTUserOperation[]>
+        const response = JSON.parse(json) as WPNResponse<WMTUserOperation[]>
         const operation = response.responseObject!![0]
         WMTOperations.normalizeOperation(operation)
 
@@ -701,7 +701,7 @@ export class TestSuite_PreApprovalScreens extends TestSuite {
             }]
         }`
 
-        const response = JSON.parse(json) as WMTResponse<WMTUserOperation[]>
+        const response = JSON.parse(json) as WPNResponse<WMTUserOperation[]>
         const screen = response.responseObject!![0].ui!!.preApprovalScreens!![0]
 
         this.assertNotNull(screen.controls)
@@ -739,7 +739,7 @@ export class TestSuite_PreApprovalScreens extends TestSuite {
             }]
         }`
 
-        const response = JSON.parse(json) as WMTResponse<WMTUserOperation[]>
+        const response = JSON.parse(json) as WPNResponse<WMTUserOperation[]>
         const screen = response.responseObject!![0].ui!!.preApprovalScreens!![0]
         this.assertNotNull(screen.elements)
         this.assertEquals(0, screen.elements!!.length)
@@ -773,7 +773,7 @@ export class TestSuite_PreApprovalScreens extends TestSuite {
             }]
         }`
 
-        const response = JSON.parse(json) as WMTResponse<WMTUserOperation[]>
+        const response = JSON.parse(json) as WPNResponse<WMTUserOperation[]>
         const operation = response.responseObject!![0]
 
         // Apply normalization
@@ -812,7 +812,7 @@ export class TestSuite_PreApprovalScreens extends TestSuite {
             }]
         }`
 
-        const response = JSON.parse(json) as WMTResponse<WMTUserOperation[]>
+        const response = JSON.parse(json) as WPNResponse<WMTUserOperation[]>
         const operation = response.responseObject!![0]
         WMTOperations.normalizeOperation(operation)
 
@@ -850,7 +850,7 @@ export class TestSuite_PreApprovalScreens extends TestSuite {
             }]
         }`
 
-        const response = JSON.parse(json) as WMTResponse<WMTUserOperation[]>
+        const response = JSON.parse(json) as WPNResponse<WMTUserOperation[]>
         const elements = response.responseObject!![0].ui!!.preApprovalScreens!![0].elements!!
         this.assertEquals(3, elements.length)
 
