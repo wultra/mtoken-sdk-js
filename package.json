@@ -1,6 +1,6 @@
 {
   "name": "mtoken-sdk-js-monorepo",
-  "version": "0.0.1-dev",
+  "version": "3.0.0",
   "description": "PowerAuth based Mobile Token SDK for React Native",
   "private": true,
   "type": "module",

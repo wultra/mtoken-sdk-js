@@ -1,6 +1,6 @@
 # Changelog
 
-## TBA
+## 3.0.0-beta-1
 - `PowerAuth Networking JS SDK` is now a required peer dependency, and you need to add it manually alongside the `mtoken-sdk-js` on React Native
 - Minimal required version for `PowerAuth Mobile JS SDK` raised to `5.0.0`
   - for more information, see [migration guide](Version-3.0.md)
