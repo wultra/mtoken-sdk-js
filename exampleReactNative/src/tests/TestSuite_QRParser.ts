@@ -76,6 +76,32 @@ export class TestSuite_QRParser extends TestSuite {
         this.assertEquals(f3.text, "hello world")
     }
 
+    testMacPersonalizedSignature() {
+        const code = new TestQRData().makeData()
+        const prefix = code.substring(0, code.lastIndexOf('\n') + 1)
+        const signature = Buffer.alloc(32, 1).toString('base64')
+        const operation = WMTQROperationParser.parse(prefix + '2' + signature)
+        this.assertEquals(operation.signature.signingKey, WMTSigningKey.MAC_PERSONALIZED)
+        this.assertEquals(operation.signature.signatureString, signature)
+        this.assertEquals(operation.signedData, prefix + '2')
+        for (const length of [0, 31, 33, 64, 255]) {
+            this.assertThrow(() => WMTQROperationParser.parse(prefix + '2' + Buffer.alloc(length).toString('base64')))
+        }
+        const signatureWithSymbols = '+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/s='
+        this.assertEquals(WMTQROperationParser.parse(prefix + '2' + signatureWithSymbols).signature.signatureString, signatureWithSymbols)
+        // each decodes to 32 bytes but is not canonical Base64
+        const malformedSignatures = [
+            '+/v7+/v7+/!v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/s=',
+            '+/v7+/v7+/ v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/s=',
+            '+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/s',
+            '-_v7-_v7-_v7-_v7-_v7-_v7-_v7-_v7-_v7-_v7-_s=',
+            '+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/t='
+        ]
+        for (const malformed of malformedSignatures) {
+            this.assertThrow(() => WMTQROperationParser.parse(prefix + '2' + malformed))
+        }
+    }
+
     testForwardCompatibility() {
         const qrcode = new TestQRData()
         qrcode.operationData = "B2*Xtest"

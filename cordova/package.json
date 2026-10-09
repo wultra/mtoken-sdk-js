@@ -10,10 +10,6 @@
     "typings.d.ts",
     "plugin.xml"
   ],
-  "peerDependencies": {
-    "cordova-powerauth-mobile-sdk": "^4.3.0",
-    "cordova-powerauth-networking": "^1.0.1"
-  },
   "keywords": [
     "cordova",
     "ios",
@@ -27,5 +23,5 @@
   "homepage": "https://www.wultra.com/mobile-security-suite",
   "license": "Apache 2.0",
   "licenseFilename": "LICENSE",
-  "readmeFilename": "README.md" 
+  "readmeFilename": "README.md"
 }

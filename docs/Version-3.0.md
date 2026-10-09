@@ -2,6 +2,11 @@
 
 This guide provides instructions for migration from **Mobile Token JS SDK** version `2.1.x` to version `3.0.x`.
 
+## Supported Platforms
+
+- React Native 0.87+ and iOS 15.1+ are required on React Native.
+- iOS 15.0+ is required on Cordova. The plugin sets the `deployment-target` preference to `15.0`. If your `config.xml` sets a lower value, raise it.
+
 ## Networking
 
 - PowerAuth Networking JS is a new required peer dependency. On React Native, add `react-native-powerauth-networking` to your app. On Cordova, `cordova-powerauth-networking` is installed automatically as a plugin dependency.
@@ -10,6 +15,16 @@ This guide provides instructions for migration from **Mobile Token JS SDK** vers
 - The default User-Agent is now provided by PowerAuth Networking and starts with `PowerAuthNetworkingJS/` instead of `MobileTokenJS/`. `WMTPlatformUtils.getDefaultUserAgent()` has been removed.
 - Networking can throw `WPNException`. Mobile Token validation still uses `WMTException`, and server errors remain in `response.responseError`.
 - Configure HTTP logging through `WPNLoggerConfig`. `WMTLogger` only controls Mobile Token logs.
+
+Service constructors remain synchronous. Unless you pass an explicit URL to a service, each request resolves its URL from the asynchronous PowerAuth configuration. A request rejects if that configuration is missing.
+
+PowerAuth Networking handles authentication headers and encryption. If you use a request processor, preserve the supplied headers and body. An encrypted request body is a `Uint8Array`; do not JSON-encode it. PowerAuth and the backend select the authentication algorithm.
+
+## Offline Authorization and QR Signatures
+
+`authorizeOffline()` keeps its public signature and uses PowerAuth's `offlineAuthenticationCode()`.
+
+Protocol 4 offline QR signatures use `WMTSigningKey.MAC_PERSONALIZED` (type `2`, 32 bytes). QR signatures with legacy key types `0` and `1` remain supported. If your app verifies scanned QR operations, select the verification key from the parsed signature as shown in [QR signature verification](Using-Operations.md#processing-scanned-qr-operation).
 
 ## Pre-Approval Screen API
 
