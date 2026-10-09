@@ -21,7 +21,6 @@
     "build": "node scripts/build.mjs all",
     "build:rn": "node scripts/build.mjs rn",
     "build:cdv": "node scripts/build.mjs cordova",
-    "stage:rn": "node scripts/build.mjs rn --stage",
     "packReactNative": "node scripts/build.mjs rn --pack && node scripts/verify-packages.mjs rn",
     "packCordova": "node scripts/build.mjs cordova --pack && node scripts/verify-packages.mjs cordova",
     "packAll": "node scripts/build.mjs all --pack && node scripts/verify-packages.mjs",

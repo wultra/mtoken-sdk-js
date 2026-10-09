@@ -9,11 +9,6 @@
     "LICENSE",
     "lib/*"
   ],
-  "scripts": {
-    "stage": "node ../../scripts/build.mjs rn --stage",
-    "build": "node ../../scripts/build.mjs rn",
-    "pack:tgz": "node ../../scripts/build.mjs rn --pack"
-  },
   "keywords": [
     "react-native",
     "ios",

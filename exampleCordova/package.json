@@ -11,11 +11,9 @@
     "ios": "node scripts/build.mjs ios && cordova run ios",
     "android": "node scripts/build.mjs android && cordova run android",
     "setup": "node scripts/add-platforms.mjs ios android && yarn installPlugin",
-    "rebuildPlugin": "yarn workspace cordova-mtoken-sdk build",
-    "installPlugin": "yarn rebuildPlugin && node scripts/install-plugins.mjs",
-    "reinstallPlugin": "yarn installPlugin",
-    "freshIos": "yarn reinstallPlugin && yarn ios",
-    "freshAndroid": "yarn reinstallPlugin && yarn android"
+    "installPlugin": "yarn build:cdv && node scripts/install-plugins.mjs",
+    "freshIos": "yarn installPlugin && yarn ios",
+    "freshAndroid": "yarn installPlugin && yarn android"
   },
   "keywords": [
     "ecosystem:cordova"

@@ -52,7 +52,6 @@ export * from './oidc/WMTPKCECodes'
 
 // INTERNAL
 export * from './WMTPlatformUtils'
-export * from './WMTSDKVersion'
 
 // UTILS
 export * from './utils/WMTAnyObject'

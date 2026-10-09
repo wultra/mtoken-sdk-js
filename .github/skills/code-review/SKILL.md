@@ -22,16 +22,16 @@ Shared TypeScript sources build to both products:
 
 - RN package: `packages/lib-rn/package.json`, staged to `packages/lib-rn/build/` as a single `lib/index.js` bundle and `lib/index.d.ts`.
 - Cordova package template and plugin: `packages/lib-cordova/package.json`, `packages/lib-cordova/plugin.xml`, with overrides in `packages/lib-cordova/src/`.
-- `scripts/build.mjs` replaces `%%SDK_VERSION%%`, replaces RN imports for Cordova, applies the Cordova overrides, and runs `rollup.config.js`. It generates the Cordova globals, shims, and `plugin.xml` modules from the public (non-`@internal`) exports. Lines marked `@cordova-remove` have platform-specific meaning.
+- `scripts/build.mjs` replaces RN imports for Cordova, applies the Cordova overrides, and runs `rollup.config.js`. It generates the Cordova globals, shims, and `plugin.xml` modules from the public (non-`@internal`) exports. Lines marked `@cordova-remove` have platform-specific meaning.
 - `scripts/verify-packages.mjs` validates the packed tarballs and React Native/Cordova export parity.
 
 The PowerAuth mobile SDK is a peer/runtime dependency (`react-native-powerauth-mobile-sdk` or `cordova-powerauth-mobile-sdk`), never a bundled replacement. Review changes to `packages/lib-shared/js/index.ts`, `packages/lib-cordova/src/`, `scripts/build.mjs`, `rollup.config.js`, or `PWAExtension.ts` together when they alter exports or platform loading.
 
 ## Security and async review
 
-Trace backend changes through `src/networking/WMTService.ts` and the service `WPNEndpoint` definitions. PowerAuth Networking JS serializes request JSON, signs with PowerAuth, optionally uses application-scope E2EE, calls `fetch`, decrypts a successful encrypted response, and maps the `WPNResponse<T>`/`WPNResponseError` contract. Flag only proven changes that lose signing, alter the signed plaintext, omit/replace an encryption header, decrypt with the wrong data, broaden sensitive logging, or change error/result semantics.
+Trace backend changes through `packages/lib-shared/js/networking/WMTService.ts` and the service `WPNEndpoint` definitions. PowerAuth Networking JS serializes request JSON, signs with PowerAuth, optionally uses application-scope E2EE, calls `fetch`, decrypts a successful encrypted response, and maps the `WPNResponse<T>`/`WPNResponseError` contract. Flag only proven changes that lose signing, alter the signed plaintext, omit/replace an encryption header, decrypt with the wrong data, broaden sensitive logging, or change error/result semantics.
 
-For operations in `src/operations/WMTOperations.ts`, preserve operation IDs, signature URI IDs, mobile-token data, and required MFA (`PowerAuthAuthentication`) when approving or rejecting. Treat QR parsing (`WMTQROperationParser.ts`) and PAC/OIDC helpers as untrusted-input boundaries: malformed Base64, fields, callback URL, or state must remain rejected rather than accepted or logged as sensitive data.
+For operations in `packages/lib-shared/js/operations/WMTOperations.ts`, preserve operation IDs, signature URI IDs, mobile-token data, and required MFA (`PowerAuthAuthentication`) when approving or rejecting. Treat QR parsing (`WMTQROperationParser.ts`) and PAC/OIDC helpers as untrusted-input boundaries: malformed Base64, fields, callback URL, or state must remain rejected rather than accepted or logged as sensitive data.
 
 `WMTOIDCUtils.processCallbackUri()` must validate both authorization code and exact opaque `state`; do not allow callbacks to continue on missing/mismatched state. PKCE values and authorization data must not be logged. Promise-returning API operations must remain awaited/returned end-to-end—do not convert them to fire-and-forget calls or mix callback completion with a second Promise completion.
 
@@ -43,7 +43,7 @@ The tracked package-build definition is in `scripts/build.mjs` and `rollup.confi
 in `.github/workflows/ci.yml`; read these files only as evidence. On a
 release-to-`develop` transition, all declared development versions must be
 `0.0.1-dev`: root, `packages/lib-rn`, and `packages/lib-cordova` `package.json`,
-the Cordova `plugin.xml` template, and `packages/lib-shared/js/WMTSDKVersion.ts` must use
+and the Cordova `plugin.xml` template must use
 `%%SDK_VERSION%%` rather than a fixed release version.
 
 `.prepare-release.json` requires release entries in `docs/Changelog.md` and compatibility streams in `docs/Readme.md` and `docs/SDK-Integration.md`. Update those public documents when a release, public API, supported PowerAuth version, or integration behavior changes. Only flag grammar in changed public docs/JSDoc when the PR base is not a release branch; do not make private-code grammar findings.

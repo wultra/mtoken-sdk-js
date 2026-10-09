@@ -23,9 +23,5 @@
   "homepage": "https://www.wultra.com/mobile-security-suite",
   "license": "Apache 2.0",
   "licenseFilename": "LICENSE",
-  "readmeFilename": "README.md",
-  "scripts": {
-    "build": "node ../../scripts/build.mjs cordova",
-    "pack:tgz": "node ../../scripts/build.mjs cordova --pack"
-  }
+  "readmeFilename": "README.md"
 }

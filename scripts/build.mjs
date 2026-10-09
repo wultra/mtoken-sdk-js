@@ -46,11 +46,11 @@ function sdkVersion() {
   return versions[0]
 }
 
-// Copies the shared sources, applies the SDK version and optional platform rewrites.
-function stageSources(destination, version, rewrite = content => content) {
+// Copies the shared sources and applies optional platform rewrites.
+function stageSources(destination, rewrite = content => content) {
   fs.cpSync(layout.shared.jsDir, destination, { recursive: true })
   for (const file of sourceFiles(destination)) {
-    fs.writeFileSync(file, rewrite(fs.readFileSync(file, 'utf8').replaceAll('%%SDK_VERSION%%', version)))
+    fs.writeFileSync(file, rewrite(fs.readFileSync(file, 'utf8')))
   }
 }
 
@@ -65,15 +65,15 @@ function stagePackageFiles(packageDir, stageDir, overrides) {
   fs.copyFileSync(path.join(rootDir, 'LICENSE'), path.join(stageDir, 'LICENSE'))
 }
 
-function stageReactNative(version) {
+function stageReactNative() {
   fs.rmSync(rn.stageDir, { recursive: true, force: true })
-  stageSources(rn.sourceDir, version)
+  stageSources(rn.sourceDir)
 }
 
-function stageCordova(version) {
+function stageCordova() {
   fs.rmSync(cordova.stageDir, { recursive: true, force: true })
   fs.rmSync(cordova.tempDir, { recursive: true, force: true })
-  stageSources(cordova.sourceDir, version, content => content
+  stageSources(cordova.sourceDir, content => content
     .replace(/.+ @cordova-remove *[^\n]*/g, '')
     .replace(/.*import.+react-native-powerauth-mobile-sdk *[^\n]*/g, "import 'cordova-powerauth-mobile-sdk'\n")
     .replaceAll('react-native-powerauth-networking', 'cordova-powerauth-networking'))
@@ -147,15 +147,14 @@ function run(command, args, options = {}) {
 const target = process.argv[2] ?? 'all'
 const flags = new Set(process.argv.slice(3))
 if (!['all', 'rn', 'cordova'].includes(target)) {
-  throw new Error('Use: node scripts/build.mjs all|rn|cordova [--stage|--pack]')
+  throw new Error('Use: node scripts/build.mjs all|rn|cordova [--pack]')
 }
 const buildRN = target === 'rn' || target === 'all'
 const buildCordova = target === 'cordova' || target === 'all'
 
 const version = sdkVersion()
-if (buildRN) stageReactNative(version)
-if (buildCordova) stageCordova(version)
-if (flags.has('--stage')) process.exit(0)
+if (buildRN) stageReactNative()
+if (buildCordova) stageCordova()
 
 run('yarn', ['rollup', '-c', '--silent'], { env: { ...process.env, BUILD_TARGET: target } })
 

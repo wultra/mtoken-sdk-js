@@ -3,8 +3,6 @@ const path = require('path');
 
 const root = path.resolve(__dirname, '..');
 const sharedSource = path.join(root, 'packages/lib-shared/js');
-const stagedSource = path.join(root, 'packages/lib-rn/build/src');
-const versionSource = path.join(stagedSource, 'WMTSDKVersion.ts');
 const appModules = path.join(__dirname, 'node_modules');
 const rootModules = path.join(root, 'node_modules');
 const escapeRegex = value => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -13,8 +11,7 @@ const singletons = ['react', 'react-native',
 
 /** Metro loads editable SDK source from the workspace. */
 const config = {
-  watchFolders: [sharedSource, stagedSource,
-    path.join(root, 'packages/lib-rn'), rootModules],
+  watchFolders: [sharedSource, rootModules],
   resolver: {
     unstable_enableSymlinks: true,
     nodeModulesPaths: [appModules, rootModules],
@@ -24,12 +21,6 @@ const config = {
     resolveRequest: (context, moduleName, platform) => {
       if (moduleName === 'react-native-mtoken-sdk') {
         return {filePath: path.join(sharedSource, 'index.ts'), type: 'sourceFile'};
-      }
-      if (context.originModulePath.startsWith(sharedSource + path.sep) &&
-          moduleName.startsWith('.') &&
-          path.resolve(path.dirname(context.originModulePath), moduleName) ===
-            path.join(sharedSource, 'WMTSDKVersion')) {
-        return {filePath: versionSource, type: 'sourceFile'};
       }
       return context.resolveRequest(context, moduleName, platform);
     },

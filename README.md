@@ -47,7 +47,7 @@ yarn typecheck         # SDK and React Native example
 yarn startReact        # Metro for exampleReactNative
 ```
 
-Metro reads the shared TypeScript source directly. The React Native example stages the SDK version when it starts; edit the SDK and reload without repacking or reinstalling it. The Cordova example rebuilds the SDK when installing or refreshing its plugins.
+Metro reads the shared TypeScript source directly; edit the SDK and reload without building, repacking, or reinstalling it. The Cordova example rebuilds the SDK when installing or refreshing its plugins.
 
 Package creation is separate from the development loop. `yarn packAll` builds both tarballs and verifies them with `scripts/verify-packages.mjs`:
 
