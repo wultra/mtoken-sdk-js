@@ -15,6 +15,7 @@
 //
 
 
+/* @internal */
 export class WMTPlatformUtils {
 
     static getPlatform():  "ios" | "android" {

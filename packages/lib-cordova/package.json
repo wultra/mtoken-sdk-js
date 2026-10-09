@@ -1,8 +1,8 @@
 {
   "name": "cordova-mtoken-sdk",
-  "version": "%%SDK_VERSION%%",
+  "version": "0.0.1-dev",
   "description": "PowerAuth based Mobile Token SDK for Cordova (iOS and Android)",
-  "types": "typings.d.ts",
+  "types": "build/typings.d.ts",
   "files": [
     "README.md",
     "LICENSE",

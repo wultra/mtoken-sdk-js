@@ -97,3 +97,9 @@ New supporting types are exported from the package: `WMTPreApprovalElement`, `WM
 ## Import Path
 
 The import path for `WMTPreApprovalScreen` is unchanged — it is still exported from the package root. However, the type's shape has changed (new optional fields like `id`, `backButton`, `image`, `elements`, `controls`). All new supporting types (`WMTPreApprovalElement`, `WMTPreApprovalControls`, etc.) are also exported from the package root.
+
+Deep imports (for example `react-native-mtoken-sdk/lib/operations/WMTOperations`) no longer work. Import everything from `react-native-mtoken-sdk`:
+
+```ts
+import { WMTOperations, WMTPreApprovalScreen } from "react-native-mtoken-sdk"
+```

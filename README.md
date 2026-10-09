@@ -34,6 +34,30 @@ To understand the Wultra Mobile Token SDK purpose on a business level better, yo
 
 The documentation is available at the [Wultra Developer Portal](https://developers.wultra.com/components/mtoken-sdk-js/) or inside the [docs](docs) folder.
 
+## Developing this repository
+
+This repository uses Yarn 4 workspaces. `packages/lib-shared/js` contains the shared SDK source; `packages/lib-rn` and `packages/lib-cordova` own the platform packages. `scripts/build.mjs` stages the platform sources and runs Rollup (`rollup.config.js`) to bundle the JavaScript and declarations. Both examples are workspaces and use the same root install.
+
+```bash
+yarn install
+yarn build             # both SDK packages
+yarn build:rn          # React Native only
+yarn build:cdv         # Cordova only
+yarn typecheck         # SDK and React Native example
+yarn startReact        # Metro for exampleReactNative
+```
+
+Metro reads the shared TypeScript source directly; edit the SDK and reload without building, repacking, or reinstalling it. The Cordova example rebuilds the SDK when installing or refreshing its plugins.
+
+Package creation is separate from the development loop. `yarn packAll` builds both tarballs and verifies them with `scripts/verify-packages.mjs`:
+
+```bash
+yarn packAll
+yarn verify:packages   # verify existing tarballs again
+```
+
+See the [React Native example](exampleReactNative/README.md) and [Cordova example](exampleCordova/README.md) for device test commands.
+
 ## License
 
 All sources are licensed using the Apache 2.0 license. You can use them with no restrictions. If you are using this library, please let us know. We will be happy to share and promote your project.
