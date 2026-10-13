@@ -47,7 +47,9 @@ You can pass request interceptors to the `WultraMobileToken` constructor or the 
 Interceptors are useful, for example, for adding custom HTTP headers like a correlation ID:
 
 ```typescript
-import { WPNRequestInterceptor } from "react-native-powerauth-networking"
+// React Native:
+import type { WPNRequestInterceptor } from "react-native-powerauth-networking"
+// Cordova: import type { WPNRequestInterceptor } from "cordova-powerauth-networking"
 
 const correlationIdInterceptor: WPNRequestInterceptor = request => {
     const headers = new Headers(request.headers)
