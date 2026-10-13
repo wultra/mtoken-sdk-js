@@ -1,5 +1,5 @@
 import { WultraMobileToken } from "./WultraMobileToken"
-import { WPNUserAgent } from "cordova-powerauth-networking"
+import { WPNUserAgent, WPNRequestInterceptor } from "cordova-powerauth-networking"
 
 export interface PowerAuth {
 
@@ -14,13 +14,16 @@ export interface PowerAuth {
      *                       Standard RFC "Accept-Language" https://tools.ietf.org/html/rfc7231#section-5.3.5
      *                       Response texts are based on this setting. For example when "de" is set, server
      *                       will return operation texts in german (if available).
-     * @param userAgent Optionally sets the User agent that will be used in a HTTP hader.
-     *                  Note that user-agent can be overriden by request processor in each API call.
+     * @param userAgent Optionally sets the User agent that will be used in a HTTP header.
+     *                  Note that user-agent can be overridden by a request interceptor.
+     * @param requestInterceptors Optional interceptors applied, in declaration order, to every request of `operations`, `push`, `inbox`
+     *                            and `oidc` right before it is sent. Default is none.
      * @returns Mobile Token SDK main wrapper.
      */
     createWultraMobileToken(
         acceptLanguage?: string,
-        userAgent?: WPNUserAgent | string
+        userAgent?: WPNUserAgent | string,
+        requestInterceptors?: readonly WPNRequestInterceptor[]
     ): WultraMobileToken
 }
 
@@ -42,13 +45,16 @@ declare var PowerAuth: PowerAuthConstructor;
  *                       Standard RFC "Accept-Language" https://tools.ietf.org/html/rfc7231#section-5.3.5
  *                       Response texts are based on this setting. For example when "de" is set, server
  *                       will return operation texts in german (if available).
- * @param userAgent Optionally sets the User agent that will be used in a HTTP hader.
- *                  Note that user-agent can be overriden by request processor in each API call.
+ * @param userAgent Optionally sets the User agent that will be used in a HTTP header.
+ *                  Note that user-agent can be overridden by a request interceptor.
+ * @param requestInterceptors Optional interceptors applied, in declaration order, to every request of `operations`, `push`, `inbox`
+ *                            and `oidc` right before it is sent. Default is none.
  * @returns Mobile Token SDK main wrapper.
  */
 PowerAuth.prototype.createWultraMobileToken = function (
     acceptLanguage?: string,
-    userAgent?: WPNUserAgent | string
+    userAgent?: WPNUserAgent | string,
+    requestInterceptors?: readonly WPNRequestInterceptor[]
 ) {
-    return new WultraMobileToken(this, acceptLanguage, userAgent)
+    return new WultraMobileToken(this, acceptLanguage, userAgent, requestInterceptors)
 }

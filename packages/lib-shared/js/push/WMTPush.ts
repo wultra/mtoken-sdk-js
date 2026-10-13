@@ -15,7 +15,7 @@
 //
 
 import { WMTService } from "../networking/WMTService"
-import { WPNEndpoint, WPNRequestProcessor, WPNResponse } from 'react-native-powerauth-networking'
+import { WPNEndpoint, WPNResponse } from 'react-native-powerauth-networking'
 import { PowerAuthAuthentication } from 'react-native-powerauth-mobile-sdk'
 
 /** Push handling */
@@ -25,7 +25,6 @@ export class WMTPush extends WMTService {
    * Registers the PowerAuth activation for push notifications on the PowerAuth backend.
    * 
    * @param data Push platform and token retrieved from the device.
-   * @param requestProcessor You may modify the request via this processor. It's highly recommended to only modify HTTP headers.
    * @returns Server response
    * 
    * ----
@@ -42,12 +41,12 @@ export class WMTPush extends WMTService {
    * await mtoken.push.register(pushData)
    * ```
    */
-  async register(data: WMTPushData, requestProcessor?: WPNRequestProcessor): Promise<WPNResponse<void>> {
+  async register(data: WMTPushData): Promise<WPNResponse<void>> {
 
     const requestData = { requestObject: data.requestObject }
     const response = await this.networking.call(
       WPNEndpoint.signedWithToken<typeof requestData, void>("/api/push/device/register/token", "possession_universal"),
-      requestData, PowerAuthAuthentication.possession(), requestProcessor
+      requestData, PowerAuthAuthentication.possession()
     )
     this.validateResponse(response, false)
     return response

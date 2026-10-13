@@ -40,6 +40,28 @@ async function exampleUsage(powerAuth: PowerAuth) {
 
 ```
 
+## Request Interceptors
+
+You can pass request interceptors to the `WultraMobileToken` constructor or the `createWultraMobileToken` factory method. Interceptors are called in the provided order for every request sent by the Mobile Token services (`operations`, `push`, `inbox`, `oidc`) of the instance, after the SDK has prepared the request, including its authentication headers and encryption. Each interceptor receives the request from the previous one and must synchronously return the request to send.
+
+Interceptors are useful, for example, for adding custom HTTP headers like a correlation ID:
+
+```typescript
+import { WPNRequestInterceptor } from "react-native-powerauth-networking"
+
+const correlationIdInterceptor: WPNRequestInterceptor = request => {
+    const headers = new Headers(request.headers)
+    headers.set("X-Correlation-ID", generateCorrelationId())
+    return { ...request, headers }
+}
+
+const mtoken = powerAuth.createWultraMobileToken(undefined, undefined, [correlationIdInterceptor])
+```
+
+<!-- begin box warning -->
+Do not modify the URL, the request body, or the `X-PowerAuth-*` headers. The body of an encrypted request is a `Uint8Array`, and changing any of these will cause the request to fail on the server.
+<!-- end -->
+
 ## Read Next
 
 - [Using Operations](./Using-Operations.md)
