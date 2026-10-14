@@ -15,7 +15,7 @@
 //
 
 import { PowerAuth } from 'react-native-powerauth-mobile-sdk'
-import { WPNNetworking, WPNUserAgent, WPNResponse } from 'react-native-powerauth-networking'
+import { WPNNetworking, WPNUserAgent, WPNResponse, WPNRequestInterceptor } from 'react-native-powerauth-networking'
 import { WMTException } from '../WMTException'
 import { WMTLogger } from '../WMTLogger'
 
@@ -29,9 +29,11 @@ export abstract class WMTService {
      * @param pa PowerAuth instance.
      * @param baseURL Optional base URL of the server. When omitted, it is resolved from the PowerAuth configuration.
      * @param userAgent User-Agent for this service's requests. Defaults to `WPNUserAgent.LIBRARY_DEFAULT`.
+     * @param requestInterceptors Interceptors applied, in declaration order, to every request of this service right before it is sent. Default is none.
      */
-    constructor(protected readonly pa: PowerAuth, baseURL?: string, userAgent: WPNUserAgent | string = WPNUserAgent.LIBRARY_DEFAULT) {
-        this.networking = new WPNNetworking(pa, baseURL, "en", userAgent)
+    constructor(protected readonly pa: PowerAuth, baseURL?: string, userAgent: WPNUserAgent | string = WPNUserAgent.LIBRARY_DEFAULT,
+                requestInterceptors?: readonly WPNRequestInterceptor[]) {
+        this.networking = new WPNNetworking(pa, { baseURL, acceptLanguage: "en", userAgent, requestInterceptors })
     }
 
     /** Language used for this service's requests. Defaults to "en". */

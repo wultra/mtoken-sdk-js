@@ -55,13 +55,14 @@ export class TestSuite_OIDC extends TestSuite {
         const invalidProviderId = "xxx"
 
         let encryptedBodySeen = false
-        const response = await this.oidc.getConfig(invalidProviderId, request => {
+        const oidc = this.pa.createWultraMobileToken(undefined, undefined, [request => {
             this.assertTrue(request.body instanceof Uint8Array, "Encrypted request body must be binary")
             encryptedBodySeen = true
             return request
-        })
+        }]).oidc
+        const response = await oidc.getConfig(invalidProviderId)
 
-        this.assertTrue(encryptedBodySeen, "Request processor was not called")
+        this.assertTrue(encryptedBodySeen, "Request interceptor was not called")
         this.assertEquals(response.status, "ERROR", "Invalid provider must return a server error")
         this.assertNotNull(response.responseError, "Server error details are missing")
     }

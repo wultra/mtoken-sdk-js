@@ -15,7 +15,7 @@
 //
 
 import { WMTService } from "../networking/WMTService"
-import { WPNEndpoint, WPNRequestProcessor, WPNResponse, WPNResponseConfig } from 'react-native-powerauth-networking'
+import { WPNEndpoint, WPNResponse, WPNResponseConfig } from 'react-native-powerauth-networking'
 import { type WMTInboxCount } from "./WMTInboxCount"
 import { type WMTInboxMessage } from "./WMTInboxMessage"
 import { type WMTInboxMessageDetail } from "./WMTInboxMessageDetail"
@@ -30,14 +30,13 @@ export class WMTInbox extends WMTService {
     /**
      * Get number of unread messages in the inbox.
      * 
-     * @param requestProcessor You may modify the request via this processor. It's highly recommended to only modify HTTP headers.
      * @returns Server response (with the unread count)
      */
-    async getUnreadCount(requestProcessor?: WPNRequestProcessor): Promise<WPNResponse<WMTInboxCount>> {
+    async getUnreadCount(): Promise<WPNResponse<WMTInboxCount>> {
         const requestData = { }
         const response = await this.networking.call(
             WPNEndpoint.signedWithToken<typeof requestData, WMTInboxCount>("/api/inbox/count", "possession_universal"),
-            requestData, PowerAuthAuthentication.possession(), requestProcessor
+            requestData, PowerAuthAuthentication.possession()
         )
         this.validateResponse(response, true)
         return response
@@ -49,14 +48,13 @@ export class WMTInbox extends WMTService {
      * @param pageNumber Page number. First page is `0`, second `1`, etc.
      * @param pageSize Size of the page.
      * @param onlyUnread Get only unread messages.
-     * @param requestProcessor You may modify the request via this processor. It's highly recommended to only modify HTTP headers.
      * @returns Server response (with the list of messages)
      */
-    async getMessageList(pageNumber: Number, pageSize: Number, onlyUnread: boolean, requestProcessor?: WPNRequestProcessor): Promise<WPNResponse<WMTInboxMessage[]>> {
+    async getMessageList(pageNumber: Number, pageSize: Number, onlyUnread: boolean): Promise<WPNResponse<WMTInboxMessage[]>> {
         const requestData = { requestObject: { page: pageNumber, size: pageSize, onlyUnread: onlyUnread } }
         const response = await this.networking.call(
             WPNEndpoint.signedWithToken<typeof requestData, WMTInboxMessage[]>("/api/inbox/message/list", "possession_universal", new WPNResponseConfig(this.jsonDateFields)),
-            requestData, PowerAuthAuthentication.possession(), requestProcessor
+            requestData, PowerAuthAuthentication.possession()
         )
         this.validateResponse(response, true)
         return response
@@ -66,14 +64,13 @@ export class WMTInbox extends WMTService {
      * Get message detail in the inbox.
      * 
      * @param messageId Message identifier.
-     * @param requestProcessor You may modify the request via this processor. It's highly recommended to only modify HTTP headers.
      * @returns Server response (with the message detail)
      */
-    async getMessageDetail(messageId: string, requestProcessor?: WPNRequestProcessor): Promise<WPNResponse<WMTInboxMessageDetail>> {
+    async getMessageDetail(messageId: string): Promise<WPNResponse<WMTInboxMessageDetail>> {
         const requestData = { requestObject: { id: messageId } }
         const response = await this.networking.call(
             WPNEndpoint.signedWithToken<typeof requestData, WMTInboxMessageDetail>("/api/inbox/message/detail", "possession_universal", new WPNResponseConfig(this.jsonDateFields)),
-            requestData, PowerAuthAuthentication.possession(), requestProcessor
+            requestData, PowerAuthAuthentication.possession()
         )
         this.validateResponse(response, true)
         return response
@@ -83,14 +80,13 @@ export class WMTInbox extends WMTService {
      * Mark the message with the given identifier as read.
      * 
      * @param messageId Message identifier.
-     * @param requestProcessor You may modify the request via this processor. It's highly recommended to only modify HTTP headers.
      * @returns  Server response
      */
-    async markRead(messageId: string, requestProcessor?: WPNRequestProcessor): Promise<WPNResponse<void>> {
+    async markRead(messageId: string): Promise<WPNResponse<void>> {
         const requestData = { requestObject: { id: messageId } }
         const response = await this.networking.call(
             WPNEndpoint.signedWithToken<typeof requestData, void>("/api/inbox/message/read", "possession_universal"),
-            requestData, PowerAuthAuthentication.possession(), requestProcessor
+            requestData, PowerAuthAuthentication.possession()
         )
         this.validateResponse(response, false)
         return response
@@ -99,14 +95,13 @@ export class WMTInbox extends WMTService {
     /**
      * Marks all unread messages in the inbox as read.
      * 
-     * @param requestProcessor You may modify the request via this processor. It's highly recommended to only modify HTTP headers.
      * @returns  Server response
      */
-    async markAllRead(requestProcessor?: WPNRequestProcessor): Promise<WPNResponse<void>> {
+    async markAllRead(): Promise<WPNResponse<void>> {
         const requestData = {}
         const response = await this.networking.call(
             WPNEndpoint.signedWithToken<typeof requestData, void>("/api/inbox/message/read-all", "possession_universal"),
-            requestData, PowerAuthAuthentication.possession(), requestProcessor
+            requestData, PowerAuthAuthentication.possession()
         )
         this.validateResponse(response, false)
         return response
