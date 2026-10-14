@@ -28,7 +28,7 @@ The user agent is sent with every request to the server (as a standard `User-Age
 
 You can specify the user-agent in the `WultraMobileToken` constructor or `createWultraMobileToken` factory method of the `PowerAuth` class.
 
-User-agent can be overridden on the per-call basis in the `requestProcessor` parameter for each API call of the SDK.
+User-agent can also be overridden in a [request interceptor](./Example-Usage.md#request-interceptors) passed to the `WultraMobileToken` constructor or the `createWultraMobileToken` factory method.
 
 Each service (`operations`, `push`, `inbox`, `oidc`) exposes its PowerAuth Networking client as `networking`. The user agent can also be changed there at runtime, for example `mtoken.operations.networking.userAgent = "MyApp/1.0"`. The SDK does not overwrite such a value.
 

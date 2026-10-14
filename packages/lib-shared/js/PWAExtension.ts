@@ -1,6 +1,6 @@
 import { PowerAuth } from "react-native-powerauth-mobile-sdk"
 import { WultraMobileToken } from "./WultraMobileToken"
-import { WPNUserAgent } from "react-native-powerauth-networking"
+import { WPNUserAgent, WPNRequestInterceptor } from "react-native-powerauth-networking"
 
 declare module "react-native-powerauth-mobile-sdk" {
     export interface PowerAuth {
@@ -16,13 +16,16 @@ declare module "react-native-powerauth-mobile-sdk" {
          *                       Standard RFC "Accept-Language" https://tools.ietf.org/html/rfc7231#section-5.3.5
          *                       Response texts are based on this setting. For example when "de" is set, server
          *                       will return operation texts in german (if available).
-         * @param userAgent Optionally sets the User agent that will be used in a HTTP hader.
-         *                  Note that user-agent can be overriden by request processor in each API call.
+         * @param userAgent Optionally sets the User agent that will be used in a HTTP header.
+         *                  Note that user-agent can be overridden by a request interceptor.
+         * @param requestInterceptors Optional interceptors applied, in declaration order, to every request of `operations`, `push`, `inbox`
+         *                            and `oidc` right before it is sent. Default is none.
          * @returns Mobile Token SDK main wrapper.
          */
         createWultraMobileToken(
             acceptLanguage?: string,
-            userAgent?: WPNUserAgent | string
+            userAgent?: WPNUserAgent | string,
+            requestInterceptors?: readonly WPNRequestInterceptor[]
         ): WultraMobileToken
     }
 }
@@ -38,15 +41,18 @@ declare module "react-native-powerauth-mobile-sdk" {
  *                       Standard RFC "Accept-Language" https://tools.ietf.org/html/rfc7231#section-5.3.5
  *                       Response texts are based on this setting. For example when "de" is set, server
  *                       will return operation texts in german (if available).
- * @param userAgent Optionally sets the User agent that will be used in a HTTP hader.
- *                  Note that user-agent can be overriden by request processor in each API call.
+ * @param userAgent Optionally sets the User agent that will be used in a HTTP header.
+ *                  Note that user-agent can be overridden by a request interceptor.
+ * @param requestInterceptors Optional interceptors applied, in declaration order, to every request of `operations`, `push`, `inbox`
+ *                            and `oidc` right before it is sent. Default is none.
  * @returns Mobile Token SDK main wrapper.
  */
 PowerAuth.prototype.createWultraMobileToken = function (
     acceptLanguage?: string,
-    userAgent?: WPNUserAgent | string
+    userAgent?: WPNUserAgent | string,
+    requestInterceptors?: readonly WPNRequestInterceptor[]
 ) {
-    return new WultraMobileToken(this, acceptLanguage, userAgent)
+    return new WultraMobileToken(this, acceptLanguage, userAgent, requestInterceptors)
 }
 
 export {}

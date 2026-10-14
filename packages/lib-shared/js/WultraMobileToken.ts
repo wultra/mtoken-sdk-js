@@ -18,7 +18,7 @@ import { WMTOperations } from './operations/WMTOperations'
 import { PowerAuth } from 'react-native-powerauth-mobile-sdk'
 import { WMTPush } from './push/WMTPush'
 import { WMTInbox } from './inbox/WMTInbox'
-import { WPNUserAgent } from 'react-native-powerauth-networking'
+import { WPNUserAgent, WPNRequestInterceptor } from 'react-native-powerauth-networking'
 import { WMTLogger } from './WMTLogger'
 import { WMTOIDC } from './oidc/WMTOIDC'
 
@@ -52,17 +52,19 @@ export class WultraMobileToken {
      *                       Standard RFC "Accept-Language" https://tools.ietf.org/html/rfc7231#section-5.3.5
      *                       Response texts are based on this setting. For example when "de" is set, server
      *                       will return operation texts in german (if available).
-     * @param userAgent Optionally sets the User agent that will be used in a HTTP hader. 
-     *                  Note that user-agent can be overriden by request processor in each API call.
+     * @param userAgent Optionally sets the User agent that will be used in a HTTP header. 
+     *                  Note that user-agent can be overridden by a request interceptor.
+     * @param requestInterceptors Optional interceptors applied, in declaration order, to every request of `operations`, `push`, `inbox`
+     *                            and `oidc` right before it is sent. Default is none.
      * Requests resolve the base URL from PowerAuth configuration and reject if it is unavailable.
      */
-    constructor(powerAuth: PowerAuth, acceptLanguage?: string, userAgent?: WPNUserAgent | string) {
+    constructor(powerAuth: PowerAuth, acceptLanguage?: string, userAgent?: WPNUserAgent | string, requestInterceptors?: readonly WPNRequestInterceptor[]) {
 
         let agent = userAgent ?? WPNUserAgent.LIBRARY_DEFAULT
-        this.operations = new WMTOperations(powerAuth, undefined, agent)
-        this.push = new WMTPush(powerAuth, undefined, agent)
-        this.inbox = new WMTInbox(powerAuth, undefined, agent)
-        this.oidc = new WMTOIDC(powerAuth, undefined, agent)
+        this.operations = new WMTOperations(powerAuth, undefined, agent, requestInterceptors)
+        this.push = new WMTPush(powerAuth, undefined, agent, requestInterceptors)
+        this.inbox = new WMTInbox(powerAuth, undefined, agent, requestInterceptors)
+        this.oidc = new WMTOIDC(powerAuth, undefined, agent, requestInterceptors)
 
         // Set the accept language properties.
         let lang = acceptLanguage ?? "en"

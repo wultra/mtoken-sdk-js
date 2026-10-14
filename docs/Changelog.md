@@ -7,10 +7,12 @@
 - Minimal required versions of React and React Native raised to `19.2.3` and `0.87.0`
 - Minimal supported iOS version for Cordova raised to `15.0`
 - `PowerAuth Networking JS SDK` dependency updated to `2.0.0`
+- Added optional `requestInterceptors` parameter to the `WultraMobileToken` constructor and `createWultraMobileToken` factory method ([documentation](Example-Usage.md#request-interceptors))
+- Removed the per-call `requestProcessor` parameter from all service methods in favor of `requestInterceptors` (breaking change compared to `3.0.0-beta-1`, which also requires upgrading `PowerAuth Networking JS SDK` from `2.0.0-beta-1` to `2.0.0-beta-2`, see [migration guide](Version-3.0.md#networking))
 - Updated offline QR authorization for PowerAuth protocol 4 ([documentation](Using-Operations.md#processing-scanned-qr-operation))
 - Removed `WMTNetworking`, `WMTJsonConfig`, and `WMTE2EEConfiguration`
 - Networking errors now use `WPNException` and HTTP logging uses `WPNLoggerConfig`
-- Removed `WMTResponse`, `WMTResponseError`, `WMTRequestProcessor`, `WMTKnownRestApiError`, and `WMTUserAgent` in favor of `WPNResponse`, `WPNResponseError`, `WPNRequestProcessor`, `WPNKnownRestApiError`, and `WPNUserAgent` from PowerAuth Networking JS
+- Removed `WMTResponse`, `WMTResponseError`, `WMTRequestProcessor`, `WMTKnownRestApiError`, and `WMTUserAgent` in favor of `WPNResponse`, `WPNResponseError`, `WPNKnownRestApiError`, and `WPNUserAgent` from PowerAuth Networking JS
 - The default User-Agent is now provided by PowerAuth Networking (`PowerAuthNetworkingJS/...` instead of `MobileTokenJS/...`), and `WMTPlatformUtils.getDefaultUserAgent` was removed
 - Implemented OIDC activation
 - Improved proximity check time handling (breaking: `WMTUserOperationProximityCheck` is now a class; timestamps are adjusted to server-synchronized time automatically during authorization)
