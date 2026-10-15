@@ -78,7 +78,7 @@ export interface WMTPostApprovalScreenRedirect extends WMTPostApprovalScreen {
     /** Message to the user */
     message: string
     /** Payload with data for the redirect */
-    payload: WMTReviewPostApprovalScreenPayload
+    payload: WMTRedirectPostApprovalScreenPayload
 }
 
 export interface WMTRedirectPostApprovalScreenPayload {
