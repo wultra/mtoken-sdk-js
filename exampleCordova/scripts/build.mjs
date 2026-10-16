@@ -59,6 +59,8 @@ try {
   fs.rmSync(temporary, { recursive: true, force: true })
   const testDestination = path.join(temporary, 'src/tests')
   copyTests(rnTests, testDestination)
+  const testConfig = path.join(rnTests, 'utils/test-config-private.json')
+  if (fs.existsSync(testConfig)) fs.copyFileSync(testConfig, path.join(testDestination, 'utils/test-config.json'))
   const credentialsDir = path.join(rnTests, 'utils')
   const privateCredentials = path.join(credentialsDir, 'credentials-private.json')
   const credentialJson = fs.readFileSync(

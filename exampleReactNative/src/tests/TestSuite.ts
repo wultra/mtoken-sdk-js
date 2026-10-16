@@ -1,5 +1,5 @@
 //
-// Copyright 2024 Wultra s.r.o.
+// Copyright 2026 Wultra s.r.o.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -10,178 +10,113 @@
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions
-// and limitations under the License.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 //
 
-export class TestSuite {
-
-    private testFcs = new Array<string>()
-    suiteName: string
-
-    private isStopped = true
-    skippedTests = 0
-
-    constructor() {
-
-        this.suiteName = this.constructor.name.replace(/(Test|Suite)$/g, '')
-        
-        const anyThis = this as any
-
-        // Retrieve all function names that stars with the "test" and call them
-        Object.getOwnPropertyNames(Object.getPrototypeOf(anyThis)).forEach(key => {
-            if (typeof anyThis[key] === 'function' && key.startsWith("test")) {
-                this.testFcs.push(key)
-            }
-        })
-    }
-
-    get testCount() { return this.testFcs.length }
-
-    // called before all tests
-    protected async beforeAll(): Promise<void> {
-
-    }
-
-    // called after all tests
-    protected async afterAll(): Promise<void> {
-
-    }
-
-    // called before each test
-    protected async beforeEach(testname: string): Promise<void> {
-
-    }
-
-    // called after each test
-    protected async afterEach(testname: string, success: boolean): Promise<void> {
-        
-    }
-
-    async runAllTests(): Promise<number> {
-
-        if (!this.isStopped) {
-            console.log(`Stopping ${this.suiteName} tests...`)
-            return 0
-        }
-
-        this.isStopped = false
-        let successCount = 0
-        this.skippedTests = 0
-
-        console.log("")
-        console.log(`-----------------------`)
-        console.log(`# STARTING TEST SUITE "${this.suiteName}" (${this.testCount} tests)`)
-
-        try {
-            await this.runAmbigiousMethod("beforeAll")
-        } catch(e) {
-            console.log(`beforeAll ${this.suiteName} failed: ${JSON.stringify(e)}. Stopping all test in this suite`)
-            return 0
-        }
-
-        for (const test of this.testFcs) {
-            if (this.isStopped) {
-                return successCount
-            }
-            console.log("")
-            console.log(`${test} started...`)
-            try {
-                await this.runAmbigiousMethod("beforeEach", test)
-            } catch(e) {
-                console.log(`- beforeEach ${test} failed: ${JSON.stringify(e)}`)
-                continue
-            }
-            let success: boolean
-            try {
-                await this.runAmbigiousMethod(test)
-                console.log(`- SUCCESS: Test ${test}`)
-                successCount++
-                success = true
-            } catch(e) {
-                if (e instanceof SkippedTest) {
-                    this.skippedTests++
-                    console.log(`- SKIP: Test ${test}: ${e.message}`)
-                } else {
-                    console.error(`- FAIL: Test ${test}: ${JSON.stringify(e)}`)
-                }
-                success = false
-            }
-            try {
-                await this.runAmbigiousMethod("afterEach", test, success)
-            } catch(e) {
-                console.log(`- afterEach ${test} failed: ${JSON.stringify(e)}`)
-            }
-        }
-
-        try {
-            await this.runAmbigiousMethod("afterAll")
-        } catch(e) {
-            console.log(`- afterAll ${this.suiteName} failed: ${e}`)
-        }
-
-        console.log("")
-        console.log(`# TEST SUITE "${this.suiteName}" FINISHED WITH ${successCount}/${this.testFcs.length - this.skippedTests} SUCCESS (${this.skippedTests} skipped).`)
-        return successCount
-    }
-
-    stop() {
-        console.log(`Stopping ${this.suiteName} tests...`)
-        this.isStopped = true
-    }
-
-
-    protected assertEquals(a: any, b: any, message: string = "Objects are not equal") {
-        if (a != b) {
-            throw new Error(`Assertion failed: ${message}: ${a} != ${b}`)
-        }
-    }
-
-    protected assertNotNull(a: any, message: string = "Object is null") {
-        if (a == null) {
-            throw new Error(`Assertion failed: ${message}`)
-        }
-    }
-
-    protected assertNull(a: any, message: string = "Object is not null") {
-        if (a != null) {
-            throw new Error(`Assertion failed: ${message}`)
-        }
-    }
-
-    protected assertThrow(call: () => void, message: string = "Function did not throw") {
-        try {
-            call()
-        } catch(e) {
-            return
-        }
-        throw new Error(`Assertion failed: ${message}`)
-    }
-
-    protected assertTrue(a: boolean, message: string = "Object is false") {
-        if (!a) {
-            throw new Error(`Assertion failed: ${message}`)
-        }
-    }
-
-    protected assertFalse(a: boolean, message: string = "Object is true") {
-        if (a) {
-            throw new Error(`Assertion failed: ${message}`)
-        }
-    }
-
-    protected skip(reason: string): never {
-        throw new SkippedTest(reason)
-    }
-
-    protected fail(message: string = "Test failed") {
-        throw new Error(`Assertion failed: ${message}`)
-    }
-
-    // run method regardles of synchronousnes
-    private async runAmbigiousMethod(method: string, ...params: any[]) {
-        await Promise.resolve((this as any)[method](...params))
-    }
+export interface TestResult {
+    suite: string
+    name: string
+    status: 'passed' | 'failed' | 'skipped'
+    duration: number
+    message?: string
 }
 
 class SkippedTest extends Error {}
+class AssertionFailure extends Error {}
+export class TestTimeout extends Error {}
+
+/** Runs the same tests in Hermes and Cordova's WebView, including the native SDK. */
+export class TestSuite {
+    readonly suiteName: string
+    private stopped = false
+    readonly testNames = Object.getOwnPropertyNames(Object.getPrototypeOf(this))
+        .filter(name => name.startsWith('test') && typeof (this as any)[name] === 'function')
+
+    get testCount() { return this.testNames.length }
+
+    constructor(name?: string) { this.suiteName = name ?? this.constructor.name }
+
+    protected async beforeAll(): Promise<void> {}
+    protected async afterAll(): Promise<void> {}
+    protected async beforeEach(_name: string): Promise<void> {}
+    protected async afterEach(_name: string, _success: boolean): Promise<void> {}
+
+    async runAllTests(report: (result: TestResult) => Promise<void>, timeout = 90000): Promise<void> {
+        this.stopped = false
+        let setupError: unknown
+        let setupFailed = false
+        let timedOut = false
+        const run = async (body: () => unknown) => {
+            let timer: ReturnType<typeof setTimeout> | undefined
+            try {
+                await Promise.race([
+                    Promise.resolve().then(body),
+                    new Promise<never>((_, reject) => {
+                        timer = setTimeout(() => reject(new TestTimeout('Test phase timed out')), timeout)
+                    })
+                ])
+            } catch (error) {
+                if (error instanceof TestTimeout) timedOut = true
+                throw error
+            } finally {
+                clearTimeout(timer)
+            }
+        }
+        try {
+            try { await run(() => this.beforeAll()) } catch (error) { setupError = error; setupFailed = true }
+            for (const name of this.testNames) {
+                const started = Date.now()
+                let error = setupError
+                let failed = setupFailed
+                if (this.stopped || timedOut) { error = new Error('Run interrupted'); failed = true }
+                if (!failed) {
+                    try {
+                        await run(() => this.beforeEach(name))
+                        await run(() => (this as any)[name]())
+                    } catch (caught) {
+                        error = caught
+                        failed = true
+                    } finally {
+                        try { await run(() => this.afterEach(name, !failed)) } catch (caught) { error = caught; failed = true }
+                    }
+                }
+                const status = error instanceof SkippedTest ? 'skipped' : failed ? 'failed' : 'passed'
+                // Do not export arbitrary SDK exceptions, bodies, OTPs, or credentials to CI artifacts.
+                const message = error instanceof AssertionFailure || error instanceof SkippedTest || error instanceof TestTimeout
+                    ? error.message : failed ? 'Test or setup failed; inspect the failing test on the device' : undefined
+                await report({ suite: this.suiteName, name, status, duration: Date.now() - started, message })
+            }
+        } finally {
+            try { await run(() => this.afterAll()) } catch {
+                await report({ suite: this.suiteName, name: '[afterAll]', status: 'failed', duration: 0, message: 'Suite cleanup failed' })
+            }
+        }
+        // A timed out native call cannot be cancelled safely; do not start another suite.
+        if (timedOut) throw new TestTimeout('Test phase timed out')
+    }
+
+    stop() { this.stopped = true }
+    protected assertEquals(a: any, b: any, message = 'Objects are not equal') {
+        // Preserve the existing suites' equality contract, including null/undefined.
+        if (a != b) throw new AssertionFailure(message)
+    }
+    protected assertNotNull(a: any, message = 'Object is null') {
+        if (a == null) throw new AssertionFailure(message)
+    }
+    protected assertNull(a: any, message = 'Object is not null') {
+        if (a != null) throw new AssertionFailure(message)
+    }
+    protected assertThrow(call: () => void, message = 'Function did not throw') {
+        try { call() } catch { return }
+        throw new AssertionFailure(message)
+    }
+    protected assertTrue(a: boolean, message = 'Object is false') {
+        if (!a) throw new AssertionFailure(message)
+    }
+    protected assertFalse(a: boolean, message = 'Object is true') {
+        if (a) throw new AssertionFailure(message)
+    }
+    protected skip(reason: string): never { throw new SkippedTest(reason) }
+    protected fail(message = 'Test failed'): never { throw new AssertionFailure(message) }
+}
