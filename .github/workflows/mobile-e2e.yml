@@ -44,12 +44,9 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-      - name: Setup Android SDK
-        if: matrix.platform == 'android'
-        uses: android-actions/setup-android@v3
       - name: Install Android build tools
         if: matrix.platform == 'android'
-        run: sdkmanager 'platforms;android-37' 'build-tools;37.0.0' 'ndk;27.1.12297006'
+        run: '"$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-37" "build-tools;37.0.0" "ndk;27.1.12297006"'
       - name: Enable KVM
         if: matrix.platform == 'android'
         run: |
