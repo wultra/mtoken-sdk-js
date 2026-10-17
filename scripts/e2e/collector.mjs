@@ -35,6 +35,7 @@ export async function createCollector({ runId, out, platform, runtime, timeout =
   let sequence = 0
   let finished = false
   let idleTimer
+  let problems = []
   let resolveStarted
   const started = new Promise(resolve => { resolveStarted = resolve })
   let resolveDone
@@ -51,6 +52,7 @@ export async function createCollector({ runId, out, platform, runtime, timeout =
     const cases = tests.concat(missing.map(test => ({ ...test, status: 'failed', duration: 0, message: reason ?? 'Result missing' })))
     if (reason) cases.push({ suite: 'runner', name: 'completion', status: 'failed', duration: 0, message: reason })
     const failureCount = cases.filter(test => test.status === 'failed').length
+    problems = cases.filter(test => test.status === 'failed' || (test.status === 'skipped' && !skipAllowed(test)))
     const body = cases.map(test => `<testcase classname="${xml(test.suite)}" name="${xml(test.name)}" time="${test.duration / 1000}">` +
       (test.status === 'failed' ? `<failure message="${xml(test.message ?? 'Test failed')}"/>` : test.status === 'skipped' ? `<skipped message="${xml(test.message ?? 'Skipped')}"/>` : '') + '</testcase>').join('\n')
     fs.writeFileSync(path.join(out, 'junit.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<testsuites><testsuite name="${xml(`${runtime}-${platform}`)}" tests="${cases.length}" failures="${failureCount}" skipped="${skipped}">\n${body}\n</testsuite></testsuites>\n`)
@@ -117,6 +119,8 @@ export async function createCollector({ runId, out, platform, runtime, timeout =
     started,
     done,
     fail: reason => finish(reason),
+    /** Failed cases and unapproved skips from the last persisted state. */
+    problems: () => problems,
     stop: async reason => {
       if (!finished) finish(reason ?? 'Test runner stopped before completion')
       await new Promise(resolve => server.close(resolve))

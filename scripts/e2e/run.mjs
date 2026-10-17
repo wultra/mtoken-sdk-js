@@ -154,6 +154,7 @@ try {
   } finally { clearTimeout(startupTimer) }
   const summary = await collector.done
   console.log(JSON.stringify(summary, null, 2))
+  for (const test of collector.problems()) console.error(`${test.status.toUpperCase()} ${test.suite}.${test.name}: ${test.message ?? ''}`)
   if (!summary.success) process.exitCode = 1
 } catch (error) {
   console.error(error.message)

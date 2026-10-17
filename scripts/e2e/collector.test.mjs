@@ -100,6 +100,7 @@ for (const allowed of ['Suite', 'Suite.testOne']) {
     assert.equal(summary.success, true)
     assert.equal(summary.skipped, 1)
     assert.equal(summary.unexpectedSkips, 0)
+    assert.deepEqual(collector.problems(), [])
     assert.match(fs.readFileSync(path.join(collector.out, 'junit.xml'), 'utf8'), /<skipped message="provider absent"/)
   })
 }
@@ -114,6 +115,7 @@ test('allowed skips do not cover other suites, cases or failures', async t => {
   const summary = await collector.done
   assert.equal(summary.success, false)
   assert.equal(summary.unexpectedSkips, 1)
+  assert.deepEqual(collector.problems().map(test => [test.name, test.status]), [['testOne', 'skipped'], ['testFailed', 'failed']])
 })
 
 test('fail() ends a run in progress with a failing reason', async t => {

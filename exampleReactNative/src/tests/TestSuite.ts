@@ -26,6 +26,12 @@ class SkippedTest extends Error {}
 class AssertionFailure extends Error {}
 export class TestTimeout extends Error {}
 
+/** Only an enum-like error code (e.g. PowerAuthErrorCode) is safe to export. */
+function errorCode(error: any): string {
+    const code = error?.code
+    return typeof code === 'string' && /^[A-Z][A-Z0-9_]{0,63}$/.test(code) ? ` (${code})` : ''
+}
+
 /** Runs the same tests in Hermes and Cordova's WebView, including the native SDK. */
 export class TestSuite {
     readonly suiteName: string
@@ -84,7 +90,7 @@ export class TestSuite {
                 const status = error instanceof SkippedTest ? 'skipped' : failed ? 'failed' : 'passed'
                 // Do not export arbitrary SDK exceptions, bodies, OTPs, or credentials to CI artifacts.
                 const message = error instanceof AssertionFailure || error instanceof SkippedTest || error instanceof TestTimeout
-                    ? error.message : failed ? 'Test or setup failed; inspect the failing test on the device' : undefined
+                    ? error.message : failed ? `Test or setup failed${errorCode(error)}; inspect the failing test on the device` : undefined
                 await report({ suite: this.suiteName, name, status, duration: Date.now() - started, message })
             }
         } finally {
