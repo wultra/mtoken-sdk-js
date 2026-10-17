@@ -1,5 +1,7 @@
 # Cordova example and device tests
 
+For automated full-suite runs with JUnit results and a failing exit status on errors, use `yarn e2e cordova android` or `yarn e2e cordova ios` from the repository root. The equivalent workspace commands are `yarn workspace com.wultra.mtokentest test android` and `yarn workspace com.wultra.mtokentest test ios`. See [Native integration tests](../E2E-Tests.md) for PAC fixtures and CI setup.
+
 This Yarn workspace runs the same `TestExecutor` suites as the React Native example on actual Cordova iOS and Android apps. The SDK plugin is installed from `packages/lib-cordova/build`.
 
 ## Setup

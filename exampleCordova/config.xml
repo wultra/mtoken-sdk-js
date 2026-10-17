@@ -6,6 +6,15 @@
         Wultra
     </author>
     <content src="index.html" />
+    <access origin="http://127.0.0.1:*" />
+    <access origin="https://*/*" />
+    <platform name="ios">
+        <edit-config file="*-Info.plist" mode="merge" target="NSAppTransportSecurity">
+            <dict>
+                <key>NSAllowsLocalNetworking</key><true />
+            </dict>
+        </edit-config>
+    </platform>
 
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />

@@ -5,6 +5,7 @@
   "description": "A sample Cordova application that runs Mobile Token Tests.",
   "main": "index.js",
   "scripts": {
+    "test": "node ../scripts/e2e/run.mjs cordova",
     "build": "node scripts/build.mjs",
     "buildIos": "node scripts/build.mjs ios && cordova build ios",
     "buildAndroid": "node scripts/build.mjs android && cordova build android",
