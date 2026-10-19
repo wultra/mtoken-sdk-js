@@ -731,4 +731,4 @@ export interface WMTPACData {
 
 ## Read Next
 
-- [Using Push](./Using-Push.md)
+- [Using Push Service](./Using-Push.md)

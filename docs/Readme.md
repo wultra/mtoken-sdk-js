@@ -38,7 +38,7 @@ The code of the library is open source and you can freely browse it in our GitHu
 - [SDK Integration](./SDK-Integration.md)
 - [Example Usage](./Example-Usage.md)
 - [Using Operations](./Using-Operations.md)
-- [Using Push](./Using-Push.md)
+- [Using Push Service](./Using-Push.md)
 - [Using Inbox](./Using-Inbox.md)
 - [Language and User-Agent Configuration](./Language-UserAgent-Configuration.md)
 
