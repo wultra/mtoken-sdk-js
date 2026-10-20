@@ -4,11 +4,12 @@
 - `PowerAuth Networking JS SDK` is now a required peer dependency, and you need to add it manually alongside the `mtoken-sdk-js` on React Native
 - Minimal required version for `PowerAuth Mobile JS SDK` raised to `5.0.0`
   - for more information, see [migration guide](Version-3.0.md)
+  - `PowerAuth Mobile JS SDK` dependency updated to `5.0.0-beta-2` (requires reinstalling it when upgrading from `3.0.0-beta-1`, see [migration guide](Version-3.0.md#networking))
 - Minimal required versions of React and React Native raised to `19.2.3` and `0.87.0`
 - Minimal supported iOS version for Cordova raised to `15.0`
 - `PowerAuth Networking JS SDK` dependency updated to `2.0.0`
 - Added optional `requestInterceptors` parameter to the `WultraMobileToken` constructor and `createWultraMobileToken` factory method ([documentation](Example-Usage.md#request-interceptors))
-- Removed the per-call `requestProcessor` parameter from all service methods in favor of `requestInterceptors` (breaking change compared to `3.0.0-beta-1`, which also requires upgrading `PowerAuth Networking JS SDK` from `2.0.0-beta-1` to `2.0.0-beta-2`, see [migration guide](Version-3.0.md#networking))
+- Removed the per-call `requestProcessor` parameter from all service methods in favor of `requestInterceptors` (breaking change compared to `3.0.0-beta-1`, which also requires upgrading `PowerAuth Networking JS SDK` from `2.0.0-beta-1` to `2.0.0-beta-3`, see [migration guide](Version-3.0.md#networking))
 - Updated offline QR authorization for PowerAuth protocol 4 ([documentation](Using-Operations.md#processing-scanned-qr-operation))
 - Removed `WMTNetworking`, `WMTJsonConfig`, and `WMTE2EEConfiguration`
 - Networking errors now use `WPNException` and HTTP logging uses `WPNLoggerConfig`

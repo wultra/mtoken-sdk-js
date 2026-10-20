@@ -4544,8 +4544,8 @@ __metadata:
     cordova-android: "npm:^13.0.0"
     cordova-ios: "npm:^7.1.1"
     cordova-mtoken-sdk: "workspace:*"
-    cordova-powerauth-mobile-sdk: "https://github.com/wultra/react-native-powerauth-mobile-sdk/releases/download/5.0.0-beta-1/cordova-powerauth-mobile-sdk-5.0.0.tgz"
-    cordova-powerauth-networking: "https://github.com/wultra/networking-js/releases/download/2.0.0-beta-2/cordova-powerauth-networking-v2.0.0.tgz"
+    cordova-powerauth-mobile-sdk: "https://github.com/wultra/react-native-powerauth-mobile-sdk/releases/download/5.0.0-beta-2/cordova-powerauth-mobile-sdk-5.0.0.tgz"
+    cordova-powerauth-networking: "https://github.com/wultra/networking-js/releases/download/2.0.0-beta-3/cordova-powerauth-networking-v2.0.0.tgz"
     esbuild: "npm:^0.23.1"
   languageName: unknown
   linkType: soft
@@ -4801,17 +4801,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"cordova-powerauth-mobile-sdk@https://github.com/wultra/react-native-powerauth-mobile-sdk/releases/download/5.0.0-beta-1/cordova-powerauth-mobile-sdk-5.0.0.tgz":
+"cordova-powerauth-mobile-sdk@https://github.com/wultra/react-native-powerauth-mobile-sdk/releases/download/5.0.0-beta-2/cordova-powerauth-mobile-sdk-5.0.0.tgz":
   version: 5.0.0
-  resolution: "cordova-powerauth-mobile-sdk@https://github.com/wultra/react-native-powerauth-mobile-sdk/releases/download/5.0.0-beta-1/cordova-powerauth-mobile-sdk-5.0.0.tgz"
-  checksum: 10c0/dfac7a4f574a738345c850884ead8a5604374594d1b3ff5b792ebbfeb14dfb1ea4cce755f618d5a9dd14964a5073537117ff927dafb5b20d205c113e59c21e27
+  resolution: "cordova-powerauth-mobile-sdk@https://github.com/wultra/react-native-powerauth-mobile-sdk/releases/download/5.0.0-beta-2/cordova-powerauth-mobile-sdk-5.0.0.tgz"
+  checksum: 10c0/3ddf5dcbb2bd5c6621a8454a65af4b87bd7fcfab17b05793cb5e4bf3f65444e3d91b8097e076f5e177e20bf82c21996dea71d1875f3764ce16bedc1a8b57b527
   languageName: node
   linkType: hard
 
-"cordova-powerauth-networking@https://github.com/wultra/networking-js/releases/download/2.0.0-beta-2/cordova-powerauth-networking-v2.0.0.tgz":
+"cordova-powerauth-networking@https://github.com/wultra/networking-js/releases/download/2.0.0-beta-3/cordova-powerauth-networking-v2.0.0.tgz":
   version: 2.0.0
-  resolution: "cordova-powerauth-networking@https://github.com/wultra/networking-js/releases/download/2.0.0-beta-2/cordova-powerauth-networking-v2.0.0.tgz"
-  checksum: 10c0/cf6960feef55f6a1c4506d61c03552db396829872c2f7b7a47407f4cdd22e011ea089a2c3f41041bbc777becae567dbd760797b7bd70571ffc4b88d68f27a701
+  resolution: "cordova-powerauth-networking@https://github.com/wultra/networking-js/releases/download/2.0.0-beta-3/cordova-powerauth-networking-v2.0.0.tgz"
+  checksum: 10c0/5cf2fb434428c7337ae8a8fbe31a452de75e34c70953a9e6bdd1b734b9d205950ef42651d871b05d0e59459e9e41b32a67fe758d5cbeeb89446c6c770e1bb13d
   languageName: node
   linkType: hard
 
@@ -5842,8 +5842,8 @@ __metadata:
     react-native: "npm:0.87.1"
     react-native-device-info: "npm:^14.0.0"
     react-native-mtoken-sdk: "workspace:*"
-    react-native-powerauth-mobile-sdk: "https://github.com/wultra/react-native-powerauth-mobile-sdk/releases/download/5.0.0-beta-1/react-native-powerauth-mobile-sdk-5.0.0.tgz"
-    react-native-powerauth-networking: "https://github.com/wultra/networking-js/releases/download/2.0.0-beta-2/react-native-powerauth-networking-v2.0.0.tgz"
+    react-native-powerauth-mobile-sdk: "https://github.com/wultra/react-native-powerauth-mobile-sdk/releases/download/5.0.0-beta-2/react-native-powerauth-mobile-sdk-5.0.0.tgz"
+    react-native-powerauth-networking: "https://github.com/wultra/networking-js/releases/download/2.0.0-beta-3/react-native-powerauth-networking-v2.0.0.tgz"
     react-test-renderer: "npm:19.2.3"
     typescript: "npm:^6.0.3"
   languageName: unknown
@@ -8769,12 +8769,12 @@ __metadata:
     "@rollup/plugin-node-resolve": "npm:^16.0.1"
     "@types/react": "npm:^19.2.0"
     buffer: "npm:^6.0.3"
-    cordova-powerauth-mobile-sdk: "https://github.com/wultra/react-native-powerauth-mobile-sdk/releases/download/5.0.0-beta-1/cordova-powerauth-mobile-sdk-5.0.0.tgz"
-    cordova-powerauth-networking: "https://github.com/wultra/networking-js/releases/download/2.0.0-beta-2/cordova-powerauth-networking-v2.0.0.tgz"
+    cordova-powerauth-mobile-sdk: "https://github.com/wultra/react-native-powerauth-mobile-sdk/releases/download/5.0.0-beta-2/cordova-powerauth-mobile-sdk-5.0.0.tgz"
+    cordova-powerauth-networking: "https://github.com/wultra/networking-js/releases/download/2.0.0-beta-3/cordova-powerauth-networking-v2.0.0.tgz"
     react: "npm:19.2.3"
     react-native: "npm:0.87.1"
-    react-native-powerauth-mobile-sdk: "https://github.com/wultra/react-native-powerauth-mobile-sdk/releases/download/5.0.0-beta-1/react-native-powerauth-mobile-sdk-5.0.0.tgz"
-    react-native-powerauth-networking: "https://github.com/wultra/networking-js/releases/download/2.0.0-beta-2/react-native-powerauth-networking-v2.0.0.tgz"
+    react-native-powerauth-mobile-sdk: "https://github.com/wultra/react-native-powerauth-mobile-sdk/releases/download/5.0.0-beta-2/react-native-powerauth-mobile-sdk-5.0.0.tgz"
+    react-native-powerauth-networking: "https://github.com/wultra/networking-js/releases/download/2.0.0-beta-3/react-native-powerauth-networking-v2.0.0.tgz"
     rollup: "npm:^4.59.0"
     rollup-plugin-dts: "npm:^6.2.3"
     rollup-plugin-typescript2: "npm:^0.37.0"
@@ -9717,26 +9717,26 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"react-native-powerauth-mobile-sdk@https://github.com/wultra/react-native-powerauth-mobile-sdk/releases/download/5.0.0-beta-1/react-native-powerauth-mobile-sdk-5.0.0.tgz":
+"react-native-powerauth-mobile-sdk@https://github.com/wultra/react-native-powerauth-mobile-sdk/releases/download/5.0.0-beta-2/react-native-powerauth-mobile-sdk-5.0.0.tgz":
   version: 5.0.0
-  resolution: "react-native-powerauth-mobile-sdk@https://github.com/wultra/react-native-powerauth-mobile-sdk/releases/download/5.0.0-beta-1/react-native-powerauth-mobile-sdk-5.0.0.tgz"
+  resolution: "react-native-powerauth-mobile-sdk@https://github.com/wultra/react-native-powerauth-mobile-sdk/releases/download/5.0.0-beta-2/react-native-powerauth-mobile-sdk-5.0.0.tgz"
   dependencies:
     node-fetch: "npm:>=2.6.1"
   peerDependencies:
     react: ^19.2.3
     react-native: ">=0.87.0"
-  checksum: 10c0/d348c8ddfeda6a51647943429f97b9c9c108a0f4c073682a252635e9d8ea60dc134eb47828d40e3b9ce8c3a42bd5a543429a3b6399cf2cb23132101a4cc7d8b8
+  checksum: 10c0/71fc932565c1950d5ddb8d25143c45cba549073c6b1b7f116000bc84a46a44b3ab48ee42fa19f447226972769f994faba7bc25bafc6f4c621e13e8575827ac26
   languageName: node
   linkType: hard
 
-"react-native-powerauth-networking@https://github.com/wultra/networking-js/releases/download/2.0.0-beta-2/react-native-powerauth-networking-v2.0.0.tgz":
+"react-native-powerauth-networking@https://github.com/wultra/networking-js/releases/download/2.0.0-beta-3/react-native-powerauth-networking-v2.0.0.tgz":
   version: 2.0.0
-  resolution: "react-native-powerauth-networking@https://github.com/wultra/networking-js/releases/download/2.0.0-beta-2/react-native-powerauth-networking-v2.0.0.tgz"
+  resolution: "react-native-powerauth-networking@https://github.com/wultra/networking-js/releases/download/2.0.0-beta-3/react-native-powerauth-networking-v2.0.0.tgz"
   peerDependencies:
     react: ^19.2.3
     react-native: ">=0.87.0"
     react-native-powerauth-mobile-sdk: 5.0.0
-  checksum: 10c0/01ccf5a2952c105dd5266a01e8dbc4189d8daff3b6cdf25bccb7c5124a196542ebe5b23900242342440dd3b19ed3ec86f4ffc76e3af2bc87f8102ff7a8183a88
+  checksum: 10c0/eb2b2de8cb99b1c6f3039941d6d30569aa0f90f2f4063ae0ec5b05de74f7cd306da33c44ea9afe1a73af3609659a77d1f5ccd468decddfdb565c3c69f6768634
   languageName: node
   linkType: hard
 
