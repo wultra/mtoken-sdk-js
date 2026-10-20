@@ -3,7 +3,7 @@
 - [SDK Integration](./SDK-Integration.md)
 - [Example Usage](./Example-Usage.md)
 - [Using Operations](./Using-Operations.md)
-- [Using Push](./Using-Push.md)
+- [Using Push Service](./Using-Push.md)
 - [Using Inbox](./Using-Inbox.md)
 - [Using OIDC](./Using-OIDC.md)
 - [Server Error Handling](./Server-Error-Handling.md)
