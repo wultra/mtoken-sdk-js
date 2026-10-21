@@ -21,6 +21,7 @@
 - Added `reject(operation, reason)` overload that includes `operation.mobileTokenData` in the request for passing customer-specific data
 - Deep imports (for example `react-native-mtoken-sdk/lib/...`) are no longer supported, import everything from `react-native-mtoken-sdk`
 - All public SDK classes are now available as globals in Cordova (for example `WMTOIDC` and `WMTOIDCUtils`)
+- `getOperations` now logs a warning when called sooner than 7 seconds after the previous call ([documentation](Using-Operations.md#fetching-frequency))
 
 ## 2.1.0
 - Added `mobileTokenData` to authorize request for passing customer-specific data ([documentation](Using-Operations.md#Passing-Additional-Mobile-Token-Data))
