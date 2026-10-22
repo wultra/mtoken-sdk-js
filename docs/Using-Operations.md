@@ -63,6 +63,19 @@ After you retrieve the pending operations, you can render them in the UI, for ex
 Note: The language of the UI data inside the operation depends on the configuration of the `WultraMobileToken.setAcceptLanguage`.
 <!-- end -->
 
+### Fetching Frequency
+
+Every `getOperations` call sends a signed request that the server has to process. Calling it too often, especially by many users at once, may overload the server. The SDK logs a warning when `getOperations` is called sooner than 7 seconds after the previous call on the same `WMTOperations` instance.
+
+Best practices:
+
+- Fetch the operations when the user needs them, for example, when the screen with the operations is displayed or when the app returns to the foreground.
+- If you need to poll, use an interval of 7 seconds and never go below 5 seconds. Poll only while the operations are visible to the user, and stop polling when the screen is closed or the app goes to the background.
+- When [push notifications](./Using-Push.md) are enabled, double the polling interval to minimize the server load.
+- Don't start a new fetch while the previous one is still running. Schedule the next fetch after the previous one finishes instead of using `setInterval`.
+- After a failure, wait longer before trying again.
+- Reuse a single `WultraMobileToken` instance, so the SDK can detect too frequent calls.
+
 ## Approve an Operation
 
 To approve an operation use `authorize`. You can simply use it with the following examples:
@@ -306,7 +319,7 @@ All available methods and attributes of `WMTOperations` API are:
 
 > To modify requests sent by the SDK, use [request interceptors](./Example-Usage.md#request-interceptors).
 
-- `async getOperations(): Promise<WPNResponse<WMTUserOperation[]>>` - Retrieves pending operations from the server.
+- `async getOperations(): Promise<WPNResponse<WMTUserOperation[]>>` - Retrieves pending operations from the server. Logs a warning when called sooner than 7 seconds after the previous call (see [Fetching Frequency](#fetching-frequency)).
 - `async getDetail(operationId: string): Promise<WPNResponse<WMTUserOperation>>` - Retrieves operation detail based on operation ID.
   - `operationId` - ID of the operation to retrieve.
 - `async getHistory(authentication: PowerAuthAuthentication): Promise<WPNResponse<WMTUserOperation[]>>` - Retrieves operation history.

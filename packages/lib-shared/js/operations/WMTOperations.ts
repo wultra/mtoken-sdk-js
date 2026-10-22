@@ -39,12 +39,26 @@ export class WMTOperations extends WMTService {
 
     private jsonDateFields = [ "operationExpires", "operationCreated", "timestampReceived" ]
 
+    /** Minimal recommended interval between two `getOperations` calls. Calling it more often logs a warning. */
+    private static readonly RECOMMENDED_FETCH_INTERVAL_MS = 7000
+
+    /** Time of the last `getOperations` call. */
+    private lastFetchTime?: number
+
     /**
     * Retrieves user operations.
+    *
+    * Calling this method more often than every 7 seconds logs a warning, as frequent calls may overload the server.
     * 
     * @returns Server response (with list of operations).
     */
     async getOperations(): Promise<WPNResponse<WMTUserOperation[]>> {
+        const now = Date.now()
+        if (this.lastFetchTime !== undefined && now - this.lastFetchTime < WMTOperations.RECOMMENDED_FETCH_INTERVAL_MS) {
+            WMTLogger.warn(`Pending operations requested ${now - this.lastFetchTime}ms after the previous request. ` +
+                `Fetching them more often than every ${WMTOperations.RECOMMENDED_FETCH_INTERVAL_MS / 1000} seconds may overload the server.`)
+        }
+        this.lastFetchTime = now
         const requestData = {}
         const response = await this.networking.call(
             WPNEndpoint.signedWithToken<typeof requestData, WMTUserOperation[]>("/api/auth/token/app/operation/list", "possession_universal", new WPNResponseConfig(this.jsonDateFields)),
