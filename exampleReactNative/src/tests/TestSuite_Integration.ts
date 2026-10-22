@@ -19,7 +19,7 @@ import { Buffer } from 'buffer';
 import { TestSuite } from './TestSuite';
 import { IntegrationUtils } from './utils/IntegrationUtils';
 import { WPNUserAgent, WPNKnownRestApiError, WPNRequestInterceptor } from 'react-native-powerauth-networking';
-import { WultraMobileToken, WMTOperations, WMTQROperationParser, WMTSigningKey, WMTPushData, WMTAPNSEnvironment, WMTException, WMTUserOperationProximityCheck } from 'react-native-mtoken-sdk';
+import { WultraMobileToken, WMTOperations, WMTQROperationParser, WMTSigningKey, WMTPushData, WMTAPNSEnvironment, WMTException, WMTUserOperationProximityCheck, WMTLogger, WMTLoggerVerbosity } from 'react-native-mtoken-sdk';
 
 export class TestSuite_Integration extends TestSuite {
 
@@ -57,6 +57,32 @@ export class TestSuite_Integration extends TestSuite {
         const configuration = await this.powerAuth.configuration
         const operations = new WMTOperations(this.powerAuth, configuration.baseEndpointUrl)
         this.assertEquals((await operations.getOperations()).status, "OK")
+    }
+
+    async testFrequentFetchWarning() {
+        const warnings: string[] = []
+        WMTLogger.setLogListener((message, verbosity) => {
+            if (verbosity === WMTLoggerVerbosity.WARN && message.startsWith("Pending operations requested")) {
+                warnings.push(message)
+            }
+        }, false)
+
+        try {
+            const mtoken = this.powerAuth.createWultraMobileToken()
+            // Both requests start immediately, so the result doesn't depend on the network latency
+            const first = mtoken.operations.getOperations()
+            this.assertEquals(warnings.length, 0, "the first fetch should not log a warning")
+
+            const second = mtoken.operations.getOperations()
+            this.assertEquals(warnings.length, 1, "a fetch repeated sooner than 7 seconds should log a warning")
+            await Promise.all([first, second])
+
+            await new Promise(resolve => setTimeout(resolve, 7100))
+            await mtoken.operations.getOperations()
+            this.assertEquals(warnings.length, 1, "a fetch repeated after 7 seconds should not log a warning")
+        } finally {
+            WMTLogger.setLogListener(null)
+        }
     }
 
     async testUnconfiguredPowerAuthRejectsRequest() {
