@@ -8771,7 +8771,7 @@ __metadata:
     buffer: "npm:^6.0.3"
     cordova-powerauth-mobile-sdk: "https://github.com/wultra/react-native-powerauth-mobile-sdk/releases/download/5.0.0-beta-2/cordova-powerauth-mobile-sdk-5.0.0.tgz"
     cordova-powerauth-networking: "https://github.com/wultra/networking-js/releases/download/2.0.0-beta-3/cordova-powerauth-networking-v2.0.0.tgz"
-    react: "npm:19.2.3"
+    react: "npm:19.3.1"
     react-native: "npm:0.87.1"
     react-native-powerauth-mobile-sdk: "https://github.com/wultra/react-native-powerauth-mobile-sdk/releases/download/5.0.0-beta-2/react-native-powerauth-mobile-sdk-5.0.0.tgz"
     react-native-powerauth-networking: "https://github.com/wultra/networking-js/releases/download/2.0.0-beta-3/react-native-powerauth-networking-v2.0.0.tgz"
@@ -9805,10 +9805,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:19.2.3":
-  version: 19.2.3
-  resolution: "react@npm:19.2.3"
-  checksum: 10c0/094220b3ba3a76c1b668f972ace1dd15509b157aead1b40391d1c8e657e720c201d9719537375eff08f5e0514748c0319063392a6f000e31303aafc4471f1436
+"react@npm:19.3.1":
+  version: 19.3.1
+  resolution: "react@npm:19.3.1"
+  checksum: 10c0/f0ed036d1223562c09c8347858ca712733ea6e27a30db709ee9c3f3f176d3e9e767afce735d59956addf3d030102e256bba82dea635fc1bdb0e01107e98fef10
   languageName: node
   linkType: hard
 
