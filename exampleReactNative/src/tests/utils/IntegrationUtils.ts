@@ -86,19 +86,25 @@ export class IntegrationUtils {
 
         // CREATE ACTIVATION LOCALLY
 
-        await pa.createActivation(PowerAuthActivation.createWithActivationCode(resp.activationCode, "tests"))
+        try {
+            await pa.createActivation(PowerAuthActivation.createWithActivationCode(resp.activationCode, "tests"))
 
         // COMMIT ACTIVATION LOCALLY
 
-        let result = await pa.persistActivation(PowerAuthAuthentication.persistWithPassword(pin))
+            await pa.persistActivation(PowerAuthAuthentication.persistWithPassword(pin))
 
         // COMMIT ACTIVATION ON THE SERVER
 
-        await this.makeCall(`{ "externalUserId": "test" }`, `${this.cloudServerUrl}/v2/registrations/${resp.registrationId}/commit`)
+            await this.makeCall(`{ "externalUserId": "test" }`, `${this.cloudServerUrl}/v2/registrations/${resp.registrationId}/commit`)
 
-        return {
-            powerauth: pa,
-            mtoken: pa.createWultraMobileToken()
+            return {
+                powerauth: pa,
+                mtoken: pa.createWultraMobileToken()
+            }
+        } catch (error) {
+            // Setup failures still remove server and native state before the next suite starts.
+            await Promise.allSettled([this.removeRegistration(), pa.removeActivationLocal()])
+            throw error
         }
     }
 
@@ -202,19 +208,25 @@ export class IntegrationUtils {
 
     private async makeCall(payload: string | undefined, url: string, method: string = "POST"): Promise<any> {
         const creds = `${this.cloudServerLogin}:${this.cloudServerPassword}`
+        const controller = new AbortController()
+        const timer = setTimeout(() => controller.abort(), 30000)
         const request: RequestInit = {
-            body: payload,
+            body: method === 'GET' || method === 'DELETE' ? undefined : payload,
             headers: {
                 "authorization": `Basic ${Buffer.from(creds, 'utf8').toString('base64')}`,
                 "content-type": this.jsonMediaType
             },
-            method: method
+            method: method,
+            signal: controller.signal
         }
-        return await fetch(url, request)
-            .then(response => response.text())
-            .then(stringResp => {
-                return JSON.parse(stringResp)
-            })
+        try {
+            const response = await fetch(url, request)
+            if (!response.ok) throw new Error(`PAC test request failed (HTTP ${response.status})`)
+            const body = await response.text()
+            return body ? JSON.parse(body) : undefined
+        } finally {
+            clearTimeout(timer)
+        }
     }
 }
 

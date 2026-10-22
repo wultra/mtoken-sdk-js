@@ -58,6 +58,8 @@ yarn verify:packages   # verify existing tarballs again
 
 See the [React Native example](exampleReactNative/README.md) and [Cordova example](exampleCordova/README.md) for device test commands.
 
+Run `yarn e2e rn android`, `yarn e2e rn ios`, `yarn e2e cordova android` or `yarn e2e cordova ios` to build and execute all suites on a device/emulator with JUnit results and a failing exit status on errors. See [Native integration tests](E2E-Tests.md) for PAC configuration, prerequisites and PR CI coverage.
+
 ## License
 
 All sources are licensed using the Apache 2.0 license. You can use them with no restrictions. If you are using this library, please let us know. We will be happy to share and promote your project.
