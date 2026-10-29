@@ -45,6 +45,8 @@ pod install
 
 ```typescript
 import { PowerAuth } from 'react-native-powerauth-mobile-sdk';
+// Loads the SDK, which adds `createWultraMobileToken()` to `PowerAuth` (at runtime and for TypeScript)
+import 'react-native-mtoken-sdk';
 
 function createMtokenInstance() {
     const powerAuth = new PowerAuth("my-instance")
