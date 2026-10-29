@@ -37,20 +37,20 @@
   "resolutions": {
     "@types/react": "^19.2.0",
     "react": "19.3.1",
-    "react-native": "0.87.1"
+    "react-native": "0.88.0"
   },
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^28.0.0",
+    "@rollup/plugin-commonjs": "^29.0.3",
     "@rollup/plugin-node-resolve": "^16.0.1",
     "@types/react": "^19.2.0",
     "buffer": "^6.0.3",
     "cordova-powerauth-mobile-sdk": "https://github.com/wultra/react-native-powerauth-mobile-sdk/releases/download/5.0.0-beta-2/cordova-powerauth-mobile-sdk-5.0.0.tgz",
     "cordova-powerauth-networking": "https://github.com/wultra/networking-js/releases/download/2.0.0-beta-3/cordova-powerauth-networking-v2.0.0.tgz",
     "react": "19.3.1",
-    "react-native": "0.87.1",
+    "react-native": "0.88.0",
     "react-native-powerauth-mobile-sdk": "https://github.com/wultra/react-native-powerauth-mobile-sdk/releases/download/5.0.0-beta-2/react-native-powerauth-mobile-sdk-5.0.0.tgz",
     "react-native-powerauth-networking": "https://github.com/wultra/networking-js/releases/download/2.0.0-beta-3/react-native-powerauth-networking-v2.0.0.tgz",
-    "rollup": "^4.64.10",
+    "rollup": "^4.65.0",
     "rollup-plugin-dts": "^6.2.3",
     "rollup-plugin-typescript2": "^0.37.0",
     "typescript": "^5.2.2"
