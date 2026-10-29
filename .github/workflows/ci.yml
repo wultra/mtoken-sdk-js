@@ -19,5 +19,8 @@ jobs:
       - name: Typecheck SDK and React Native example before building
         run: yarn typecheck
 
+      - name: Test native runner and collector
+        run: yarn test
+
       - name: Pack both release artifacts
         run: yarn packAll
