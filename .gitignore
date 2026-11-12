@@ -6,6 +6,8 @@
 
 # TEST CREDENTIALS
 exampleReactNative/src/tests/utils/credentials-private.json
+exampleReactNative/src/tests/utils/test-config-private.json
+artifacts/e2e/
 
 # XDE
 .expo/
@@ -39,6 +41,7 @@ project.xcworkspace
 .classpath
 .cxx
 .gradle
+.kotlin/
 .idea
 .project
 .settings

@@ -1,0 +1,95 @@
+name: Native E2E
+on:
+  pull_request:
+  push:
+    branches: [develop]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: native-e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  native:
+    # Fork PRs run CI's nonsecret checks; PAC credentials are only used by trusted code.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    name: ${{ matrix.runtime }} / ${{ matrix.platform }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {runtime: rn, platform: android, runner: ubuntu-latest}
+          - {runtime: cordova, platform: android, runner: ubuntu-latest}
+          - {runtime: rn, platform: ios, runner: macos-latest}
+          - {runtime: cordova, platform: ios, runner: macos-latest}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 90
+    env:
+      # OIDC cases skip when the PAC environment has no OIDC providers; they stay visible in JUnit.
+      E2E_ALLOW_SKIP: OIDC
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - name: Check PAC configuration is available
+        env:
+          MTOKEN_TEST_CREDENTIALS: ${{ secrets.MTOKEN_TEST_CREDENTIALS }}
+        run: node -e "if (!process.env.MTOKEN_TEST_CREDENTIALS) { console.error('Missing repository secret MTOKEN_TEST_CREDENTIALS; see E2E-Tests.md'); process.exit(1) }"
+
+      - name: Setup Java
+        if: matrix.platform == 'android'
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Install Android build tools
+        if: matrix.platform == 'android'
+        env:
+          PACKAGES: ${{ matrix.runtime == 'rn' && 'platforms;android-37.0 build-tools;37.0.0 ndk;27.1.12297006' || 'platforms;android-36 build-tools;37.0.0' }}
+        run: |
+          # Retry transient download/unzip failures from the Android repository.
+          for attempt in 1 2 3; do
+            "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" $PACKAGES && exit 0
+            echo "sdkmanager attempt $attempt failed; retrying"
+            sleep 15
+          done
+          exit 1
+      - name: Enable KVM
+        if: matrix.platform == 'android'
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Setup Ruby
+        if: matrix.platform == 'ios'
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.4'
+          bundler-cache: true
+          working-directory: exampleReactNative
+      - name: Run all suites on Android
+        if: matrix.platform == 'android'
+        uses: reactivecircus/android-emulator-runner@v2
+        env:
+          MTOKEN_TEST_CREDENTIALS: ${{ secrets.MTOKEN_TEST_CREDENTIALS }}
+        with:
+          api-level: 36
+          arch: x86_64
+          target: google_apis
+          disable-animations: true
+          script: yarn e2e ${{ matrix.runtime }} android
+      - name: Run all suites on iOS
+        if: matrix.platform == 'ios'
+        env:
+          MTOKEN_TEST_CREDENTIALS: ${{ secrets.MTOKEN_TEST_CREDENTIALS }}
+          BUNDLE_GEMFILE: ${{ github.workspace }}/exampleReactNative/Gemfile
+        run: bundle exec yarn e2e ${{ matrix.runtime }} ios
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-e2e-${{ matrix.runtime }}-${{ matrix.platform }}
+          path: artifacts/e2e/${{ matrix.runtime }}-${{ matrix.platform }}/
+          if-no-files-found: warn

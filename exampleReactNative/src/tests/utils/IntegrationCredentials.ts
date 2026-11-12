@@ -21,17 +21,11 @@ export class IntegrationCredentials {
 
     static async loadCredentials(): Promise<CredentialsObject> {
 
-        const privateFileName = "credentials-private.json"
-        try {
-            const credentials = Credentials.cloudServerUrl.length != 0 ? Credentials : await import(`./${privateFileName}`)
-
-            console.log(`Loaded credentials: ${credentials.envName}`)
-
-            return credentials
-
-        } catch (e) {
-            console.error(e)
-            throw "Failed to load credentials"
+        // Metro and the Cordova bundler resolve the ignored private file at build time.
+        const credentials: CredentialsObject = Credentials
+        for (const key of ['cloudServerUrl', 'cloudServerLogin', 'cloudServerPassword', 'cloudApplicationId', 'enrollmentUrl', 'sdkConfig'] as const) {
+            if (!credentials[key]?.trim()) throw new Error(`Missing PAC test configuration: ${key}`)
         }
+        return credentials
     }
 }

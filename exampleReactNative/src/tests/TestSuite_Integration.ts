@@ -43,8 +43,8 @@ export class TestSuite_Integration extends TestSuite {
         if (this.powerAuth) {
             console.log("")
             console.log("afterAll: removing activation...")
-            this.utils.removeRegistration(await this.powerAuth.getActivationIdentifier())
-            this.powerAuth.removeActivationLocal()
+            try { await this.utils.removeRegistration(await this.powerAuth.getActivationIdentifier()) }
+            finally { await this.powerAuth.removeActivationLocal() }
             console.log("afterAll: activation removed!")
         }
     }
@@ -357,7 +357,7 @@ export class TestSuite_Integration extends TestSuite {
         this.assertNotNull(operations, "Operations not retrieved")
         const opRecord = operations!!.find( it => it.id == op.operationId)
         this.assertNotNull(opRecord)
-        this.assertEquals(opRecord!!.statusReason, cancelReason, `${opRecord?.statusReason} should be ${cancelReason}`)
+        this.assertEquals(opRecord!!.statusReason, cancelReason, 'Cancellation reason should match')
     }
 
     async testTestUserAgents() {
@@ -379,13 +379,13 @@ export class TestSuite_Integration extends TestSuite {
         await tempMtoken.operations.getOperations()
 
         const userAgent = headers!!.get("user-agent")!!
-        this.assertTrue(userAgent.startsWith(expectedDefaultUserAgentProductName), `user-agent should start with ${expectedDefaultUserAgentProductName}`)
-        this.assertTrue(userAgent.includes(envInfo.systemVersion), `user-agent should contain systemVersion ${envInfo.systemVersion}`)
-        this.assertTrue(userAgent.includes(envInfo.systemName), `user-agent should contain systemName ${envInfo.systemName}`)
-        this.assertTrue(userAgent.includes(envInfo.deviceId), `user-agent should contain deviceId ${envInfo.deviceId}`)
-        this.assertTrue(userAgent.includes(envInfo.deviceManufacturer), `user-agent should contain deviceManufacturer ${envInfo.deviceManufacturer}`)
-        this.assertTrue(userAgent.includes(envInfo.applicationIdentifier || "MISSING"), `user-agent should contain applicationIdentifier ${envInfo.applicationIdentifier}`)
-        this.assertTrue(userAgent.includes(envInfo.applicationVersion || "MISSING"), `user-agent should contain applicationVersion ${envInfo.applicationVersion}`)
+        this.assertTrue(userAgent.startsWith(expectedDefaultUserAgentProductName), 'user-agent should start with the default product name')
+        this.assertTrue(userAgent.includes(envInfo.systemVersion), 'user-agent should contain systemVersion')
+        this.assertTrue(userAgent.includes(envInfo.systemName), 'user-agent should contain systemName')
+        this.assertTrue(userAgent.includes(envInfo.deviceId), 'user-agent should contain deviceId')
+        this.assertTrue(userAgent.includes(envInfo.deviceManufacturer), 'user-agent should contain deviceManufacturer')
+        this.assertTrue(userAgent.includes(envInfo.applicationIdentifier || "MISSING"), 'user-agent should contain applicationIdentifier')
+        this.assertTrue(userAgent.includes(envInfo.applicationVersion || "MISSING"), 'user-agent should contain applicationVersion')
 
         // Test custom user agent
 
@@ -417,7 +417,7 @@ export class TestSuite_Integration extends TestSuite {
         tempMtoken = this.powerAuth.createWultraMobileToken(undefined, undefined, [capture])
         await tempMtoken.operations.getOperations()
         const defaultUserAgent = headers!!.get("user-agent")!!
-        this.assertTrue(defaultUserAgent.startsWith(expectedDefaultUserAgentProductName), `user-agent should start with ${expectedDefaultUserAgentProductName}`)
+        this.assertTrue(defaultUserAgent.startsWith(expectedDefaultUserAgentProductName), 'user-agent should start with the default product name')
         this.assertEquals(tempMtoken.operations.networking.userAgent, WPNUserAgent.LIBRARY_DEFAULT, "library default should be resolved by the networking client")
 
         // Value set by the app on the networking client is kept by SDK calls
@@ -488,8 +488,8 @@ export class TestSuite_Integration extends TestSuite {
         await mtoken.oidc.getConfig("xxx")
 
         const expectedPaths = ["/api/auth/token/app/operation/list", "/api/inbox/count", "/api/push/device/register/token", "/api/config/oidc"]
-        this.assertEquals(urls.length, expectedPaths.length, `each service request should be intercepted once, intercepted: ${urls.join(", ")}`)
-        expectedPaths.forEach((path, index) => this.assertTrue(urls[index].endsWith(path), `request ${urls[index]} should end with ${path}`))
+        this.assertEquals(urls.length, expectedPaths.length, 'Each service request should be intercepted once')
+        expectedPaths.forEach((path, index) => this.assertTrue(urls[index].endsWith(path), 'Intercepted request path should match the endpoint'))
         this.assertEquals(calls.join(","), "addHeader,record,addHeader,record,addHeader,record,addHeader,record", "both interceptors should run for each request")
 
         // Interceptors are not shared with other instances

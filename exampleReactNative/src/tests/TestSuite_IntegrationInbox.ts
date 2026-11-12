@@ -46,8 +46,8 @@ export class TestSuite_IntegrationInbox extends TestSuite {
         if (this.powerAuth) {
             console.log("")
             console.log("afterEach: removing activation...")
-            await this.utils.removeRegistration(await this.powerAuth.getActivationIdentifier())
-            this.powerAuth.removeActivationLocal()
+            try { await this.utils.removeRegistration(await this.powerAuth.getActivationIdentifier()) }
+            finally { await this.powerAuth.removeActivationLocal() }
             console.log("afterEach: activation removed!")
         }
     }
