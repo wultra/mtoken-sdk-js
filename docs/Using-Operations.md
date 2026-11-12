@@ -127,6 +127,10 @@ async function approveWithBiometrics(operation: WMTUserOperation) {
 }
 ```
 
+<!-- begin box info -->
+If the approval fails, call `fetchActivationStatus` on your `PowerAuth` instance to detect whether the activation is blocked and how many attempts are left.
+<!-- end -->
+
 ### Passing Additional Mobile Token Data
 
 You can attach customer-specific metadata to operations during authorization or rejection. See the [Mobile Token Data](#mobile-token-data) section for details and examples.
