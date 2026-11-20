@@ -1926,8 +1926,6 @@ PODS:
     - React-utils (= 0.88.1)
     - ReactNativeDependencies
   - ReactNativeDependencies (0.88.1)
-  - RNDeviceInfo (14.1.1):
-    - React-Core
   - SocketRocket (0.7.1):
     - ReactNativeDependencies
   - Yoga (0.0.0)
@@ -2018,7 +2016,6 @@ DEPENDENCIES:
   - ReactCodegen (from `build/generated/ios/ReactCodegen`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - ReactNativeDependencies (from `../node_modules/react-native/third-party-podspecs/ReactNativeDependencies.podspec`)
-  - RNDeviceInfo (from `../node_modules/react-native-device-info`)
   - SocketRocket (from `build/rndeps-facades/SocketRocket`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
@@ -2196,8 +2193,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   ReactNativeDependencies:
     :podspec: "../node_modules/react-native/third-party-podspecs/ReactNativeDependencies.podspec"
-  RNDeviceInfo:
-    :path: "../node_modules/react-native-device-info"
   SocketRocket:
     :path: build/rndeps-facades/SocketRocket
   Yoga:
@@ -2289,7 +2284,6 @@ SPEC CHECKSUMS:
   ReactCodegen: 665c7ee0fca63dd9e2b2d1fc20cca903d0322633
   ReactCommon: 74339d6220b072716ad634726f5bf509ef5c8dbd
   ReactNativeDependencies: a5164c3ebbe90d992022b5d9cbabbf770a6d7d05
-  RNDeviceInfo: bcce8752b5043a623fe3c26789679b473f705d3c
   SocketRocket: 37aec555668fb852ec12e3c0de59a86ca58f0871
   Yoga: cfbf768b8188dd8031d170316047010a4092581f
 
