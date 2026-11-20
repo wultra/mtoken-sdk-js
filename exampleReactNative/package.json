@@ -13,7 +13,6 @@
   "dependencies": {
     "react": "19.2.3",
     "react-native": "0.87.1",
-    "react-native-device-info": "^14.0.0",
     "react-native-mtoken-sdk": "workspace:*",
     "react-native-powerauth-mobile-sdk": "^5.0.0",
     "react-native-powerauth-networking": "^2.0.0"

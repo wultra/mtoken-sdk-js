@@ -24,7 +24,7 @@
     "buffer": "^6.0.3",
     "cordova": "^13.0.0",
     "cordova-android": "^13.0.0",
-    "cordova-ios": "^7.1.1",
+    "cordova-ios": "^8.2.0",
     "cordova-mtoken-sdk": "workspace:*",
     "cordova-powerauth-mobile-sdk": "^5.0.0",
     "cordova-powerauth-networking": "^2.0.0",
