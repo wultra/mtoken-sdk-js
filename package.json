@@ -50,7 +50,7 @@
     "react-native": "0.88.1",
     "react-native-powerauth-mobile-sdk": "^5.0.0",
     "react-native-powerauth-networking": "^2.0.0",
-    "rollup": "^4.68.0",
+    "rollup": "^4.68.8",
     "rollup-plugin-dts": "^6.2.3",
     "rollup-plugin-typescript2": "^0.37.0",
     "typescript": "^5.2.2"
