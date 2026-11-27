@@ -42,7 +42,7 @@ export class TestSuite_OIDC extends TestSuite {
         if (this.pa) {
             console.log("")
             console.log("afterAll(OIDC): cleaning up PA instance...")
-            this.pa.removeActivationLocal()
+            await this.pa.removeActivationLocal()
             console.log("afterAll(OIDC): done.")
         }
     }
@@ -112,7 +112,7 @@ export class TestSuite_OIDC extends TestSuite {
             this.assertNotNull(authData.nonce, "nonce should not be null")
             this.assertNotNull(authData.codeVerifier, "codeVerifier should not be null for PKCE provider")
         } catch (e) {
-            this.fail(`Authorization data preparation failed: ${String(e)}`)
+            this.fail('Authorization data preparation failed')
         }
     }
 
@@ -122,7 +122,7 @@ export class TestSuite_OIDC extends TestSuite {
     private async fetchConfigOrFail(oidc: WMTOIDC, providerId: string): Promise<WMTOIDCConfig> {
         const resp: any = await oidc.getConfig(providerId)
         const cfg = resp?.responseObject ?? resp
-        if (!cfg) this.fail(`getConfig() returned no config (providerId="${providerId}"). Raw: ${JSON.stringify(resp)}`)
+        if (!cfg) this.fail('getConfig() returned no config')
         return cfg
     }
 

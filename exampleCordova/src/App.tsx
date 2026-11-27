@@ -25,7 +25,7 @@ function onDeviceReady() {
   // Cordova is now initialized. Have fun!
 
   // enable debug
-  PowerAuthDebug.isEnabled = true;
+  PowerAuthDebug.isEnabled = false;
 
   const contentEl = document.getElementById('content');
   const buttonEl = document.getElementById('runtests');

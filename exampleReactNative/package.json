@@ -8,7 +8,7 @@
     "lint": "eslint .",
     "start": "react-native start",
     "typecheck": "tsc --noEmit",
-    "test": "jest"
+    "test": "node ../scripts/e2e/run.mjs rn"
   },
   "dependencies": {
     "react": "19.2.3",

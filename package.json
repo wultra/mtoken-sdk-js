@@ -18,6 +18,8 @@
     "exampleCordova"
   ],
   "scripts": {
+    "test": "node --test scripts/e2e/*.test.mjs",
+    "e2e": "node scripts/e2e/run.mjs",
     "build": "node scripts/build.mjs all",
     "build:rn": "node scripts/build.mjs rn",
     "build:cdv": "node scripts/build.mjs cordova",
